@@ -163,7 +163,7 @@ Here's how the target RNA is organized (positions numbered 1-22):
 4. **The mechanism they propose**:
    > "Together, our results and model suggest that Cas13d initially recognizes the target RNA in the solvent-exposed distal spacer region, followed by RNA duplex formation towards the target RNA in the proximal region"
 
-<sub>**📝 What does "solvent-exposed" mean?** In structural biology, "solvent-exposed" means that part of the molecule is sticking out into the surrounding water (the "solvent") rather than being buried inside the protein or hidden in a pocket. Think of it like having your hand sticking out of a coat sleeve - it's accessible and can easily touch other things. In Cas13d, the distal region of the crRNA (positions 14-20) is sticking out of the protein surface, making it available to "search" for and bind to complementary target RNA sequences floating nearby. The proximal region, in contrast, is more buried within the protein structure.</sub>
+> **📝 What does "solvent-exposed" mean?** In structural biology, "solvent-exposed" means that part of the molecule is sticking out into the surrounding water (the "solvent") rather than being buried inside the protein or hidden in a pocket. Think of it like having your hand sticking out of a coat sleeve - it's accessible and can easily touch other things. In Cas13d, the distal region of the crRNA (positions 14-20) is sticking out of the protein surface, making it available to "search" for and bind to complementary target RNA sequences floating nearby. The proximal region, in contrast, is more buried within the protein structure.
 
 So the binding mechanism is like a zipper that starts at the 3' end (distal) and zips toward the 5' end (proximal)!
 
