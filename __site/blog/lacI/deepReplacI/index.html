@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="/libs/katex/katex.min.css">
+     
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Deep Learning Predicts How Mutations Break a Genetic Switch on LacI</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="deep_learning_predicts_how_mutations_break_a_genetic_switch_on_laci"><a href="#deep_learning_predicts_how_mutations_break_a_genetic_switch_on_laci" class="header-anchor">Deep Learning Predicts How Mutations Break a Genetic Switch on LacI</a></h1>
+<h2 id="the_big_picture"><a href="#the_big_picture" class="header-anchor">The Big Picture</a></h2>
+<p>Imagine you have a light switch that controls a gene. Scientists want to know: if we change the switch slightly, will it still work? This paper uses AI trained on millions of proteins to predict whether mutations will break a bacterial gene switch called LacI.</p>
+<p><strong>The Achievement:</strong> Their AI model can predict mutation effects with 79&#37; accuracy &#40;way better than the previous best of 61&#37;&#41;, and it only needs ~100 training examples because it already learned general &quot;protein rules&quot; from millions of other proteins.</p>
+<hr />
+<h2 id="background_what_is_laci"><a href="#background_what_is_laci" class="header-anchor">Background: What is LacI?</a></h2>
+<p><strong>LacI &#40;Lac Repressor&#41;</strong> is a protein switch in <em>E. coli</em> bacteria that controls whether certain genes are turned on or off. It&#39;s been studied for 60&#43; years and is one of biology&#39;s most famous examples of gene regulation.</p>
+<p>Think of it like a door lock:</p>
+<ul>
+<li><p>When LacI works properly → door is locked → gene is OFF</p>
+</li>
+<li><p>When LacI is broken → door is unlocked → gene is ON</p>
+</li>
+</ul>
+<p><strong>The Question:</strong> If you change one or more amino acids &#40;the building blocks of proteins&#41;, will the lock still work?</p>
+<p>&lt;sup&gt;<em>Amino acids are like LEGO bricks that snap together to form proteins. LacI has 360 of these bricks in a specific order.</em>&lt;/sup&gt;</p>
+<hr />
+<p>Paper: Deep representation learning improves prediction of LacI-mediated transcriptional repression</p>
+<h2 id="the_authors"><a href="#the_authors" class="header-anchor">The Authors</a></h2>
+<ul>
+<li><p><strong>Alexander S. Garruss</strong> &#40;Harvard Medical School&#41;</p>
+</li>
+<li><p><strong>Katherine M. Collins</strong> &#40;MIT&#41;</p>
+</li>
+<li><p><strong>George M. Church</strong> &#40;Harvard, famous geneticist&#41;</p>
+</li>
+</ul>
+<p>Published in PNAS, 2021</p>
+<hr />
+<h2 id="the_experiment_a_survival_test"><a href="#the_experiment_a_survival_test" class="header-anchor">The Experiment: A Survival Test</a></h2>
+<h3 id="how_they_measured_function"><a href="#how_they_measured_function" class="header-anchor">How They Measured Function</a></h3>
+<p>Instead of measuring function in a test tube, they created a clever <strong>survival game</strong> for bacteria:</p>
+<p><strong>The Setup:</strong></p>
+<ol>
+<li><p>Give bacteria different versions of LacI &#40;some functional, some broken&#41;</p>
+</li>
+<li><p>Add a toxin &#40;colicin E1&#41; to the environment</p>
+</li>
+<li><p>Only bacteria with working LacI survive</p>
+</li>
+</ol>
+<p><strong>Why does this work?</strong></p>
+<ul>
+<li><p>LacI controls a gene called <em>tolC</em> &#40;which makes a toxin importer protein&#41;</p>
+</li>
+<li><p>The <em>tolC</em> gene naturally &quot;wants&quot; to be ON &#40;it has a promoter that drives expression&#41;</p>
+</li>
+<li><p>LacI&#39;s job is to REPRESS it &#40;turn it OFF by blocking the promoter&#41;</p>
+</li>
+</ul>
+<p><strong>The logic:</strong></p>
+<ul>
+<li><p><strong>Functional LacI:</strong> actively represses <em>tolC</em> → <em>tolC</em> stays OFF → no importer protein made → toxin can&#39;t enter → ✅ <strong>bacteria survive</strong></p>
+</li>
+<li><p><strong>Broken LacI:</strong> can&#39;t repress <em>tolC</em> → <em>tolC</em> turns ON &#40;its natural state&#41; → importer protein made → toxin enters → ☠️ <strong>bacteria die</strong></p>
+</li>
+</ul>
+<p>&lt;sup&gt;<em>Think of it like: The gene *tolC</em> is a radio that defaults to ON. LacI is the OFF button. If the OFF button is broken &#40;mutated LacI&#41;, the radio stays on.*&lt;/sup&gt;</p>
+<p><strong>The test environment:</strong></p>
+<ul>
+<li><p>All bacteria have the <em>tolC</em> gene in their DNA</p>
+</li>
+<li><p>All bacteria have a LacI variant &#40;each bacterium has a different mutated version&#41;</p>
+</li>
+<li><p>Toxin &#40;colicin E1&#41; is added to the environment</p>
+</li>
+<li><p>Which bacteria survive depends on whether their LacI variant can repress <em>tolC</em></p>
+</li>
+</ul>
+<h3 id="understanding_selection_survival_of_the_fittest"><a href="#understanding_selection_survival_of_the_fittest" class="header-anchor">Understanding Selection: Survival of the Fittest</a></h3>
+<p><strong>Negative Selection &#40;used here&#41;:</strong> Bad mutations are weeded out &#40;death test&#41;</p>
+<ul>
+<li><p>Broken variants die</p>
+</li>
+<li><p>Functional variants survive</p>
+</li>
+<li><p>Result: Variant frequency <em>decreases</em> if it&#39;s broken</p>
+</li>
+</ul>
+<p><strong>Positive Selection &#40;opposite&#41;:</strong> Good mutations are enriched &#40;growth advantage test&#41;</p>
+<ul>
+<li><p>Better variants grow faster</p>
+</li>
+<li><p>Result: Variant frequency <em>increases</em> if it&#39;s beneficial</p>
+</li>
+</ul>
+<p>&lt;sup&gt;<em>Think of it like: Negative selection &#61; firing bad employees vs. Positive selection &#61; promoting good employees</em>&lt;/sup&gt;</p>
+<h3 id="measuring_the_results"><a href="#measuring_the_results" class="header-anchor">Measuring the Results</a></h3>
+<ol>
+<li><p><strong>Before toxin:</strong> Sequence all variants, count how many of each exist</p>
+</li>
+<li><p><strong>After toxin:</strong> Sequence survivors, count again</p>
+</li>
+<li><p><strong>Calculate:</strong> Fold change &#61; frequency after ÷ frequency before</p>
+</li>
+<li><p><strong>Convert to repression score:</strong> Scale to &#91;0, 1&#93;</p>
+<ul>
+<li><p><strong>0</strong> &#61; completely broken &#40;bacteria with this variant died out&#41;</p>
+</li>
+<li><p><strong>1</strong> &#61; perfect function &#40;bacteria with this variant survived as well as wild-type&#41;</p>
+</li>
+<li><p><strong>0.5</strong> &#61; partially functional</p>
+</li>
+</ul>
+</li>
+</ol>
+<p>&lt;sup&gt;<em>Terminology clarification: &quot;variant&quot; &#61; a specific mutated version of the LacI protein. Each variant lives inside bacteria. When we say &quot;variant died out,&quot; we mean the bacteria carrying that variant died, so that variant became rare/absent in the surviving population.</em>&lt;/sup&gt;</p>
+<hr />
+<h2 id="the_dataset_43669_protein_variants"><a href="#the_dataset_43669_protein_variants" class="header-anchor">The Dataset: 43,669 Protein Variants</a></h2>
+<h3 id="what_they_tested"><a href="#what_they_tested" class="header-anchor">What They Tested</a></h3>
+<ul>
+<li><p><strong>5,009 single mutations</strong> &#40;change 1 amino acid&#41;</p>
+</li>
+<li><p><strong>Thousands of double mutations</strong> &#40;change 2 amino acids&#41;</p>
+</li>
+<li><p><strong>Higher-order mutations</strong> &#40;3&#43; changes&#41;</p>
+</li>
+<li><p>Covered most possible single mutations across the entire 360-amino acid protein</p>
+</li>
+</ul>
+<h3 id="why_this_is_better_than_before"><a href="#why_this_is_better_than_before" class="header-anchor">Why This is Better Than Before</a></h3>
+<p><strong>Old Studies &#40;1990s-2010s&#41;:</strong> Sorted variants into 4 bins</p>
+<ul>
+<li><p>&quot;Total loss&quot; </p>
+</li>
+<li><p>&quot;Major loss&quot;</p>
+</li>
+<li><p>&quot;Some loss&quot; </p>
+</li>
+<li><p>&quot;No loss&quot;</p>
+</li>
+</ul>
+<p>This is like getting letter grades: A, B, C, D, F</p>
+<p><strong>This Study:</strong> Continuous numerical scores &#91;0.0 to 1.0&#93;</p>
+<ul>
+<li><p>Variant #1: 0.73 repression</p>
+</li>
+<li><p>Variant #2: 0.68 repression</p>
+</li>
+<li><p>Variant #3: 0.95 repression</p>
+</li>
+</ul>
+<p>This is like getting exact percentages: 73&#37;, 68&#37;, 95&#37;</p>
+<p><strong>Why it matters:</strong> Machine learning needs precise numbers to learn patterns. You can&#39;t train an AI on &quot;some loss&quot; vs &quot;major loss&quot; nearly as well as on 0.73 vs 0.68.</p>
+<h3 id="quality_control_is_the_data_reliable"><a href="#quality_control_is_the_data_reliable" class="header-anchor">Quality Control: Is the Data Reliable?</a></h3>
+<p>✅ <strong>Yes&#33;</strong> Multiple checks:</p>
+<ul>
+<li><p>Tested same protein with different DNA sequences &#40;synonyms&#41; → 85&#37; correlation</p>
+</li>
+<li><p>Positive controls &#40;normal LacI&#41; → scored ~1.0 as expected</p>
+</li>
+<li><p>Negative controls &#40;20&#43; mutations&#41; → scored ~0.0 as expected</p>
+</li>
+<li><p>Results match previous studies from different labs</p>
+</li>
+</ul>
+<hr />
+<h2 id="discovery_1_the_c-terminal_mystery"><a href="#discovery_1_the_c-terminal_mystery" class="header-anchor">Discovery #1: The C-Terminal Mystery</a></h2>
+<h3 id="protein_geography_lesson"><a href="#protein_geography_lesson" class="header-anchor">Protein Geography Lesson</a></h3>
+<p>LacI protein has different regions with different jobs:</p>
+<pre><code class="language-julia">N-terminal -------- Middle -------- C-terminal
+&#40;start&#41;                            &#40;end&#41;
+Amino acids:
+1-----------180-----------330------360
+
+Jobs:
+DNA binding    Signal         Teamwork
+domain      detection         domain</code></pre>
+<h3 id="the_c-terminal_domain_a_teamwork_problem"><a href="#the_c-terminal_domain_a_teamwork_problem" class="header-anchor">The C-Terminal Domain: A Teamwork Problem</a></h3>
+<p>Here&#39;s what they discovered about the C-terminal region &#40;amino acids 330-360&#41;:</p>
+<p><strong>How LacI Really Works:</strong></p>
+<ul>
+<li><p>LacI doesn&#39;t work alone</p>
+</li>
+<li><p>Each bacterium produces MANY copies of the same LacI variant</p>
+</li>
+<li><p>4 copies of LacI must team up &#40;form a &quot;tetramer&quot;&#41; to be effective</p>
+</li>
+<li><p>The C-terminal domain is where they hold hands &#40;via a coiled-coil structure&#41;</p>
+</li>
+<li><p>When 4 proteins team up, they can grab 2 DNA sites at once, creating a DNA loop</p>
+</li>
+<li><p>This DNA loop makes repression MUCH stronger</p>
+</li>
+</ul>
+<p>&lt;sup&gt;<em>Important: Each individual bacterium has only ONE variant &#40;e.g., all its LacI proteins have mutation A52G&#41;. But it makes many copies of that variant, and those copies work together. The experiment tests thousands of different bacteria, each with a different variant.</em>&lt;/sup&gt;</p>
+<p><strong>What Happens When You Mutate the C-terminal:</strong></p>
+<ul>
+<li><p>Mutations at the &quot;handshake interface&quot; → proteins can&#39;t team up → <strong>no tetramer forms</strong> → <strong>no repression</strong></p>
+</li>
+<li><p>Mutations outside the interface → doesn&#39;t matter → <strong>tetramer still forms</strong> → <strong>still works fine</strong></p>
+</li>
+</ul>
+<p><strong>How They Proved This:</strong></p>
+<p>They used computer simulations &#40;Rosetta software&#41; to calculate energy:</p>
+<ul>
+<li><p>Mutation in tetramer form: HIGH energy cost &#40;destabilizing&#41; ⚡️</p>
+</li>
+<li><p>Same mutation in single protein: LOW energy cost &#40;stable&#41; ✓</p>
+</li>
+</ul>
+<p><strong>Interpretation:</strong> The mutation specifically breaks protein-protein teamwork, NOT the protein&#39;s overall structure or DNA-binding ability.</p>
+<p>&lt;sup&gt;<em>Think of it like: You can be perfectly capable individually &#40;DNA binding works&#41;, but if you can&#39;t work in a team meeting &#40;tetramerization fails&#41;, the project &#40;repression&#41; still fails.</em>&lt;/sup&gt;</p>
+<h3 id="why_this_matters"><a href="#why_this_matters" class="header-anchor">Why This Matters</a></h3>
+<p>The C-terminal domain offers engineering opportunities:</p>
+<ul>
+<li><p>A single mutation &#40;L356G&#41; can make LacI respond to completely different sugar molecules</p>
+</li>
+<li><p>Could design custom biosensors by tweaking this region</p>
+</li>
+<li><p>Previous studies ignored this domain, thinking it wasn&#39;t important</p>
+</li>
+</ul>
+<hr />
+<h2 id="discovery_2_when_mutations_team_up_epistasis"><a href="#discovery_2_when_mutations_team_up_epistasis" class="header-anchor">Discovery #2: When Mutations Team Up &#40;Epistasis&#41;</a></h2>
+<h3 id="the_question"><a href="#the_question" class="header-anchor">The Question</a></h3>
+<p>If mutation A has effect X, and mutation B has effect Y, what happens when you have BOTH mutations?</p>
+<p><strong>Simple expectation:</strong> Effect should be X &#43; Y &#40;just add them up&#41;</p>
+<p><strong>Reality:</strong> Sometimes you get X &#43; Y &#43; <strong>surprise bonus/penalty</strong></p>
+<p>This &quot;surprise&quot; is called <strong>epistasis</strong> &#61; mutation interactions.</p>
+<h3 id="how_they_measured_it"><a href="#how_they_measured_it" class="header-anchor">How They Measured It</a></h3>
+<p><strong>Step 1: The Math</strong></p>
+<p>For a double mutant at positions \(i\) and \(j\):</p>
+\(\text{Expected effect} = \text{effect}_i + \text{effect}_j\)
+\(\text{Epistasis} = \text{Observed effect} - \text{Expected effect}\)
+<p><strong>Example to make this concrete:</strong></p>
+<p>Let&#39;s say you have:</p>
+<ul>
+<li><p>Wild-type LacI: repression &#61; 1.0</p>
+</li>
+<li><p>Single mutant at position 50 &#40;A50G&#41;: repression &#61; 0.8 &#40;effect &#61; -0.2&#41;</p>
+</li>
+<li><p>Single mutant at position 100 &#40;T100P&#41;: repression &#61; 0.7 &#40;effect &#61; -0.3&#41;</p>
+</li>
+<li><p>Double mutant &#40;A50G &#43; T100P&#41;: repression &#61; 0.4 &#40;measured experimentally&#41;</p>
+</li>
+</ul>
+<p><strong>Calculate epistasis:</strong></p>
+<ul>
+<li><p>Expected: 1.0 &#43; &#40;-0.2&#41; &#43; &#40;-0.3&#41; &#61; 0.5</p>
+</li>
+<li><p>Observed: 0.4</p>
+</li>
+<li><p>Epistasis: 0.4 - 0.5 &#61; -0.1 &#40;negative epistasis - worse together&#33;&#41;</p>
+</li>
+</ul>
+<p>&lt;sup&gt;<em>Critical point: To calculate epistasis, you MUST have measurements for BOTH single mutants AND the double mutant. The paper only analyzed double mutants where they had all three measurements. Not all double mutants had their underlying singles measured.</em>&lt;/sup&gt;</p>
+<p>Let me check the paper for where they explicitly mention this requirement: Looking at the paper, they mention this in the &quot;<strong>Epistasis in Multiple Mutations</strong>&quot; section:</p>
+<blockquote>
+<p>&quot;We focused on double mutations in the experiment that contained measurements from underlying single mutations &#40;Fig. 3A&#41;.&quot;</p>
+</blockquote>
+<p>And in the <strong>Materials and Methods</strong> section under &quot;Epistasis Measurement&quot;:</p>
+<blockquote>
+<p>&quot;We used an additive model to measure epistasis in our experimental data &#40;24&#41;. The model first subtracts the wild-type value from every variant, producing an adjusted repression value. We took the adjusted repression value of each double or higher mutant and subtracted the sum of its underlying single-mutation adjusted repression values.&quot;</p>
+</blockquote>
+<p>The key phrase is &quot;double mutations in the experiment that <strong>contained measurements from underlying single mutations</strong>&quot; - this indicates they filtered to only analyze doubles where they had the singles measured. However, they don&#39;t explicitly state what percentage of double mutants were excluded or how many lacked underlying singles. Figure 3A shows the comparison, and Figure 3B shows &quot;the frequency of double mutations analyzed at each position pair&quot; in the lower triangular area, suggesting not all position pairs had equal coverage.</p>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li><p>Epistasis &#61; 0 → Mutations are independent &#40;no interaction&#41;</p>
+</li>
+<li><p>Epistasis &gt; 0 → <strong>Positive epistasis</strong> &#40;mutations help each other out, better than expected&#41;</p>
+</li>
+<li><p>Epistasis &lt; 0 → <strong>Negative epistasis</strong> &#40;mutations make things worse together, worse than expected&#41;</p>
+</li>
+</ul>
+<p><strong>Step 2: Find the Strongest Interactions</strong></p>
+<p>For each 36-amino acid region &#40;tile&#41;:</p>
+<ol>
+<li><p>Calculate epistasis for all double mutants</p>
+</li>
+<li><p>Rank position pairs by epistasis strength</p>
+</li>
+<li><p>Select top 18 pairs &#40;half the tile length&#41;</p>
+</li>
+</ol>
+<p><strong>Step 3: Connect to Physical Structure</strong></p>
+<p>The key test: Do positions with strong epistasis actually touch each other in the 3D protein structure?</p>
+<ul>
+<li><p>Got the crystal structure &#40;3D map of where every atom is&#41;</p>
+</li>
+<li><p>Measured distances: positions &lt;8Å apart &#61; &quot;touching&quot;</p>
+</li>
+<li><p>Counted: How many top epistatic pairs are also physical contacts?</p>
+</li>
+</ul>
+<p><strong>Step 4: Statistical Test</strong></p>
+<p>To know if this overlap is real or just luck:</p>
+<ul>
+<li><p>Shuffle epistasis values randomly 100,000 times</p>
+</li>
+<li><p>Count overlaps in each shuffle</p>
+</li>
+<li><p>Compare real data to this random distribution</p>
+</li>
+</ul>
+<p><strong>Result:</strong>  ✅ <strong>Significant overlap&#33;</strong> &#40;P &lt; 0.05&#41;</p>
+<p>Positions that interact functionally &#40;epistasis&#41; ARE physically touching in the 3D structure.</p>
+<h3 id="what_this_means"><a href="#what_this_means" class="header-anchor">What This Means</a></h3>
+<p>Epistasis captures real biology:</p>
+<ul>
+<li><p>When amino acids are neighbors in 3D space, they can compensate for or amplify each other&#39;s effects</p>
+</li>
+<li><p>Like two workers at adjacent desks - if one changes, it affects the other</p>
+</li>
+<li><p>This validates that the experimental measurements are picking up real structural information</p>
+</li>
+</ul>
+<p>&lt;sup&gt;<em>Note: This epistasis analysis is separate from the deep learning models. It&#39;s just using simple math to understand mutation interactions, not to predict function.</em>&lt;/sup&gt;</p>
+<hr />
+<h2 id="the_ai_models_can_we_predict_mutation_effects"><a href="#the_ai_models_can_we_predict_mutation_effects" class="header-anchor">The AI Models: Can We Predict Mutation Effects?</a></h2>
+<h3 id="the_challenge"><a href="#the_challenge" class="header-anchor">The Challenge</a></h3>
+<p><strong>Input:</strong> A protein sequence with some mutations <strong>Output:</strong> Will it still work? &#40;Repression score 0-1&#41;</p>
+<h3 id="old-school_approaches_didnt_work_well"><a href="#old-school_approaches_didnt_work_well" class="header-anchor">Old-School Approaches &#40;Didn&#39;t Work Well&#41;</a></h3>
+<p><strong>1. Physics-Based Simulation &#40;Rosetta&#41;</strong></p>
+<ul>
+<li><p>Simulate protein folding, calculate energy</p>
+</li>
+<li><p>Performance: Correlation &#61; 0.16 😞</p>
+</li>
+<li><p>Problem: Can identify catastrophically bad mutations, but can&#39;t distinguish between &quot;pretty good&quot; and &quot;excellent&quot;</p>
+</li>
+</ul>
+<p><strong>2. Evolution-Based Models</strong></p>
+<ul>
+<li><p>Look at related proteins across species</p>
+</li>
+<li><p>Assume: mutations that appear in nature are probably okay</p>
+</li>
+<li><p>Performance: Correlation &#61; 0.32 😐</p>
+</li>
+<li><p>Problem: This specific LacI variant might need mutations that don&#39;t exist in nature yet</p>
+</li>
+</ul>
+<p><strong>3. Simple Neural Networks</strong></p>
+<ul>
+<li><p>Train on just this dataset</p>
+</li>
+<li><p>Performance: Correlation &#61; 0.58 🤷</p>
+</li>
+<li><p>Problem: Not enough training data &#40;only 5,009 examples&#41;</p>
+</li>
+</ul>
+<h3 id="the_deep_learning_revolution"><a href="#the_deep_learning_revolution" class="header-anchor">The Deep Learning Revolution</a></h3>
+<p><strong>Big Idea:</strong> What if the AI learned &quot;protein language&quot; from millions of proteins first, THEN specialized in LacI?</p>
+<p>This is called <strong>transfer learning</strong> &#40;same idea behind ChatGPT or image recognition&#41;.</p>
+<h3 id="the_winning_model_unirep"><a href="#the_winning_model_unirep" class="header-anchor">The Winning Model: UniRep</a></h3>
+<p><strong>Stage 1: Pre-training &#40;The Foundation&#41;</strong></p>
+<ul>
+<li><p>Trained on <strong>24 million</strong> diverse proteins from all life</p>
+</li>
+<li><p>Task: &quot;Given amino acids 1-50, predict amino acid 51&quot;</p>
+</li>
+<li><p>Like training on: &quot;The quick brown fox _____&quot; &#40;learns English grammar&#41;</p>
+</li>
+<li><p>No information about LacI, just general protein patterns</p>
+</li>
+<li><p>Learns: secondary structure, folding patterns, amino acid compatibility, functional motifs</p>
+</li>
+<li><p>Output: Can convert any protein into a 1,900-dimensional &quot;representation&quot;</p>
+</li>
+</ul>
+<p>&lt;sup&gt;<em>A representation is like a fingerprint or barcode - it captures the essence of the protein in a format AI can work with</em>&lt;/sup&gt;</p>
+<p><strong>Stage 2: Fine-tuning &#40;The Specialization&#41;</strong></p>
+<ul>
+<li><p>Take those 1,900-dimensional representations for LacI variants</p>
+</li>
+<li><p>Train a model: representation → repression score</p>
+</li>
+<li><p>Training data: 5,009 single mutations with measured scores</p>
+</li>
+<li><p>Method: Ensemble of 100 decision trees</p>
+</li>
+<li><p>Like: &quot;You know English grammar, now learn scientific writing&quot;</p>
+</li>
+</ul>
+<h3 id="the_results_unirep_crushes_it"><a href="#the_results_unirep_crushes_it" class="header-anchor">The Results: UniRep Crushes It</a></h3>
+<table><tr><th align="right">Method</th><th align="right">Correlation</th><th align="right">Interpretation</th></tr><tr><td align="right">Physics simulation</td><td align="right">0.16</td><td align="right">❌ Barely works</td></tr><tr><td align="right">Evolution only</td><td align="right">0.32</td><td align="right">😞 Poor</td></tr><tr><td align="right">Simple neural net</td><td align="right">0.58</td><td align="right">😐 Mediocre</td></tr><tr><td align="right"><strong>UniRep &#40;deep learning&#41;</strong></td><td align="right"><strong>0.79</strong></td><td align="right">✅ <strong>Excellent&#33;</strong></td></tr></table>
+<p><strong>External Validation:</strong> Tested on completely different dataset &#40;103 variants from different lab&#41;:</p>
+<ul>
+<li><p>Previous best tool: correlation &#61; 0.61</p>
+</li>
+<li><p>UniRep: correlation &#61; 0.74 🎯</p>
+</li>
+</ul>
+<h3 id="why_does_this_work_so_well"><a href="#why_does_this_work_so_well" class="header-anchor">Why Does This Work So Well?</a></h3>
+<p><strong>The Power of Transfer Learning:</strong></p>
+<p>Think of it like learning to drive:</p>
+<ul>
+<li><p><strong>Old approach:</strong> Learn to drive a Toyota Camry from scratch &#40;5,009 examples&#41;</p>
+</li>
+<li><p><strong>Transfer learning:</strong> </p>
+<ul>
+<li><p>First learn general driving from millions of hours with all car types</p>
+</li>
+<li><p>Then specialize in the Camry with just 100 hours</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>Because UniRep already knows:</p>
+<ul>
+<li><p>What makes a stable protein fold</p>
+</li>
+<li><p>Which amino acid combinations work together</p>
+</li>
+<li><p>Common functional patterns across proteins</p>
+</li>
+</ul>
+<p>It only needs a small amount of LacI-specific data to adapt.</p>
+<p><strong>It can predict effects of mutations that:</strong></p>
+<ul>
+<li><p>Don&#39;t exist in nature yet</p>
+</li>
+<li><p>Are in poorly-studied regions</p>
+</li>
+<li><p>Are combinations of changes</p>
+</li>
+</ul>
+<h3 id="model_comparison_summary"><a href="#model_comparison_summary" class="header-anchor">Model Comparison Summary</a></h3>
+<p>The paper tested multiple deep learning architectures:</p>
+<ul>
+<li><p><strong>UniRep</strong> &#40;sequence-to-sequence, LSTM&#41;: 🥇 <strong>Best</strong> &#40;r &#61; 0.79&#41;</p>
+</li>
+<li><p><strong>BERT</strong> &#40;transformer, attention-based&#41;: 🥈 Good &#40;r &#61; 0.54&#41;  </p>
+</li>
+<li><p><strong>Doc2vec</strong> &#40;word embedding style&#41;: 🥉 Okay &#40;r &#61; 0.50&#41;</p>
+</li>
+</ul>
+<p>UniRep won because its sequential processing matches how proteins are made &#40;one amino acid at a time&#41;, and its recurrent architecture captures long-range dependencies.</p>
+<h3 id="not_really_training_the_null_model"><a href="#not_really_training_the_null_model" class="header-anchor">Not Really Training: The Null Model</a></h3>
+<p><strong>Important distinction:</strong> The additive epistasis model is NOT a trained model:</p>
+<pre><code class="language-julia">Expected double mutant effect &#61; effect&#40;mutation 1&#41; &#43; effect&#40;mutation 2&#41;</code></pre>
+<p>This is just arithmetic&#33; No parameters, no training, no AI. It&#39;s the <em>null hypothesis</em> for detecting when mutations interact unexpectedly.</p>
+<p>The deep learning models are solving a different problem: predicting single mutation effects from scratch.</p>
+<hr />
+<h2 id="how_the_ai_sees_proteins"><a href="#how_the_ai_sees_proteins" class="header-anchor">How the AI &quot;Sees&quot; Proteins</a></h2>
+<h3 id="visualization_the_protein_landscape"><a href="#visualization_the_protein_landscape" class="header-anchor">Visualization: The Protein Landscape</a></h3>
+<p>They used t-SNE to squish the 1,900-dimensional representations down to 2D &#40;like making a map&#41;:</p>
+<p><strong>What clusters together:</strong></p>
+<ul>
+<li><p>Mutations at similar positions</p>
+</li>
+<li><p>Mutations with similar amino acid types</p>
+</li>
+<li><p>Mutations with similar functional effects</p>
+</li>
+</ul>
+<p><strong>Cool finding:</strong> The C-terminal domain mutations that break function cluster together in representation space, even though the AI was never explicitly told &quot;these are C-terminal&quot; or &quot;these break oligomerization.&quot;</p>
+<p>This means UniRep automatically learned that:</p>
+<ul>
+<li><p>Certain positions are special &#40;C-terminal interface&#41;</p>
+</li>
+<li><p>Certain amino acids &#40;proline, tryptophan&#41; have unique roles in helices</p>
+</li>
+<li><p>Breaking secondary structure has consistent effects</p>
+</li>
+</ul>
+<p>&lt;sup&gt;<em>t-SNE &#61; t-Distributed Stochastic Neighbor Embedding, a way to visualize high-dimensional data in 2D while preserving relationships</em>&lt;/sup&gt;</p>
+<hr />
+<h2 id="key_takeaways"><a href="#key_takeaways" class="header-anchor">Key Takeaways</a></h2>
+<h3 id="quality_dataset_matters"><a href="#quality_dataset_matters" class="header-anchor"><ol>
+<li><p><strong>Quality Dataset Matters</strong></p>
+</li>
+</ol>
+</a></h3>
+<ul>
+<li><p>Continuous scores &#40;not categories&#41; enable better ML</p>
+</li>
+<li><p>43,669 variants with high reproducibility</p>
+</li>
+<li><p>Covers most single mutations systematically</p>
+</li>
+</ul>
+<h3 id="ol_start2_biology_c-terminal_domain_is_critical"><a href="#ol_start2_biology_c-terminal_domain_is_critical" class="header-anchor"><ol start="2">
+<li><p><strong>Biology: C-Terminal Domain is Critical</strong></p>
+</li>
+</ol>
+</a></h3>
+<ul>
+<li><p>Forms the teamwork interface &#40;tetramerization&#41;</p>
+</li>
+<li><p>Mutations there break protein assembly, not DNA binding</p>
+</li>
+<li><p>Engineering opportunity for custom biosensors</p>
+</li>
+</ul>
+<h3 id="ol_start3_epistasis_validates_structure"><a href="#ol_start3_epistasis_validates_structure" class="header-anchor"><ol start="3">
+<li><p><strong>Epistasis Validates Structure</strong></p>
+</li>
+</ol>
+</a></h3>
+<ul>
+<li><p>Functional interactions match physical contacts</p>
+</li>
+<li><p>Double mutants reveal 3D structure information</p>
+</li>
+<li><p>Confirms data quality and biological relevance</p>
+</li>
+</ul>
+<h3 id="ol_start4_transfer_learning_wins"><a href="#ol_start4_transfer_learning_wins" class="header-anchor"><ol start="4">
+<li><p><strong>Transfer Learning Wins</strong></p>
+</li>
+</ol>
+</a></h3>
+<ul>
+<li><p>Pre-training on 24M proteins gives deep knowledge</p>
+</li>
+<li><p>Fine-tuning on 5,009 examples achieves 79&#37; correlation</p>
+</li>
+<li><p>Outperforms all previous methods by huge margin</p>
+</li>
+<li><p>Works even with &lt;100 training examples</p>
+</li>
+</ul>
+<h3 id="ol_start5_practical_impact"><a href="#ol_start5_practical_impact" class="header-anchor"><ol start="5">
+<li><p><strong>Practical Impact</strong></p>
+</li>
+</ol>
+</a></h3>
+<ul>
+<li><p>Can predict mutation effects before testing in lab</p>
+</li>
+<li><p>Accelerates protein engineering</p>
+</li>
+<li><p>Same approach applicable to other proteins</p>
+</li>
+<li><p>Reduces experimental cost and time</p>
+</li>
+</ul>
+<hr />
+<h2 id="why_this_matters_beyond_laci"><a href="#why_this_matters_beyond_laci" class="header-anchor">Why This Matters Beyond LacI</a></h2>
+<h3 id="for_protein_engineering"><a href="#for_protein_engineering" class="header-anchor">For Protein Engineering</a></h3>
+<ul>
+<li><p>Design better biosensors by predicting which changes work</p>
+</li>
+<li><p>Engineer proteins for new functions</p>
+</li>
+<li><p>Understand disease-causing mutations in human proteins</p>
+</li>
+</ul>
+<h3 id="for_machine_learning"><a href="#for_machine_learning" class="header-anchor">For Machine Learning</a></h3>
+<ul>
+<li><p>Shows transfer learning works for biology</p>
+</li>
+<li><p>Demonstrates you don&#39;t need huge task-specific datasets</p>
+</li>
+<li><p>Pre-training captures general rules that transfer across problems</p>
+</li>
+</ul>
+<h3 id="for_basic_science"><a href="#for_basic_science" class="header-anchor">For Basic Science</a></h3>
+<ul>
+<li><p>Better models &#61; better understanding of how proteins work</p>
+</li>
+<li><p>Can test hypotheses computationally before lab experiments</p>
+</li>
+<li><p>Reveals patterns humans might miss</p>
+</li>
+</ul>
+<hr />
+<h2 id="limitations_future_directions"><a href="#limitations_future_directions" class="header-anchor">Limitations &amp; Future Directions</a></h2>
+<p><strong>What they tested:</strong></p>
+<ul>
+<li><p>Mostly single and double mutations</p>
+</li>
+<li><p>One specific protein &#40;LacI&#41;</p>
+</li>
+<li><p>One specific function &#40;repression&#41;</p>
+</li>
+</ul>
+<p><strong>What&#39;s next:</strong></p>
+<ul>
+<li><p>Test on more proteins</p>
+</li>
+<li><p>Predict other properties &#40;stability, binding affinity&#41;</p>
+</li>
+<li><p>Handle larger combination mutations</p>
+</li>
+<li><p>Integrate structural information directly</p>
+</li>
+</ul>
+<p><strong>The vision:</strong> AI that can design proteins from scratch by predicting all functional properties from sequence alone.</p>
+<hr />
+<h2 id="technical_appendix"><a href="#technical_appendix" class="header-anchor">Technical Appendix</a></h2>
+<p>&lt;sup&gt;For those who want the details:&lt;/sup&gt;</p>
+<h3 id="dataset_processing"><a href="#dataset_processing" class="header-anchor">Dataset Processing</a></h3>
+<ul>
+<li><p>Raw reads: paired-end 300bp, collapsed with PEAR v.0.9.8</p>
+</li>
+<li><p>Filtering: minimum 10 read counts pre-selection</p>
+</li>
+<li><p>Synonymous replicates: Pearson r &#61; 0.85</p>
+</li>
+<li><p>Scaling: min-max normalization per tile to &#91;0,1&#93; range</p>
+</li>
+<li><p>Total variants after QC: 43,669</p>
+</li>
+</ul>
+<h3 id="unirep_architecture"><a href="#unirep_architecture" class="header-anchor">UniRep Architecture</a></h3>
+<ul>
+<li><p>Pre-training: 24M sequences, next-amino-acid prediction task</p>
+</li>
+<li><p>Architecture: 10D residue embedding → 1,900-cell mLSTM layer</p>
+</li>
+<li><p>Representation: Average mLSTM hidden states</p>
+</li>
+<li><p>Fine-tuning: 100 extremely randomized trees</p>
+</li>
+<li><p>Training: 90/10 train/validation split, 10-fold cross-validation</p>
+</li>
+</ul>
+<h3 id="statistical_methods"><a href="#statistical_methods" class="header-anchor">Statistical Methods</a></h3>
+<ul>
+<li><p>Epistasis: log-additive model with adjusted values</p>
+</li>
+<li><p>Significance: 100,000 permutations, empirical P-values</p>
+</li>
+<li><p>Structural contacts: &lt;8Å distance, &gt;5 residues apart in sequence</p>
+</li>
+<li><p>Performance metrics: Pearson r, Spearman ρ, MSE</p>
+</li>
+</ul>
+<h3 id="computational_resources"><a href="#computational_resources" class="header-anchor">Computational Resources</a></h3>
+<ul>
+<li><p>Rosetta molecular modeling for ΔΔG calculations</p>
+</li>
+<li><p>EVCouplings for evolutionary analysis &#40;143,119 sequences&#41;</p>
+</li>
+<li><p>Python/scikit-learn for ML baselines</p>
+</li>
+<li><p>TensorFlow/Keras for neural networks</p>
+</li>
+</ul>
+<hr />
+<h2 id="conclusion"><a href="#conclusion" class="header-anchor">Conclusion</a></h2>
+<p>This paper shows that AI trained on general protein knowledge can accurately predict mutation effects with minimal task-specific data. The winning approach &#40;UniRep&#41; achieved 79&#37; correlation - far better than any previous method - by first learning protein &quot;grammar&quot; from millions of examples, then specializing in LacI with just thousands of examples.</p>
+<p>Beyond the technical achievement, the work provides biological insights about how the LacI tetramerization domain works and validates that epistasis measurements capture real structural interactions.</p>
+<p><strong>The future:</strong> This transfer learning paradigm could work for any protein function, potentially revolutionizing protein engineering and drug design.</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: October 10, 2025.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+        <script src="/libs/katex/katex.min.js"></script>
+<script src="/libs/katex/contrib/auto-render.min.js"></script>
+<script>renderMathInElement(document.body)</script>
+
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>

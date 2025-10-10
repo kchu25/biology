@@ -26,6 +26,8 @@ Think of it like a door lock:
 
 ---
 
+Paper: Deep representation learning improves prediction of LacI-mediated transcriptional repression
+
 ## The Authors
 - **Alexander S. Garruss** (Harvard Medical School)
 - **Katherine M. Collins** (MIT)
