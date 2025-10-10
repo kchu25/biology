@@ -1,4 +1,4 @@
-@def title = "Deep Learning Predicts How Mutations Break a Genetic Switch on LacI""
+@def title = "Deep Learning Predicts How Mutations Break a Genetic Switch on LacI"
 @def published = "9 October 2025"
 @def tags = ["mutegenisis", "proteins"]
 
