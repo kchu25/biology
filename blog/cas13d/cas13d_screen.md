@@ -1,5 +1,5 @@
 @def title = "Understanding Cas13d: How This RNA Editor Finds Its Targets"
-@def published = "9 October 2025"
+@def published = "10 October 2025"
 @def tags = ["cas13d", "rna", "mutegenisis"]
 
 # Understanding Cas13d: How This RNA Editor Finds Its Targets
@@ -15,70 +15,6 @@
 **Published in:** Nature Communications (2024)
 
 **DOI:** https://doi.org/10.1038/s41467-024-44738-w
-
-**Published in:** Nature Communications (2024)
-
-**DOI:** https://doi.org/10.1038/s41467-024-44738-w
-
----
-
-## ⚠️ Important Limitation: Limited Target Diversity
-
-**The paper tested only 3 different target RNA sequences (called target #1, #2, and #3).** For each target, they tested thousands of variants (mismatches, insertions, deletions, different PFS sequences), but the underlying "matched" sequence was just one of three.
-
-### Is This Limiting?
-
-**Yes, somewhat.** Here's why:
-- Different RNA sequences have different base compositions (GC-rich vs AU-rich)
-- Different sequences fold into different structures
-- The "rules" might be sequence-context dependent
-- Ideally, you'd want to test dozens or hundreds of different target sequences
-
-### Why Such Limitation?
-
-**It's not really an instrument limitation - it's a practical/design choice:**
-
-1. **Chip capacity**: Each MiSeq chip can handle millions of clusters, which is plenty. The limitation isn't physical space.
-
-2. **Experimental design**: For each target sequence, they needed:
-   - All single mismatches (66 variants)
-   - All double mismatches (~2000 variants)
-   - All insertions and deletions (~2400 variants)
-   - PFS variations (~1500 variants)
-   - **Total: ~6000 variants per target**
-   
-   Testing 100 different targets × 6000 variants = 600,000 sequences, which is feasible but...
-
-3. **The real bottleneck - validation**: They validated their RNA-CHAMP results with orthogonal methods:
-   - Biolayer Interferometry (BLI) for 16+ sequences
-   - Fluorescent cleavage assays for 19+ sequences
-   - Each validation experiment takes significant time and resources
-
-4. **Reproducibility**: They did biological replicates for each target, doubling the work
-
-5. **Analysis complexity**: Building and training models on more diverse sequences would be harder and might not reveal clearer patterns
-
-### Does This Undermine the Conclusions?
-
-**Partially, but the paper does several things to mitigate this:**
-
-✅ **Cross-target validation**: They show that patterns are consistent across all 3 targets (see their comparisons between target #1 and target #3)
-
-✅ **Comparison with published data**: They compared their results to Wessels et al. 2020, which did large-scale Cas13d screens in mammalian cells with different sequences. The patterns matched! (See Figure 3B)
-
-✅ **Biophysical validation**: BLI measurements on individual sequences confirmed the trends weren't chip artifacts
-
-✅ **Testing a different Cas13 variant**: They validated key findings with RfxCas13d (CasRx), showing the mechanism is conserved (Figure S8)
-
-✅ **Structural predictions align**: Their findings match what crystal structures show about solvent-exposed regions
-
-### The Bottom Line on Limitations
-
-This is actually a common trade-off in molecular biology:
-- **Depth vs. Breadth**: Go deep on a few targets with comprehensive perturbations, OR go broad with many targets but limited perturbations
-- They chose depth, which was appropriate for mechanistic understanding
-- A follow-up study testing 50-100 diverse targets would be valuable to confirm generalizability
-- But the core mechanistic insights (distal binding initiation, proximal activation, structure sensitivity) are likely universal features of Cas13d architecture
 
 ---
 
@@ -244,3 +180,63 @@ For anyone working with Cas13d for RNA editing, diagnostics, or research, these 
 ## The Bigger Picture
 
 Beyond just understanding Cas13d, RNA-CHAMP opens up possibilities for studying many other RNA-binding proteins. By recycling sequencing chips, any lab with a microscope can now run massive parallel experiments that would have been prohibitively expensive before. That's the kind of democratization of technology that accelerates scientific progress!
+
+---
+
+## ⚠️ Important Limitation: Limited Target Diversity
+
+**The paper tested only 3 different target RNA sequences (called target #1, #2, and #3).** For each target, they tested thousands of variants (mismatches, insertions, deletions, different PFS sequences), but the underlying "matched" sequence was just one of three.
+
+### Is This Limiting?
+
+**Yes, somewhat.** Here's why:
+- Different RNA sequences have different base compositions (GC-rich vs AU-rich)
+- Different sequences fold into different structures
+- The "rules" might be sequence-context dependent
+- Ideally, you'd want to test dozens or hundreds of different target sequences
+
+### Why Such Limitation?
+
+**It's not really an instrument limitation - it's a practical/design choice:**
+
+1. **Chip capacity**: Each MiSeq chip can handle millions of clusters, which is plenty. The limitation isn't physical space.
+
+2. **Experimental design**: For each target sequence, they needed:
+   - All single mismatches (66 variants)
+   - All double mismatches (~2000 variants)
+   - All insertions and deletions (~2400 variants)
+   - PFS variations (~1500 variants)
+   - **Total: ~6000 variants per target**
+   
+   Testing 100 different targets × 6000 variants = 600,000 sequences, which is feasible but...
+
+3. **The real bottleneck - validation**: They validated their RNA-CHAMP results with orthogonal methods:
+   - Biolayer Interferometry (BLI) for 16+ sequences
+   - Fluorescent cleavage assays for 19+ sequences
+   - Each validation experiment takes significant time and resources
+
+4. **Reproducibility**: They did biological replicates for each target, doubling the work
+
+5. **Analysis complexity**: Building and training models on more diverse sequences would be harder and might not reveal clearer patterns
+
+### Does This Undermine the Conclusions?
+
+**Partially, but the paper does several things to mitigate this:**
+
+✅ **Cross-target validation**: They show that patterns are consistent across all 3 targets (see their comparisons between target #1 and target #3)
+
+✅ **Comparison with published data**: They compared their results to Wessels et al. 2020, which did large-scale Cas13d screens in mammalian cells with different sequences. The patterns matched! (See Figure 3B)
+
+✅ **Biophysical validation**: BLI measurements on individual sequences confirmed the trends weren't chip artifacts
+
+✅ **Testing a different Cas13 variant**: They validated key findings with RfxCas13d (CasRx), showing the mechanism is conserved (Figure S8)
+
+✅ **Structural predictions align**: Their findings match what crystal structures show about solvent-exposed regions
+
+### The Bottom Line on Limitations
+
+This is actually a common trade-off in molecular biology:
+- **Depth vs. Breadth**: Go deep on a few targets with comprehensive perturbations, OR go broad with many targets but limited perturbations
+- They chose depth, which was appropriate for mechanistic understanding
+- A follow-up study testing 50-100 diverse targets would be valuable to confirm generalizability
+- But the core mechanistic insights (distal binding initiation, proximal activation, structure sensitivity) are likely universal features of Cas13d architecture
