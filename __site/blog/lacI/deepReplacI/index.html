@@ -40,7 +40,9 @@
 </li>
 </ul>
 <p><strong>The Question:</strong> If you change one or more amino acids &#40;the building blocks of proteins&#41;, will the lock still work?</p>
-<p>&lt;sup&gt;<em>Amino acids are like LEGO bricks that snap together to form proteins. LacI has 360 of these bricks in a specific order.</em>&lt;/sup&gt;</p>
+<blockquote>
+<p><em>Amino acids are like LEGO bricks that snap together to form proteins. LacI has 360 of these bricks in a specific order.</em></p>
+</blockquote>
 <hr />
 <p>Paper: Deep representation learning improves prediction of LacI-mediated transcriptional repression</p>
 <h2 id="the_authors"><a href="#the_authors" class="header-anchor">The Authors</a></h2>
@@ -82,7 +84,9 @@
 <li><p><strong>Broken LacI:</strong> can&#39;t repress <em>tolC</em> → <em>tolC</em> turns ON &#40;its natural state&#41; → importer protein made → toxin enters → ☠️ <strong>bacteria die</strong></p>
 </li>
 </ul>
-<p>&lt;sup&gt;<em>Think of it like: The gene *tolC</em> is a radio that defaults to ON. LacI is the OFF button. If the OFF button is broken &#40;mutated LacI&#41;, the radio stays on.*&lt;/sup&gt;</p>
+<blockquote>
+<p><em>Think of it like: The gene *tolC</em> is a radio that defaults to ON. LacI is the OFF button. If the OFF button is broken &#40;mutated LacI&#41;, the radio stays on.*</p>
+</blockquote>
 <p><strong>The test environment:</strong></p>
 <ul>
 <li><p>All bacteria have the <em>tolC</em> gene in their DNA</p>
@@ -111,7 +115,9 @@
 <li><p>Result: Variant frequency <em>increases</em> if it&#39;s beneficial</p>
 </li>
 </ul>
-<p>&lt;sup&gt;<em>Think of it like: Negative selection &#61; firing bad employees vs. Positive selection &#61; promoting good employees</em>&lt;/sup&gt;</p>
+<blockquote>
+<p><em>Think of it like: Negative selection &#61; firing bad employees vs. Positive selection &#61; promoting good employees</em></p>
+</blockquote>
 <h3 id="measuring_the_results"><a href="#measuring_the_results" class="header-anchor">Measuring the Results</a></h3>
 <ol>
 <li><p><strong>Before toxin:</strong> Sequence all variants, count how many of each exist</p>
@@ -131,7 +137,9 @@
 </ul>
 </li>
 </ol>
-<p>&lt;sup&gt;<em>Terminology clarification: &quot;variant&quot; &#61; a specific mutated version of the LacI protein. Each variant lives inside bacteria. When we say &quot;variant died out,&quot; we mean the bacteria carrying that variant died, so that variant became rare/absent in the surviving population.</em>&lt;/sup&gt;</p>
+<blockquote>
+<p><em>Terminology clarification: &quot;variant&quot; &#61; a specific mutated version of the LacI protein. Each variant lives inside bacteria. When we say &quot;variant died out,&quot; we mean the bacteria carrying that variant died, so that variant became rare/absent in the surviving population.</em></p>
+</blockquote>
 <hr />
 <h2 id="the_dataset_43669_protein_variants"><a href="#the_dataset_43669_protein_variants" class="header-anchor">The Dataset: 43,669 Protein Variants</a></h2>
 <h3 id="what_they_tested"><a href="#what_they_tested" class="header-anchor">What They Tested</a></h3>
@@ -210,7 +218,9 @@ domain      detection         domain</code></pre>
 <li><p>This DNA loop makes repression MUCH stronger</p>
 </li>
 </ul>
-<p>&lt;sup&gt;<em>Important: Each individual bacterium has only ONE variant &#40;e.g., all its LacI proteins have mutation A52G&#41;. But it makes many copies of that variant, and those copies work together. The experiment tests thousands of different bacteria, each with a different variant.</em>&lt;/sup&gt;</p>
+<blockquote>
+<p>Important: Each individual bacterium has only ONE variant &#40;e.g., all its LacI proteins have mutation A52G&#41;. But it makes many copies of that variant, and those copies work together. The experiment tests thousands of different bacteria, each with a different variant.</p>
+</blockquote>
 <p><strong>What Happens When You Mutate the C-terminal:</strong></p>
 <ul>
 <li><p>Mutations at the &quot;handshake interface&quot; → proteins can&#39;t team up → <strong>no tetramer forms</strong> → <strong>no repression</strong></p>
@@ -227,7 +237,9 @@ domain      detection         domain</code></pre>
 </li>
 </ul>
 <p><strong>Interpretation:</strong> The mutation specifically breaks protein-protein teamwork, NOT the protein&#39;s overall structure or DNA-binding ability.</p>
-<p>&lt;sup&gt;<em>Think of it like: You can be perfectly capable individually &#40;DNA binding works&#41;, but if you can&#39;t work in a team meeting &#40;tetramerization fails&#41;, the project &#40;repression&#41; still fails.</em>&lt;/sup&gt;</p>
+<blockquote>
+<p><em>Think of it like: You can be perfectly capable individually &#40;DNA binding works&#41;, but if you can&#39;t work in a team meeting &#40;tetramerization fails&#41;, the project &#40;repression&#41; still fails.</em></p>
+</blockquote>
 <h3 id="why_this_matters"><a href="#why_this_matters" class="header-anchor">Why This Matters</a></h3>
 <p>The C-terminal domain offers engineering opportunities:</p>
 <ul>
@@ -271,7 +283,9 @@ domain      detection         domain</code></pre>
 <li><p>Epistasis: 0.4 - 0.5 &#61; -0.1 &#40;negative epistasis - worse together&#33;&#41;</p>
 </li>
 </ul>
-<p>&lt;sup&gt;<em>Critical point: To calculate epistasis, you MUST have measurements for BOTH single mutants AND the double mutant. The paper only analyzed double mutants where they had all three measurements. Not all double mutants had their underlying singles measured.</em>&lt;/sup&gt;</p>
+<blockquote>
+<p><em>Critical point: To calculate epistasis, you MUST have measurements for BOTH single mutants AND the double mutant. The paper only analyzed double mutants where they had all three measurements. Not all double mutants had their underlying singles measured.</em></p>
+</blockquote>
 <p>Let me check the paper for where they explicitly mention this requirement: Looking at the paper, they mention this in the &quot;<strong>Epistasis in Multiple Mutations</strong>&quot; section:</p>
 <blockquote>
 <p>&quot;We focused on double mutations in the experiment that contained measurements from underlying single mutations &#40;Fig. 3A&#41;.&quot;</p>
@@ -332,7 +346,9 @@ domain      detection         domain</code></pre>
 <li><p>This validates that the experimental measurements are picking up real structural information</p>
 </li>
 </ul>
-<p>&lt;sup&gt;<em>Note: This epistasis analysis is separate from the deep learning models. It&#39;s just using simple math to understand mutation interactions, not to predict function.</em>&lt;/sup&gt;</p>
+<blockquote>
+<p><em>Note: This epistasis analysis is separate from the deep learning models. It&#39;s just using simple math to understand mutation interactions, not to predict function.</em></p>
+</blockquote>
 <hr />
 <h2 id="the_ai_models_can_we_predict_mutation_effects"><a href="#the_ai_models_can_we_predict_mutation_effects" class="header-anchor">The AI Models: Can We Predict Mutation Effects?</a></h2>
 <h3 id="the_challenge"><a href="#the_challenge" class="header-anchor">The Challenge</a></h3>
@@ -386,7 +402,9 @@ domain      detection         domain</code></pre>
 <li><p>Output: Can convert any protein into a 1,900-dimensional &quot;representation&quot;</p>
 </li>
 </ul>
-<p>&lt;sup&gt;<em>A representation is like a fingerprint or barcode - it captures the essence of the protein in a format AI can work with</em>&lt;/sup&gt;</p>
+<blockquote>
+<p><em>A representation is like a fingerprint or barcode - it captures the essence of the protein in a format AI can work with</em></p>
+</blockquote>
 <p><strong>Stage 2: Fine-tuning &#40;The Specialization&#41;</strong></p>
 <ul>
 <li><p>Take those 1,900-dimensional representations for LacI variants</p>
@@ -482,7 +500,9 @@ domain      detection         domain</code></pre>
 <li><p>Breaking secondary structure has consistent effects</p>
 </li>
 </ul>
-<p>&lt;sup&gt;<em>t-SNE &#61; t-Distributed Stochastic Neighbor Embedding, a way to visualize high-dimensional data in 2D while preserving relationships</em>&lt;/sup&gt;</p>
+<blockquote>
+<p><em>t-SNE &#61; t-Distributed Stochastic Neighbor Embedding, a way to visualize high-dimensional data in 2D while preserving relationships</em></p>
+</blockquote>
 <hr />
 <h2 id="key_takeaways"><a href="#key_takeaways" class="header-anchor">Key Takeaways</a></h2>
 <h3 id="quality_dataset_matters"><a href="#quality_dataset_matters" class="header-anchor"><ol>
@@ -608,7 +628,7 @@ domain      detection         domain</code></pre>
 <p><strong>The vision:</strong> AI that can design proteins from scratch by predicting all functional properties from sequence alone.</p>
 <hr />
 <h2 id="technical_appendix"><a href="#technical_appendix" class="header-anchor">Technical Appendix</a></h2>
-<p>&lt;sup&gt;For those who want the details:&lt;/sup&gt;</p>
+<p>For those who want the details:</p>
 <h3 id="dataset_processing"><a href="#dataset_processing" class="header-anchor">Dataset Processing</a></h3>
 <ul>
 <li><p>Raw reads: paired-end 300bp, collapsed with PEAR v.0.9.8</p>

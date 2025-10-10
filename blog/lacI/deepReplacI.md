@@ -22,7 +22,7 @@ Think of it like a door lock:
 
 **The Question:** If you change one or more amino acids (the building blocks of proteins), will the lock still work?
 
-<sup>*Amino acids are like LEGO bricks that snap together to form proteins. LacI has 360 of these bricks in a specific order.*</sup>
+> *Amino acids are like LEGO bricks that snap together to form proteins. LacI has 360 of these bricks in a specific order.*
 
 ---
 
@@ -57,7 +57,7 @@ Instead of measuring function in a test tube, they created a clever **survival g
 - **Functional LacI:** actively represses *tolC* → *tolC* stays OFF → no importer protein made → toxin can't enter → ✅ **bacteria survive**
 - **Broken LacI:** can't repress *tolC* → *tolC* turns ON (its natural state) → importer protein made → toxin enters → ☠️ **bacteria die**
 
-<sup>*Think of it like: The gene *tolC* is a radio that defaults to ON. LacI is the OFF button. If the OFF button is broken (mutated LacI), the radio stays on.*</sup>
+> *Think of it like: The gene *tolC* is a radio that defaults to ON. LacI is the OFF button. If the OFF button is broken (mutated LacI), the radio stays on.*
 
 **The test environment:**
 - All bacteria have the *tolC* gene in their DNA
@@ -76,7 +76,7 @@ Instead of measuring function in a test tube, they created a clever **survival g
 - Better variants grow faster
 - Result: Variant frequency *increases* if it's beneficial
 
-<sup>*Think of it like: Negative selection = firing bad employees vs. Positive selection = promoting good employees*</sup>
+> *Think of it like: Negative selection = firing bad employees vs. Positive selection = promoting good employees*
 
 ### Measuring the Results
 
@@ -88,7 +88,7 @@ Instead of measuring function in a test tube, they created a clever **survival g
    - **1** = perfect function (bacteria with this variant survived as well as wild-type)
    - **0.5** = partially functional
 
-<sup>*Terminology clarification: "variant" = a specific mutated version of the LacI protein. Each variant lives inside bacteria. When we say "variant died out," we mean the bacteria carrying that variant died, so that variant became rare/absent in the surviving population.*</sup>
+> *Terminology clarification: "variant" = a specific mutated version of the LacI protein. Each variant lives inside bacteria. When we say "variant died out," we mean the bacteria carrying that variant died, so that variant became rare/absent in the surviving population.*
 
 ---
 
@@ -158,7 +158,7 @@ Here's what they discovered about the C-terminal region (amino acids 330-360):
 - When 4 proteins team up, they can grab 2 DNA sites at once, creating a DNA loop
 - This DNA loop makes repression MUCH stronger
 
-<sup>*Important: Each individual bacterium has only ONE variant (e.g., all its LacI proteins have mutation A52G). But it makes many copies of that variant, and those copies work together. The experiment tests thousands of different bacteria, each with a different variant.*</sup>
+> Important: Each individual bacterium has only ONE variant (e.g., all its LacI proteins have mutation A52G). But it makes many copies of that variant, and those copies work together. The experiment tests thousands of different bacteria, each with a different variant.
 
 **What Happens When You Mutate the C-terminal:**
 - Mutations at the "handshake interface" → proteins can't team up → **no tetramer forms** → **no repression**
@@ -172,7 +172,7 @@ They used computer simulations (Rosetta software) to calculate energy:
 
 **Interpretation:** The mutation specifically breaks protein-protein teamwork, NOT the protein's overall structure or DNA-binding ability.
 
-<sup>*Think of it like: You can be perfectly capable individually (DNA binding works), but if you can't work in a team meeting (tetramerization fails), the project (repression) still fails.*</sup>
+> *Think of it like: You can be perfectly capable individually (DNA binding works), but if you can't work in a team meeting (tetramerization fails), the project (repression) still fails.*
 
 ### Why This Matters
 
@@ -218,7 +218,7 @@ Let's say you have:
 - Observed: 0.4
 - Epistasis: 0.4 - 0.5 = -0.1 (negative epistasis - worse together!)
 
-<sup>*Critical point: To calculate epistasis, you MUST have measurements for BOTH single mutants AND the double mutant. The paper only analyzed double mutants where they had all three measurements. Not all double mutants had their underlying singles measured.*</sup>
+> *Critical point: To calculate epistasis, you MUST have measurements for BOTH single mutants AND the double mutant. The paper only analyzed double mutants where they had all three measurements. Not all double mutants had their underlying singles measured.*
 
 Let me check the paper for where they explicitly mention this requirement:
 Looking at the paper, they mention this in the "**Epistasis in Multiple Mutations**" section:
@@ -272,7 +272,7 @@ Epistasis captures real biology:
 - Like two workers at adjacent desks - if one changes, it affects the other
 - This validates that the experimental measurements are picking up real structural information
 
-<sup>*Note: This epistasis analysis is separate from the deep learning models. It's just using simple math to understand mutation interactions, not to predict function.*</sup>
+> *Note: This epistasis analysis is separate from the deep learning models. It's just using simple math to understand mutation interactions, not to predict function.*
 
 ---
 
@@ -317,7 +317,7 @@ This is called **transfer learning** (same idea behind ChatGPT or image recognit
 - Learns: secondary structure, folding patterns, amino acid compatibility, functional motifs
 - Output: Can convert any protein into a 1,900-dimensional "representation"
 
-<sup>*A representation is like a fingerprint or barcode - it captures the essence of the protein in a format AI can work with*</sup>
+> *A representation is like a fingerprint or barcode - it captures the essence of the protein in a format AI can work with*
 
 **Stage 2: Fine-tuning (The Specialization)**
 - Take those 1,900-dimensional representations for LacI variants
@@ -403,7 +403,7 @@ This means UniRep automatically learned that:
 - Certain amino acids (proline, tryptophan) have unique roles in helices
 - Breaking secondary structure has consistent effects
 
-<sup>*t-SNE = t-Distributed Stochastic Neighbor Embedding, a way to visualize high-dimensional data in 2D while preserving relationships*</sup>
+> *t-SNE = t-Distributed Stochastic Neighbor Embedding, a way to visualize high-dimensional data in 2D while preserving relationships*
 
 ---
 
@@ -476,7 +476,7 @@ This means UniRep automatically learned that:
 
 ## Technical Appendix
 
-<sup>For those who want the details:</sup>
+For those who want the details:
 
 ### Dataset Processing
 - Raw reads: paired-end 300bp, collapsed with PEAR v.0.9.8
