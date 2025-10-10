@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Understanding Cas13d: How This RNA Editor Finds Its Targets</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="understanding_cas13d_how_this_rna_editor_finds_its_targets"><a href="#understanding_cas13d_how_this_rna_editor_finds_its_targets" class="header-anchor">Understanding Cas13d: How This RNA Editor Finds Its Targets</a></h1>
+<h2 id="paper_information"><a href="#paper_information" class="header-anchor">Paper Information</a></h2>
+<p><strong>Title:</strong> Massively parallel profiling of RNA-targeting CRISPR-Cas13d</p>
+<p><strong>Authors:</strong> Hung-Che Kuo, Joshua Prupes, Chia-Wei Chou &amp; Ilya J. Finkelstein</p>
+<p><strong>Institution:</strong> University of Texas at Austin</p>
+<p><strong>Published in:</strong> Nature Communications &#40;2024&#41;</p>
+<p><strong>DOI:</strong> https://doi.org/10.1038/s41467-024-44738-w</p>
+<p><strong>Published in:</strong> Nature Communications &#40;2024&#41;</p>
+<p><strong>DOI:</strong> https://doi.org/10.1038/s41467-024-44738-w</p>
+<hr />
+<h2 id="important_limitation_limited_target_diversity"><a href="#important_limitation_limited_target_diversity" class="header-anchor">⚠️ Important Limitation: Limited Target Diversity</a></h2>
+<p><strong>The paper tested only 3 different target RNA sequences &#40;called target #1, #2, and #3&#41;.</strong> For each target, they tested thousands of variants &#40;mismatches, insertions, deletions, different PFS sequences&#41;, but the underlying &quot;matched&quot; sequence was just one of three.</p>
+<h3 id="is_this_limiting"><a href="#is_this_limiting" class="header-anchor">Is This Limiting?</a></h3>
+<p><strong>Yes, somewhat.</strong> Here&#39;s why:</p>
+<ul>
+<li><p>Different RNA sequences have different base compositions &#40;GC-rich vs AU-rich&#41;</p>
+</li>
+<li><p>Different sequences fold into different structures</p>
+</li>
+<li><p>The &quot;rules&quot; might be sequence-context dependent</p>
+</li>
+<li><p>Ideally, you&#39;d want to test dozens or hundreds of different target sequences</p>
+</li>
+</ul>
+<h3 id="why_such_limitation"><a href="#why_such_limitation" class="header-anchor">Why Such Limitation?</a></h3>
+<p><strong>It&#39;s not really an instrument limitation - it&#39;s a practical/design choice:</strong></p>
+<ol>
+<li><p><strong>Chip capacity</strong>: Each MiSeq chip can handle millions of clusters, which is plenty. The limitation isn&#39;t physical space.</p>
+</li>
+<li><p><strong>Experimental design</strong>: For each target sequence, they needed:</p>
+<ul>
+<li><p>All single mismatches &#40;66 variants&#41;</p>
+</li>
+<li><p>All double mismatches &#40;~2000 variants&#41;</p>
+</li>
+<li><p>All insertions and deletions &#40;~2400 variants&#41;</p>
+</li>
+<li><p>PFS variations &#40;~1500 variants&#41;</p>
+</li>
+<li><p><strong>Total: ~6000 variants per target</strong></p>
+</li>
+</ul>
+<p>Testing 100 different targets × 6000 variants &#61; 600,000 sequences, which is feasible but...</p>
+</li>
+<li><p><strong>The real bottleneck - validation</strong>: They validated their RNA-CHAMP results with orthogonal methods:</p>
+<ul>
+<li><p>Biolayer Interferometry &#40;BLI&#41; for 16&#43; sequences</p>
+</li>
+<li><p>Fluorescent cleavage assays for 19&#43; sequences</p>
+</li>
+<li><p>Each validation experiment takes significant time and resources</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Reproducibility</strong>: They did biological replicates for each target, doubling the work</p>
+</li>
+<li><p><strong>Analysis complexity</strong>: Building and training models on more diverse sequences would be harder and might not reveal clearer patterns</p>
+</li>
+</ol>
+<h3 id="does_this_undermine_the_conclusions"><a href="#does_this_undermine_the_conclusions" class="header-anchor">Does This Undermine the Conclusions?</a></h3>
+<p><strong>Partially, but the paper does several things to mitigate this:</strong></p>
+<p>✅ <strong>Cross-target validation</strong>: They show that patterns are consistent across all 3 targets &#40;see their comparisons between target #1 and target #3&#41;</p>
+<p>✅ <strong>Comparison with published data</strong>: They compared their results to Wessels et al. 2020, which did large-scale Cas13d screens in mammalian cells with different sequences. The patterns matched&#33; &#40;See Figure 3B&#41;</p>
+<p>✅ <strong>Biophysical validation</strong>: BLI measurements on individual sequences confirmed the trends weren&#39;t chip artifacts</p>
+<p>✅ <strong>Testing a different Cas13 variant</strong>: They validated key findings with RfxCas13d &#40;CasRx&#41;, showing the mechanism is conserved &#40;Figure S8&#41;</p>
+<p>✅ <strong>Structural predictions align</strong>: Their findings match what crystal structures show about solvent-exposed regions</p>
+<h3 id="the_bottom_line_on_limitations"><a href="#the_bottom_line_on_limitations" class="header-anchor">The Bottom Line on Limitations</a></h3>
+<p>This is actually a common trade-off in molecular biology:</p>
+<ul>
+<li><p><strong>Depth vs. Breadth</strong>: Go deep on a few targets with comprehensive perturbations, OR go broad with many targets but limited perturbations</p>
+</li>
+<li><p>They chose depth, which was appropriate for mechanistic understanding</p>
+</li>
+<li><p>A follow-up study testing 50-100 diverse targets would be valuable to confirm generalizability</p>
+</li>
+<li><p>But the core mechanistic insights &#40;distal binding initiation, proximal activation, structure sensitivity&#41; are likely universal features of Cas13d architecture</p>
+</li>
+</ul>
+<hr />
+<h2 id="whats_this_all_about"><a href="#whats_this_all_about" class="header-anchor">What&#39;s This All About?</a></h2>
+<p>Imagine you have a molecular scissor that can cut RNA instead of DNA. That&#39;s essentially what Cas13d is - it&#39;s part of the CRISPR family, but instead of editing genes, it targets RNA molecules. Scientists have been using it for things like knocking down gene expression and even diagnosing diseases, but there was a catch: they didn&#39;t fully understand <em>how</em> it actually recognizes and binds to its RNA targets.</p>
+<h2 id="whats_this_all_about__2"><a href="#whats_this_all_about__2" class="header-anchor">What&#39;s This All About?</a></h2>
+<p>Imagine you have a molecular scissor that can cut RNA instead of DNA. That&#39;s essentially what Cas13d is - it&#39;s part of the CRISPR family, but instead of editing genes, it targets RNA molecules. Scientists have been using it for things like knocking down gene expression and even diagnosing diseases, but there was a catch: they didn&#39;t fully understand <em>how</em> it actually recognizes and binds to its RNA targets.</p>
+<h2 id="the_core_novelty_separating_binding_from_cutting"><a href="#the_core_novelty_separating_binding_from_cutting" class="header-anchor">🎯 The Core Novelty: Separating Binding from Cutting</a></h2>
+<p><strong>Here&#39;s the game-changer that nobody knew before:</strong> </p>
+<p>Previous studies lumped everything together - they measured Cas13d&#39;s RNA cleavage activity as a single output. But cleavage is the <em>end result</em> of multiple steps: binding → activation → cutting. If cleavage doesn&#39;t happen, you couldn&#39;t tell which step failed.</p>
+<h3 id="the_breakthrough_discovery"><a href="#the_breakthrough_discovery" class="header-anchor">The Breakthrough Discovery:</a></h3>
+<p><strong>Binding and cutting are controlled by different regions and can be decoupled&#33;</strong></p>
+<pre><code class="language-julia">OLD UNDERSTANDING:
+Mismatch anywhere → poor cleavage → &quot;it doesn&#39;t work well&quot;
+&#40;But WHY? Can&#39;t tell from cleavage alone&#41;
+
+NEW UNDERSTANDING:
+Distal mismatch &#40;pos 12-22&#41; → CAN&#39;T BIND → no cleavage
+Proximal mismatch &#40;pos 1-11&#41; → BINDS FINE → but no cleavage&#33;</code></pre>
+<p>This is <strong>fundamentally new mechanistic insight</strong>. A proximal mismatch creates a &quot;dead-end complex&quot; - the enzyme grabs the RNA tightly but its scissors stay locked. This had never been systematically mapped before.</p>
+<h3 id="why_this_matters"><a href="#why_this_matters" class="header-anchor">Why This Matters:</a></h3>
+<ol>
+<li><p><strong>Rational design is now possible</strong>: Before, designing guide RNAs was trial-and-error. Now you can predict which sequences will bind &#40;for RNA tracking applications&#41; vs. which will cut &#40;for knockdown&#41;.</p>
+</li>
+<li><p><strong>SNP discrimination by design</strong>: You can intentionally position mismatches to either:</p>
+<ul>
+<li><p>Block binding entirely &#40;distal mismatch&#41;</p>
+</li>
+<li><p>Allow binding but prevent cutting &#40;proximal mismatch&#41;</p>
+</li>
+</ul>
+<p>This gives you <em>two orthogonal mechanisms</em> for specificity - incredibly powerful for diagnostics&#33;</p>
+</li>
+<li><p><strong>Explains previous mysteries</strong>: Many groups had noticed that Cas13d was &quot;picky&quot; and that RNA structure mattered, but they couldn&#39;t explain the patterns. This paper reveals the molecular logic.</p>
+</li>
+</ol>
+<h2 id="the_challenge"><a href="#the_challenge" class="header-anchor">The Challenge</a></h2>
+<p>Think of it like this: Cas13d needs to find one specific RNA sequence among thousands of others in a cell. Previous studies had shown that it&#39;s picky about mismatches and doesn&#39;t like when the target RNA is folded up, but the details were fuzzy. The researchers wanted to answer: <strong>What exactly makes Cas13d bind strongly or weakly to different RNA targets?</strong></p>
+<h2 id="enter_rna-champ_a_clever_recycling_project"><a href="#enter_rna-champ_a_clever_recycling_project" class="header-anchor">Enter RNA-CHAMP: A Clever Recycling Project</a></h2>
+<p>Here&#39;s where it gets cool. The team developed a technology called <strong>RNA-CHAMP</strong> &#40;RNA Chip-Hybridized Association-Mapping Platform&#41;. Instead of letting used DNA sequencing chips go to waste, they figured out how to repurpose them to test over 10,000 different RNA sequences at once&#33;</p>
+<p>The workflow is elegant:</p>
+<ol>
+<li><p>Take a used Illumina sequencing chip &#40;the kind that normally gets thrown away&#41;</p>
+</li>
+<li><p>The chip already has DNA sequences on it that were identified during sequencing</p>
+</li>
+<li><p>Convert those DNA sequences into RNA using T7 RNA polymerase</p>
+</li>
+<li><p>Add fluorescently labeled Cas13d and watch which RNAs it binds to</p>
+</li>
+<li><p>Image everything with a regular fluorescence microscope</p>
+</li>
+</ol>
+<h2 id="key_discoveries"><a href="#key_discoveries" class="header-anchor">Key Discoveries</a></h2>
+<h3 id="no_strict_zip_code_required"><a href="#no_strict_zip_code_required" class="header-anchor"><ol>
+<li><p><strong>No Strict &quot;Zip Code&quot; Required</strong></p>
+</li>
+</ol>
+</a></h3>
+<p>Unlike some other CRISPR enzymes that need a specific sequence right next to the target &#40;called a PFS or protospacer flanking sequence&#41;, Cas13d is pretty relaxed about this. It doesn&#39;t have a strong preference for what nucleotides are adjacent to its target.</p>
+<h3 id="ol_start2_structure_matters_-_a_lot"><a href="#ol_start2_structure_matters_-_a_lot" class="header-anchor"><ol start="2">
+<li><p><strong>Structure Matters - A Lot</strong></p>
+</li>
+</ol>
+</a></h3>
+<p>The target RNA needs to be relatively &quot;relaxed&quot; and unfolded, especially in a specific region. When the RNA folds back on itself &#40;forming secondary structure&#41;, Cas13d has a much harder time binding. It&#39;s like trying to read a book when the pages are all crumpled up.</p>
+<h3 id="ol_start3_the_distal_seed_region_-_where_recognition_starts"><a href="#ol_start3_the_distal_seed_region_-_where_recognition_starts" class="header-anchor"><ol start="3">
+<li><p><strong>The &quot;Distal Seed Region&quot; - Where Recognition Starts</strong></p>
+</li>
+</ol>
+</a></h3>
+<p>This is the big mechanistic insight. The researchers found that Cas13d has two functionally distinct regions:</p>
+<ul>
+<li><p><strong>Distal region &#40;positions 12-22&#41;</strong>: This is like the &quot;recognition zone.&quot; Cas13d is very sensitive to mismatches here. If the RNA doesn&#39;t match well in this region, or if it&#39;s folded up, Cas13d won&#39;t bind well at all. This is where the enzyme <em>first</em> engages the target.</p>
+</li>
+<li><p><strong>Proximal region &#40;positions 1-11&#41;</strong>: This is the &quot;activation zone.&quot; Here&#39;s the surprise - mismatches in this region don&#39;t really affect <em>binding</em>, but they completely shut down <em>cutting activity</em>. The enzyme can still grab onto the RNA, but it can&#39;t activate its scissors&#33;</p>
+</li>
+</ul>
+<h3 id="ol_start4_building_a_predictive_model"><a href="#ol_start4_building_a_predictive_model" class="header-anchor"><ol start="4">
+<li><p><strong>Building a Predictive Model</strong></p>
+</li>
+</ol>
+</a></h3>
+<p>The team didn&#39;t just collect data - they built mathematical models to predict how well Cas13d would bind to any given RNA sequence. Their best model combines:</p>
+<ul>
+<li><p>Where mismatches are located</p>
+</li>
+<li><p>How folded the target RNA is</p>
+</li>
+<li><p>The overall stability of the RNA structure</p>
+</li>
+</ul>
+<p>This model achieved a correlation of 0.76 with experimental data, which is pretty good for biology&#33;</p>
+<h2 id="practical_applications"><a href="#practical_applications" class="header-anchor">Practical Applications</a></h2>
+<h3 id="sars-cov-2_variant_detection"><a href="#sars-cov-2_variant_detection" class="header-anchor">SARS-CoV-2 Variant Detection</a></h3>
+<p>As a proof-of-concept, they designed Cas13d guides that could distinguish between the original Wuhan strain and the Delta variant of SARS-CoV-2, which differ by just a single nucleotide. By positioning that single mismatch strategically:</p>
+<ul>
+<li><p>In the distal region → prevents binding entirely</p>
+</li>
+<li><p>In the proximal region → allows binding but blocks cutting</p>
+</li>
+</ul>
+<p>This gives you two different ways to design diagnostic tests&#33;</p>
+<h3 id="better_rna_knockdown"><a href="#better_rna_knockdown" class="header-anchor">Better RNA Knockdown</a></h3>
+<p>Understanding these rules means researchers can now:</p>
+<ul>
+<li><p>Design better guide RNAs that work more efficiently</p>
+</li>
+<li><p>Predict which targets will be easy vs. hard to hit</p>
+</li>
+<li><p>Avoid off-target effects by understanding what makes a &quot;close match&quot;</p>
+</li>
+</ul>
+<h2 id="visual_guide_to_the_regions"><a href="#visual_guide_to_the_regions" class="header-anchor">Visual Guide to the Regions</a></h2>
+<p>Here&#39;s how the target RNA is organized &#40;positions numbered 1-22&#41;:</p>
+<pre><code class="language-julia">5&#39; -----&gt; 3&#39; &#40;target RNA direction&#41;
+
+&#91;&#61;&#61;&#61; PROXIMAL REGION &#61;&#61;&#61;&#93;&#91;&#61;&#61;&#61;&#61;&#61;&#61; DISTAL REGION &#61;&#61;&#61;&#61;&#61;&#61;&#93;
+    positions 1-11              positions 12-22
+                                          ↑
+   &quot;ACTIVATION ZONE&quot;              &quot;RECOGNITION/SEED ZONE&quot;
+                                  &#40;Cas13d binds here FIRST&#41;
+   
+   ✓ Binding: NOT sensitive          ✓ Binding: VERY sensitive
+   ✗ Cutting: VERY sensitive          ✗ Cutting: Prevented &#40;no binding&#41;
+   
+   If mismatch here:                  If mismatch here:
+   - Still binds strongly             - Poor/no binding
+   - But won&#39;t cut&#33;                   - No cutting &#40;can&#39;t bind&#41;</code></pre>
+<h3 id="important_notes_on_directionality"><a href="#important_notes_on_directionality" class="header-anchor">Important Notes on Directionality:</a></h3>
+<p><strong>Yes, 5&#39; and 3&#39; absolutely matter&#33;</strong> The paper uses this numbering convention:</p>
+<ul>
+<li><p>Position 1 &#61; the 5&#39; end of the target RNA</p>
+</li>
+<li><p>Position 22 &#61; the 3&#39; end of the target RNA</p>
+</li>
+<li><p>The &quot;distal&quot; region &#40;12-22&#41; is toward the <strong>3&#39; end</strong></p>
+</li>
+<li><p>The &quot;proximal&quot; region &#40;1-11&#41; is toward the <strong>5&#39; end</strong></p>
+</li>
+</ul>
+<h3 id="does_cas13d_start_binding_at_the_distal_region"><a href="#does_cas13d_start_binding_at_the_distal_region" class="header-anchor">Does Cas13d Start Binding at the Distal Region?</a></h3>
+<p><strong>Yes, you&#39;re absolutely right&#33;</strong> The paper strongly suggests this through multiple lines of evidence:</p>
+<ol>
+<li><p><strong>From the modeling results</strong> &#40;Figure 4E&#41;: Distal mismatches and structure have much larger penalties on binding than proximal ones</p>
+</li>
+<li><p><strong>Direct quote from the paper</strong>: </p>
+<blockquote>
+<p>&quot;Based on these results, we hypothesize that Cas13d prefers to engage the distal end of the target RNA first&quot;</p>
+</blockquote>
+</li>
+<li><p><strong>In the Discussion section</strong>:</p>
+<blockquote>
+<p>&quot;Based on the large effects of intramolecular base pairing in the distal position &#40;positions 14-20&#41;, we hypothesize that Cas13d initiates target recognition in this distal region&quot;</p>
+</blockquote>
+</li>
+<li><p><strong>The mechanism they propose</strong>:</p>
+<blockquote>
+<p>&quot;Together, our results and model suggest that Cas13d initially recognizes the target RNA in the solvent-exposed distal spacer region, followed by RNA duplex formation towards the target RNA in the proximal region&quot;</p>
+</blockquote>
+</li>
+</ol>
+<p>&lt;sub&gt;<strong>📝 What does &quot;solvent-exposed&quot; mean?</strong> In structural biology, &quot;solvent-exposed&quot; means that part of the molecule is sticking out into the surrounding water &#40;the &quot;solvent&quot;&#41; rather than being buried inside the protein or hidden in a pocket. Think of it like having your hand sticking out of a coat sleeve - it&#39;s accessible and can easily touch other things. In Cas13d, the distal region of the crRNA &#40;positions 14-20&#41; is sticking out of the protein surface, making it available to &quot;search&quot; for and bind to complementary target RNA sequences floating nearby. The proximal region, in contrast, is more buried within the protein structure.&lt;/sub&gt;</p>
+<p>So the binding mechanism is like a zipper that starts at the 3&#39; end &#40;distal&#41; and zips toward the 5&#39; end &#40;proximal&#41;&#33;</p>
+<h2 id="the_bottom_line"><a href="#the_bottom_line" class="header-anchor">The Bottom Line</a></h2>
+<p>This paper is essentially a user&#39;s manual for Cas13d. It tells us:</p>
+<ol>
+<li><p><strong>Where</strong> Cas13d starts recognizing its target &#40;the distal end&#41;</p>
+</li>
+<li><p><strong>What</strong> it&#39;s sensitive to &#40;RNA structure and distal mismatches&#41;</p>
+</li>
+<li><p><strong>How</strong> it gets activated to start cutting &#40;needs perfect proximal matching&#41;</p>
+</li>
+</ol>
+<p>For anyone working with Cas13d for RNA editing, diagnostics, or research, these insights are gold. They transform Cas13d from a &quot;sometimes it works, sometimes it doesn&#39;t&quot; tool into a predictable, designable system.</p>
+<h2 id="the_bigger_picture"><a href="#the_bigger_picture" class="header-anchor">The Bigger Picture</a></h2>
+<p>Beyond just understanding Cas13d, RNA-CHAMP opens up possibilities for studying many other RNA-binding proteins. By recycling sequencing chips, any lab with a microscope can now run massive parallel experiments that would have been prohibitively expensive before. That&#39;s the kind of democratization of technology that accelerates scientific progress&#33;</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: October 10, 2025.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>
