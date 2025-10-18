@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>The LacI Protein Adventure </title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="the_laci_protein_adventure"><a href="#the_laci_protein_adventure" class="header-anchor">The LacI Protein Adventure 🧬</a></h1>
+<p><strong>Paper:</strong> &quot;The genotype-phenotype landscape of an allosteric protein&quot;</p>
+<p><strong>Authors:</strong> Drew S Tack, Peter D Tonner, Abe Pressman, Nathan D Olson, Sasha F Levy, Eugenia F Romantseva, Nina Alperovich, Olga Vasilyeva &amp; David Ross</p>
+<p><strong>Published:</strong> Molecular Systems Biology &#40;2021&#41; 17: e10179</p>
+<p><strong>DOI:</strong> <a href="https://doi.org/10.15252/msb.202010179">10.15252/msb.202010179</a></p>
+<p><strong>Institution:</strong> National Institute of Standards and Technology &#40;NIST&#41;</p>
+<hr />
+<h2 id="what_this_paper_is_about"><a href="#what_this_paper_is_about" class="header-anchor">What This Paper Is About</a></h2>
+<p>Imagine you have a tiny robot guard &#40;called LacI&#41; that controls a door in a factory. When sugar arrives, the guard steps aside and lets the factory make stuff. This paper is about testing almost 100,000 different versions of this guard to see how they work&#33;</p>
+<hr />
+<h2 id="why_did_they_do_this_the_motivation"><a href="#why_did_they_do_this_the_motivation" class="header-anchor">Why Did They Do This? &#40;The Motivation&#41; 🤔</a></h2>
+<h3 id="what_we_already_knew_about_laci"><a href="#what_we_already_knew_about_laci" class="header-anchor">What We Already Knew About LacI</a></h3>
+<p>LacI has been studied since <strong>1961</strong> - it&#39;s like the celebrity of molecular biology&#33; Scientists knew:</p>
+<ul>
+<li><p><strong>The structure:</strong> Crystal structures showed what it looks like in different states &#40;with DNA, with sugar, without either&#41;</p>
+</li>
+<li><p><strong>The mechanism:</strong> It works by &quot;allostery&quot; - binding sugar at one spot changes behavior at a distant spot</p>
+</li>
+<li><p><strong>The basics:</strong> Individual mutations at ~4,000 positions had been tested before</p>
+</li>
+<li><p><strong>The model:</strong> Scientists had mathematical models &#40;MWC model&#41; to explain how it switches</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>MWC Model Side Note:</strong> MWC &#61; Monod-Wyman-Changeux model &#40;from 1965&#33;&#41;</p>
+<p>Think of the protein like a light switch with two positions:</p>
+<ul>
+<li><p><strong>T state</strong> &#40;Tense&#41; &#61; OFF, tight, inactive</p>
+</li>
+<li><p><strong>R state</strong> &#40;Relaxed&#41; &#61; ON, loose, active</p>
+</li>
+</ul>
+<p>The protein naturally flips between these states. When sugar binds, it &quot;locks&quot; the protein into the R state, like putting a wedge under the light switch to keep it ON.</p>
+<p>Key assumptions:</p>
+<ul>
+<li><p>Only TWO states exist &#40;T and R&#41;</p>
+</li>
+<li><p>All parts of the protein move together &#40;it&#39;s &quot;concerted&quot;&#41;</p>
+</li>
+<li><p>Sugar binding shifts the balance toward R</p>
+</li>
+</ul>
+<p><strong>Why it matters here:</strong> The band-stop phenotype they discovered BREAKS this model&#33; It needs more than two states to explain the weird bright-dim-bright behavior. That&#39;s why finding it was such a big deal&#33;</p>
+</blockquote>
+<h3 id="but_heres_what_was_missing"><a href="#but_heres_what_was_missing" class="header-anchor">But Here&#39;s What Was MISSING 🕵️</a></h3>
+<p><strong>Problem #1: The Prediction Gap</strong></p>
+<ul>
+<li><p>Scientists could see structures, but couldn&#39;t predict: &quot;If I change amino acid #143 from A to G, what happens?&quot;</p>
+</li>
+<li><p>Previous studies tested mutations one-by-one or in small groups - no systematic map</p>
+</li>
+<li><p>Even crystal structures looked nearly identical between states, yet function changed dramatically</p>
+</li>
+</ul>
+<p><strong>Problem #2: The Complexity Problem</strong></p>
+<ul>
+<li><p>Allostery involves changes spread throughout the protein, not just near the sugar or DNA binding sites</p>
+</li>
+<li><p>How do distant amino acids affect function? Nobody had a comprehensive answer</p>
+</li>
+<li><p>What about combinations of mutations? Do effects add up or do weird things happen?</p>
+</li>
+</ul>
+<p><strong>Problem #3: The Scale Problem</strong></p>
+<ul>
+<li><p>Previous largest study: ~4,000 variants tested individually over decades</p>
+</li>
+<li><p>But proteins have astronomical possibilities &#40;20²⁰ &#61; 10²⁶ possible protein sequences&#33;&#41;</p>
+</li>
+<li><p>Needed technology to test 10,000s at once to find patterns</p>
+</li>
+</ul>
+<p><strong>Problem #4: Engineering Limitations</strong></p>
+<ul>
+<li><p>Scientists wanted to engineer new biosensors but lacked design rules</p>
+</li>
+<li><p>Could we make LacI respond to different molecules? Work backwards instead of forwards?</p>
+</li>
+<li><p>Without understanding the full landscape, engineering was trial-and-error guesswork</p>
+</li>
+</ul>
+<p><strong>Problem #5: The Hidden Phenotypes</strong></p>
+<ul>
+<li><p>Were there totally new behaviors waiting to be discovered?</p>
+</li>
+<li><p>Most studies looked for things they expected - what about surprises?</p>
+</li>
+</ul>
+<h3 id="what_made_this_study_possible_now"><a href="#what_made_this_study_possible_now" class="header-anchor">What Made This Study Possible NOW</a></h3>
+<p><strong>New Technology Stack:</strong></p>
+<ol>
+<li><p><strong>Long-read DNA sequencing</strong> &#40;PacBio&#41; - can read full gene sequences accurately</p>
+</li>
+<li><p><strong>DNA barcoding</strong> - track 100,000s of variants simultaneously  </p>
+</li>
+<li><p><strong>High-throughput automation</strong> - robots do the tedious work</p>
+</li>
+<li><p><strong>Machine learning</strong> - neural networks find patterns humans can&#39;t see</p>
+</li>
+<li><p><strong>Bayesian inference</strong> - better statistics for noisy biological data</p>
+</li>
+</ol>
+<p><strong>The Key Innovation:</strong> Previous work measured one variant at a time using fluorescence. This study invented a way to measure 100,000 variants AT ONCE using bacterial growth rate as the readout&#33;</p>
+<h3 id="the_bottom_line_on_motivation"><a href="#the_bottom_line_on_motivation" class="header-anchor">The Bottom Line on Motivation</a></h3>
+<p>They did this because:</p>
+<ul>
+<li><p>✅ LacI is THE model system everyone uses - understanding it helps understand ALL allosteric proteins</p>
+</li>
+<li><p>✅ Technology finally existed to do it at massive scale</p>
+</li>
+<li><p>✅ Previous small-scale studies hinted at complex patterns but couldn&#39;t see the full picture</p>
+</li>
+<li><p>✅ Engineering applications needed design rules, not just anecdotes</p>
+</li>
+<li><p>✅ Science needed to move from &quot;describe what we see&quot; to &quot;predict what we haven&#39;t tested&quot;</p>
+</li>
+</ul>
+<p><strong>The Audacious Goal:</strong> Create a comprehensive &quot;Google Maps&quot; for the LacI protein landscape that lets you predict the effect of any mutation or combination of mutations&#33;</p>
+<hr />
+<h2 id="the_main_characters"><a href="#the_main_characters" class="header-anchor">The Main Characters</a></h2>
+<p><strong>LacI &#40;Lac Repressor&#41;</strong> - Think of it as a molecular &quot;bouncer&quot; at a nightclub</p>
+<ul>
+<li><p>It&#39;s a protein that sits on DNA and blocks genes &#40;like putting your hand over a light switch&#41;</p>
+</li>
+<li><p>When it senses a special sugar molecule &#40;IPTG&#41;, it lets go and genes turn ON</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>Quick Clarification: Allostery vs Epistasis</strong> 🧬</p>
+<p>Good catch, but they&#39;re actually different &#40;though related&#33;&#41; concepts:</p>
+<p><strong>ALLOSTERY</strong> &#61; Communication <em>within</em> a single molecule</p>
+<ul>
+<li><p>&quot;When I bind sugar at Site A, it changes the shape at distant Site B&quot;</p>
+</li>
+<li><p>One protein molecule talking to itself across distance</p>
+</li>
+<li><p>Example: Sugar binds to LacI&#39;s pocket → Changes DNA-binding domain 20 Angstroms away</p>
+</li>
+</ul>
+<blockquote>
+<blockquote>
+<p><strong>Math Side-Side Note: Can Allostery Be Described Mathematically?</strong> 📐</p>
+<p>YES&#33; That&#39;s what the MWC model does. Here&#39;s the basic idea:</p>
+<p><strong>The Hill Equation</strong> &#40;what they measured&#41;:</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<pre><code class="language-julia">&gt; &gt;&gt; G&#40;L&#41; &#61; G₀ &#43; &#40;G∞ - G₀&#41; / &#40;1 &#43; &#40;EC₅₀/L&#41;ⁿ&#41;
+&gt; &gt;&gt;</code></pre>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>Where:</p>
+<ul>
+<li><p>L &#61; ligand &#40;sugar&#41; concentration</p>
+</li>
+<li><p>G&#40;L&#41; &#61; gene expression at that concentration</p>
+</li>
+<li><p>G₀ &#61; expression with no sugar &#40;basal&#41;</p>
+</li>
+<li><p>G∞ &#61; expression with infinite sugar &#40;maximum&#41;</p>
+</li>
+<li><p>EC₅₀ &#61; sugar amount for half-maximal response</p>
+</li>
+<li><p>n &#61; Hill coefficient &#40;steepness of the curve&#41;</p>
+</li>
+</ul>
+<p><strong>The Biophysical Model</strong> &#40;what&#39;s really happening&#41;: The Hill equation comes from deeper physics:</p>
+<ul>
+<li><p>Protein switches between states with some energy difference &#40;ΔG&#41;</p>
+</li>
+<li><p>Ligand binding shifts this energy balance</p>
+</li>
+<li><p>Three key parameters:</p>
+<ol>
+<li><p><strong>Operator binding affinity</strong> &#40;how tight DNA sticks&#41;</p>
+</li>
+<li><p><strong>Ligand binding affinity</strong> &#40;how tight sugar sticks&#41;</p>
+</li>
+<li><p><strong>Allosteric constant</strong> &#40;natural T↔R equilibrium&#41;</p>
+</li>
+</ol>
+</li>
+</ul>
+<p><strong>The Challenge:</strong> You can measure the Hill equation &#40;G₀, G∞, EC₅₀, n&#41; but you can&#39;t uniquely determine the three biophysical parameters&#33; Multiple combinations can give the same curve. It&#39;s like having 3 unknowns but only 2 equations.</p>
+<p><strong>What This Paper Shows:</strong> Most mutations affect the allosteric constant &#40;the T↔R balance&#41; rather than binding affinities. Why? Because there are WAY more positions far from binding sites than near them&#33;</p>
+</blockquote>
+</blockquote>
+<p><strong>EPISTASIS</strong> &#61; Interaction <em>between</em> different mutations</p>
+<ul>
+<li><p>&quot;Mutation A &#43; Mutation B together ≠ what you&#39;d expect from adding their individual effects&quot;</p>
+</li>
+<li><p>Different genetic changes interacting</p>
+</li>
+<li><p>Example: R195H alone does nothing, G265D alone does nothing, but TOGETHER they create band-stop&#33;</p>
+</li>
+</ul>
+<p><strong>The Connection:</strong> This paper studies BOTH&#33;</p>
+<ul>
+<li><p>Allostery &#61; The protein&#39;s mechanism &#40;how it works&#41;</p>
+</li>
+<li><p>Epistasis &#61; How mutations interact &#40;what this study measures&#41;</p>
+</li>
+</ul>
+<p>The cool finding: Most mutations show NO epistasis &#40;effects simply add&#41;, but some show dramatic epistasis &#40;those silent mutations that combine into band-stop&#41;. This tells us allostery is mostly a &quot;distributed energy balance&quot; rather than a &quot;domino chain of movements.&quot;</p>
+</blockquote>
+<p><strong>Why This Matters:</strong> Scientists want to understand how tiny changes in proteins create big changes in what they do. It&#39;s like figuring out which LEGO pieces you can swap and still have your castle stand up&#33;</p>
+<hr />
+<h2 id="what_they_did_the_experiment"><a href="#what_they_did_the_experiment" class="header-anchor">What They Did &#40;The Experiment&#41;</a></h2>
+<h3 id="step_1_make_lots_of_different_guards"><a href="#step_1_make_lots_of_different_guards" class="header-anchor">Step 1: Make LOTS of Different Guards 🏭</a></h3>
+<ul>
+<li><p>Started with the normal LacI protein &#40;360 building blocks called amino acids&#41;</p>
+</li>
+<li><p>Used a special copying machine that makes mistakes on purpose</p>
+</li>
+<li><p>Created <strong>62,472 different versions</strong> of LacI</p>
+</li>
+<li><p>Each version had about 4-7 changes from the original</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>Science Jargon Alert:</strong> &quot;Error-prone PCR&quot; &#61; A copying machine that makes typos on purpose to create variety</p>
+</blockquote>
+<h3 id="step_2_give_each_one_a_name_tag"><a href="#step_2_give_each_one_a_name_tag" class="header-anchor">Step 2: Give Each One a Name Tag 🏷️</a></h3>
+<ul>
+<li><p>Attached a unique &quot;DNA barcode&quot; to each version</p>
+</li>
+<li><p>Like giving each person at a huge party a different colored bracelet</p>
+</li>
+<li><p>This lets them track which version is which later</p>
+</li>
+</ul>
+<h3 id="step_3_the_big_test"><a href="#step_3_the_big_test" class="header-anchor">Step 3: The Big Test 🧪</a></h3>
+<p>They grew bacteria with all these different LacI versions and tested them like this:</p>
+<p><strong>The X-Axis &#40;Input&#41;: IPTG Concentrations</strong> 🍬</p>
+<ul>
+<li><p>Tested <strong>12 different sugar concentrations</strong>: 0, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, and 2048 μmol/L</p>
+</li>
+<li><p>That&#39;s a 2-fold dilution series &#40;each step is double the previous&#41;</p>
+</li>
+<li><p>Covers from &quot;no sugar&quot; to &quot;drowning in sugar&quot;</p>
+</li>
+<li><p>Think of it like testing how a light dimmer works at 12 different positions</p>
+</li>
+</ul>
+<p><strong>The Y-Axis &#40;Output&#41;: Gene Expression Level</strong> 💡</p>
+<ul>
+<li><p>Measured how much the controlled gene turns ON</p>
+</li>
+<li><p>Reported in &quot;MEF&quot; &#40;Molecules of Equivalent Fluorophore&#41; - basically brightness units</p>
+</li>
+<li><p>Range: ~100 MEF &#40;OFF&#41; to ~24,000 MEF &#40;fully ON&#41; for wild-type</p>
+</li>
+<li><p>This tells you: &quot;At this sugar concentration, how much is the gene expressing?&quot;</p>
+</li>
+</ul>
+<p><strong>How They Measured It:</strong></p>
+<ul>
+<li><p>In the plasmid pTY1: LacI controls a tetracycline resistance gene &#40;tetA&#41;</p>
+<ul>
+<li><p>More tetA &#61; bacteria survive better with tetracycline</p>
+</li>
+<li><p>Measured bacterial <strong>growth rate &#40;fitness&#41;</strong> with/without tetracycline</p>
+</li>
+<li><p>Converted fitness → gene expression using a calibration curve</p>
+</li>
+</ul>
+</li>
+<li><p>For verification &#40;plasmid pVER&#41;: LacI controls a yellow fluorescent protein &#40;YFP&#41;</p>
+<ul>
+<li><p>More YFP &#61; bacteria glow brighter yellow</p>
+</li>
+<li><p>Measured directly with flow cytometry</p>
+</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>Tetracycline Side Note: Why Test With AND Without?</strong> 💊</p>
+<p><strong>Without Tetracycline:</strong></p>
+<ul>
+<li><p>All bacteria grow at basically the same rate &#40;~0.81 h⁻¹&#41;</p>
+</li>
+<li><p>Doesn&#39;t matter if tetA gene is ON or OFF - there&#39;s no antibiotic to resist&#33;</p>
+</li>
+<li><p>This is the <strong>baseline</strong> - tells you the &quot;normal&quot; growth rate</p>
+</li>
+<li><p>Should be flat across all IPTG concentrations &#40;and it is&#33; See the blue line in Fig 1D&#41;</p>
+</li>
+</ul>
+<p><strong>With Tetracycline:</strong></p>
+<ul>
+<li><p>NOW it matters if tetA is expressed&#33;</p>
+</li>
+<li><p>High tetA expression → bacteria resist antibiotic → grow fast</p>
+</li>
+<li><p>Low tetA expression → antibiotic kills/slows bacteria → grow slow</p>
+</li>
+<li><p>Growth rate depends on IPTG concentration &#40;via LacI → tetA&#41;</p>
+</li>
+<li><p>This is the <strong>signal</strong> - tells you how LacI is responding to IPTG</p>
+</li>
+</ul>
+<p><strong>The Magic of Comparing Both:</strong></p>
+</blockquote>
+<pre><code class="language-julia">&gt; Fitness Difference &#61; &#40;Growth WITH tet&#41; - &#40;Growth WITHOUT tet&#41;
+&gt;</code></pre>
+<blockquote>
+<ul>
+<li><p>Cancels out all the noise and confounding factors</p>
+</li>
+<li><p>Isolates ONLY the effect of LacI controlling tetA</p>
+</li>
+<li><p>The bigger the difference, the more tetA is being expressed</p>
+</li>
+<li><p>This difference is what they convert to gene expression level&#33;</p>
+</li>
+</ul>
+<p><strong>Why This Is Clever:</strong></p>
+<ul>
+<li><p>Each bacteria has slightly different growth rates for random reasons</p>
+</li>
+<li><p>By measuring the SAME bacteria with/without tetracycline, those random differences cancel out</p>
+</li>
+<li><p>It&#39;s like weighing yourself with and without a backpack to find the backpack&#39;s weight - more accurate than trying to weigh the backpack directly&#33;</p>
+</li>
+</ul>
+<p><strong>The Result:</strong> Without tet: Flat line &#40;no IPTG dependence&#41; With tet: Dose-response curve &#40;IPTG changes growth via LacI → tetA&#41; The difference between them &#61; Pure LacI dose-response signal&#33;</p>
+</blockquote>
+<p><strong>The 24 Conditions:</strong></p>
+<ul>
+<li><p>12 IPTG concentrations × 2 &#40;with/without tetracycline&#41; &#61; 24 conditions</p>
+</li>
+<li><p>They needed the &quot;without tetracycline&quot; baseline to calculate the effect</p>
+</li>
+</ul>
+<p><strong>What a Dose-Response Curve Shows:</strong></p>
+<ul>
+<li><p>X-axis: Sugar concentration &#40;0 to 2048 μmol/L&#41;</p>
+</li>
+<li><p>Y-axis: Gene expression &#40;100 to ~24,000 MEF&#41;</p>
+</li>
+<li><p>The curve shape tells you HOW the protein responds to the signal</p>
+</li>
+<li><p>Normal LacI: Sigmoidal S-curve &#40;low → high as sugar increases&#41;</p>
+</li>
+<li><p>Inverted: Backwards S-curve &#40;high → low&#41;</p>
+</li>
+<li><p>Band-stop: M-shaped &#40;high → low → high again&#33;&#41;</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>Why This Matters:</strong> By measuring the full dose-response curve &#40;not just one point&#41;, they capture the complete functional &quot;personality&quot; of each LacI variant&#33;</p>
+</blockquote>
+<h3 id="step_4_read_all_the_name_tags"><a href="#step_4_read_all_the_name_tags" class="header-anchor">Step 4: Read All the Name Tags 🔬</a></h3>
+<ul>
+<li><p>Used DNA sequencing to count how many bacteria had each LacI version</p>
+</li>
+<li><p>Like counting colored bracelets at the end of a party to see who had fun and invited friends</p>
+</li>
+</ul>
+<hr />
+<h2 id="the_big_discoveries"><a href="#the_big_discoveries" class="header-anchor">The Big Discoveries 🎉</a></h2>
+<h3 id="discovery_1_most_changes_are_predictable"><a href="#discovery_1_most_changes_are_predictable" class="header-anchor">Discovery #1: Most Changes Are Predictable</a></h3>
+<p><strong>The Additive Rule:</strong></p>
+<ul>
+<li><p>If change A makes LacI work 3× differently</p>
+</li>
+<li><p>And change B makes it work 2× differently  </p>
+</li>
+<li><p>Then both changes together make it work 6× differently &#40;3 × 2&#41;</p>
+</li>
+<li><p>It&#39;s like stacking LEGO blocks - effects add up in a simple way&#33;</p>
+</li>
+</ul>
+<p><strong>Where Changes Matter Most:</strong></p>
+<ul>
+<li><p>Changes near where the sugar binds &#61; Big effects &#40;makes sense&#33;&#41;</p>
+</li>
+<li><p>Changes where two protein parts touch &#61; Big effects</p>
+</li>
+<li><p>Changes in the middle &#61; Usually small effects</p>
+</li>
+</ul>
+<h3 id="discovery_2_some_surprising_new_behaviors"><a href="#discovery_2_some_surprising_new_behaviors" class="header-anchor">Discovery #2: Some Surprising New Behaviors&#33; 😮</a></h3>
+<p><strong>Normal LacI:</strong> Low gene expression → Add sugar → High gene expression</p>
+<p><strong>But they found weird ones:</strong></p>
+<p><strong>Inverted LacI &#40;~230 versions&#41;:</strong></p>
+<ul>
+<li><p>HIGH gene expression → Add sugar → LOW gene expression</p>
+</li>
+<li><p>It works BACKWARDS&#33; Like a light switch that turns lights ON when you flip it down</p>
+</li>
+</ul>
+<p><strong>Band-Stop LacI &#40;~200 versions&#41;:</strong></p>
+<ul>
+<li><p>HIGH → Add a little sugar → LOW → Add more sugar → HIGH again</p>
+</li>
+<li><p>It&#39;s like a dimmer switch that goes bright-dim-bright as you turn it&#33;</p>
+</li>
+<li><p><strong>This had NEVER been seen before in a single protein&#33;</strong></p>
+</li>
+</ul>
+<h3 id="discovery_3_the_silent_saboteurs"><a href="#discovery_3_the_silent_saboteurs" class="header-anchor">Discovery #3: The &quot;Silent Saboteurs&quot; 🕵️</a></h3>
+<p>The most surprising finding:</p>
+<ul>
+<li><p>Some changes did almost NOTHING by themselves</p>
+</li>
+<li><p>But when you combined two &quot;silent&quot; changes together...</p>
+</li>
+<li><p><strong>BAM&#33;</strong> Totally new behavior appeared&#33;</p>
+</li>
+</ul>
+<p>Example: Changes at positions R195H and G265D</p>
+<ul>
+<li><p>Each alone: Normal behavior</p>
+</li>
+<li><p>Together: Band-stop behavior &#40;that weird bright-dim-bright thing&#41;</p>
+</li>
+</ul>
+<p><strong>Why This Matters:</strong> You can&#39;t predict everything just by looking at individual changes. Sometimes 1&#43;1&#61;100&#33;</p>
+<hr />
+<h2 id="the_numbers_game"><a href="#the_numbers_game" class="header-anchor">The Numbers Game 📊</a></h2>
+<h3 id="single_changes_they_mapped"><a href="#single_changes_they_mapped" class="header-anchor">Single Changes They Mapped:</a></h3>
+<ul>
+<li><p><strong>1,991 different single-letter changes</strong> to the protein &#40;94&#37; of all possible changes&#41;</p>
+</li>
+<li><p>About <strong>38&#37; actually changed how it worked</strong></p>
+</li>
+<li><p>The rest were &quot;silent mutations&quot; &#40;like fixing a typo that doesn&#39;t change the sentence meaning&#41;</p>
+</li>
+</ul>
+<h3 id="where_changes_had_big_effects"><a href="#where_changes_had_big_effects" class="header-anchor">Where Changes Had Big Effects:</a></h3>
+<p><strong>For EC₅₀</strong> &#40;the amount of sugar needed&#41;:</p>
+<blockquote>
+<p><strong>Jargon Note:</strong> EC₅₀ &#61; The sugar amount where the protein is half-way between ON and OFF</p>
+</blockquote>
+<ul>
+<li><p>~9&#37; of changes shifted it more than 5-fold</p>
+</li>
+<li><p>Changes spread ALL OVER the protein could do this</p>
+</li>
+<li><p>This shows allostery is a &quot;team sport&quot; - many parts work together&#33;</p>
+</li>
+</ul>
+<p><strong>For G₀</strong> &#40;gene expression with no sugar&#41;:</p>
+<ul>
+<li><p>Changes in the DNA-grabbing part &#61; Big effects</p>
+</li>
+<li><p>Changes where protein halves touch &#61; Big effects</p>
+</li>
+<li><p>Changes at the protein&#39;s start &#61; Big effects</p>
+</li>
+</ul>
+<p><strong>For G∞</strong> &#40;gene expression with lots of sugar&#41;:</p>
+<ul>
+<li><p>Changes near the sugar-binding pocket &#61; Big effects</p>
+</li>
+<li><p>~3.5&#37; of changes dropped it more than 5-fold</p>
+</li>
+</ul>
+<hr />
+<h2 id="the_machine_learning_part"><a href="#the_machine_learning_part" class="header-anchor">The Machine Learning Part 🤖</a></h2>
+<p>They built an AI brain &#40;called a &quot;deep neural network&quot;&#41; to:</p>
+<ul>
+<li><p>Learn patterns from their data</p>
+</li>
+<li><p>Predict how changes they DIDN&#39;T test would work</p>
+</li>
+<li><p>Fill in missing information</p>
+</li>
+</ul>
+<p><strong>How Well Did It Work?</strong></p>
+<ul>
+<li><p>Pretty good for single changes&#33;</p>
+</li>
+<li><p>Got less accurate for proteins with many changes</p>
+</li>
+<li><p>But still useful for filling gaps in their map</p>
+</li>
+</ul>
+<hr />
+<h2 id="why_should_anyone_care"><a href="#why_should_anyone_care" class="header-anchor">Why Should Anyone Care? 🤔</a></h2>
+<h3 id="for_understanding_life"><a href="#for_understanding_life" class="header-anchor">For Understanding Life:</a></h3>
+<ul>
+<li><p>Shows how evolution can create totally new protein behaviors quickly</p>
+</li>
+<li><p>Explains why some mutations matter and others don&#39;t</p>
+</li>
+<li><p>Reveals that proteins are more &quot;hackable&quot; than we thought</p>
+</li>
+</ul>
+<h3 id="for_engineering"><a href="#for_engineering" class="header-anchor">For Engineering:</a></h3>
+<ul>
+<li><p>Want to design new biosensors? Now we have a blueprint&#33;</p>
+</li>
+<li><p>Need a protein that responds to different signals? Here&#39;s a starting point&#33;</p>
+</li>
+<li><p>Want to make medicines that target specific proteins? This helps&#33;</p>
+</li>
+</ul>
+<h3 id="the_philosophy"><a href="#the_philosophy" class="header-anchor">The Philosophy:</a></h3>
+<p>Old idea: &quot;Proteins work through a specific chain of movements, like dominoes falling&quot;</p>
+<p>New idea from this paper: &quot;Proteins work through a distributed energy balance, like a trampoline where any push affects the whole thing&quot;</p>
+<hr />
+<h2 id="the_technical_innovation"><a href="#the_technical_innovation" class="header-anchor">The Technical Innovation 🔧</a></h2>
+<p>They invented a NEW WAY to measure dose-response curves for thousands of proteins at once:</p>
+<ul>
+<li><p>Old way: Test each protein one-by-one &#40;slow&#33;&#41;</p>
+</li>
+<li><p>New way: Test 100,000 at once using DNA barcodes and bacterial fitness</p>
+</li>
+<li><p>This makes research 100,000× faster&#33;</p>
+</li>
+</ul>
+<hr />
+<h2 id="the_surprise_ending"><a href="#the_surprise_ending" class="header-anchor">The Surprise Ending 🎭</a></h2>
+<p>Remember those band-stop proteins that no one had ever seen before?</p>
+<p><strong>They&#39;re made from nearly invisible changes&#33;</strong></p>
+<ul>
+<li><p>Each change alone: &quot;Meh, whatever&quot;</p>
+</li>
+<li><p>Two changes together: &quot;WHOA, WHAT IS THAT?&#33;&quot;</p>
+</li>
+</ul>
+<p>This means:</p>
+<ul>
+<li><p>Evolution can create wild new functions from tiny tweaks</p>
+</li>
+<li><p>We can&#39;t predict everything from looking at parts alone</p>
+</li>
+<li><p>Biology is full of hidden surprises waiting to be combined</p>
+</li>
+</ul>
+<hr />
+<h2 id="the_bottom_line"><a href="#the_bottom_line" class="header-anchor">The Bottom Line 🎯</a></h2>
+<p><strong>What They Did:</strong> Created and tested ~100,000 different versions of a protein that acts like a molecular switch</p>
+<p><strong>What They Found:</strong></p>
+<ol>
+<li><p>Most effects are predictable and add up simply</p>
+</li>
+<li><p>BUT... combinations can create totally unexpected behaviors</p>
+</li>
+<li><p>New protein functions can emerge from &quot;silent&quot; changes</p>
+</li>
+</ol>
+<p><strong>Why It Matters:</strong> </p>
+<ul>
+<li><p>Shows us how to engineer new proteins</p>
+</li>
+<li><p>Explains how evolution creates innovation</p>
+</li>
+<li><p>Reveals that proteins are more flexible and &quot;surpriseable&quot; than we thought&#33;</p>
+</li>
+</ul>
+<p><strong>The Big Idea:</strong> Life is like LEGO bricks - most combinations are predictable, but sometimes you accidentally build a spaceship when you were just trying to make a taller tower&#33; 🚀</p>
+<hr />
+<h2 id="fun_facts"><a href="#fun_facts" class="header-anchor">Fun Facts 🌟</a></h2>
+<ul>
+<li><p>They grew bacteria for <strong>~10 generations</strong> &#40;imagine 10 generations of your family all growing up in a few hours&#33;&#41;</p>
+</li>
+<li><p>Used <strong>1.5 BILLION DNA sequencing reads</strong> to track everything</p>
+</li>
+<li><p>The protein they studied is found in E. coli bacteria &#40;the ones in your gut&#33;&#41;</p>
+</li>
+<li><p>This same protein is what scientists have used for decades as a tool - now we know SO much more about it&#33;</p>
+</li>
+</ul>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: October 18, 2025.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>
