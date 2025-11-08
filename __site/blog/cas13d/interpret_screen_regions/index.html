@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Cas13d Target RNA Binding: Proximal vs Distal Regions</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="cas13d_target_rna_binding_proximal_vs_distal_regions"><a href="#cas13d_target_rna_binding_proximal_vs_distal_regions" class="header-anchor">Cas13d Target RNA Binding: Proximal vs Distal Regions</a></h1>
+<h2 id="data_structure_overview"><a href="#data_structure_overview" class="header-anchor">Data Structure Overview</a></h2>
+<p><strong>Note:</strong> Analyzing your actual CSV data reveals variable total lengths &#40;not all 75nt&#41;.</p>
+<p><strong>Constant Prefix &#40;30nt&#41;:</strong></p>
+<pre><code class="language-julia">GGGAATGGATCCACATCTACGAATTCGTAC
+Position: 1-30</code></pre>
+<p><strong>Variable Region Structure:</strong></p>
+<pre><code class="language-julia">&#91;5&#39;-PFS: 3nt&#93; &#43; &#91;Target: ~22nt&#93; &#43; &#91;3&#39;-PFS: variable&#93;</code></pre>
+<p><strong>Constant Suffix &#40;21nt&#41;:</strong></p>
+<pre><code class="language-julia">CGAGATCGGAAGAGCACACGT
+Position: Variable &#40;last 21nt of each sequence&#41;</code></pre>
+<p><strong>Full Structure:</strong></p>
+<pre><code class="language-julia">&#91;30nt Prefix&#93; &#43; &#91;3nt 5&#39;-PFS&#93; &#43; &#91;~22nt Target&#93; &#43; &#91;Variable 3&#39;-PFS&#93; &#43; &#91;21nt Suffix&#93;
+Total length varies: 73-77nt</code></pre>
+<h3 id="example_breakdown_row_5"><a href="#example_breakdown_row_5" class="header-anchor">Example Breakdown &#40;Row 5&#41;:</a></h3>
+<pre><code class="language-julia">GGGAATGGATCCACATCTACGAATTCGTAC GCATAGAGAGGTTATCCGCTTC ACCGAGATCGGAAGAGCACACGT
+&#91;--------30nt Prefix----------&#93; &#91;-----22nt Target-------&#93; &#91;------25nt Suffix--------&#93;
+                                 |3nt|----19nt----|                  
+                                 PFS    Target core</code></pre>
+<hr />
+<h2 id="region_definitions"><a href="#region_definitions" class="header-anchor">Region Definitions</a></h2>
+<table><tr><th align="right">Region</th><th align="right">Position in 22nt Target</th><th align="right">Position in Full Sequence</th><th align="right">Length</th></tr><tr><td align="right"><strong>Proximal</strong></td><td align="right">1-11</td><td align="right">31-41</td><td align="right">11 nt</td></tr><tr><td align="right"><strong>Distal</strong></td><td align="right">12-22</td><td align="right">42-52</td><td align="right">11 nt</td></tr></table>
+<h3 id="example_row_1"><a href="#example_row_1" class="header-anchor">Example &#40;Row 1&#41;:</a></h3>
+<pre><code class="language-julia">Full sequence:
+GGGAATGGATCCACATCTACGAATTCGTACGCATAGAGAGGTTATCCGCTTCACCGAGATCGGAAGAGCACACGT
+
+Structure:
+&#91;-----Prefix &#40;1-30&#41;-----&#93;&#91;--Proximal &#40;31-41&#41;--&#93;&#91;--Distal &#40;42-52&#41;--&#93;&#91;--Suffix &#40;53-75&#41;--&#93;
+GGGAATGGATCCACATCTACGAATTCGTAC GCATAGAGAGG            TTATCCGCTTC         ACCGAGATCGGAAGAGCACACGT</code></pre>
+<hr />
+<h2 id="key_findings_effects_on_cas13d_activity"><a href="#key_findings_effects_on_cas13d_activity" class="header-anchor">Key Findings: Effects on Cas13d Activity</a></h2>
+<h3 id="distal_region_12-22_-_recognition_seed_region"><a href="#distal_region_12-22_-_recognition_seed_region" class="header-anchor"><ol>
+<li><p><strong>Distal Region &#40;12-22&#41; - Recognition &quot;Seed&quot; Region</strong></p>
+</li>
+</ol>
+</a></h3>
+<table><tr><th align="right">Factor</th><th align="right">Effect on Binding</th><th align="right">Effect on Cleavage</th></tr><tr><td align="right">Mismatches</td><td align="right"><strong>Strong NEGATIVE ⬇️⬇️</strong></td><td align="right">NEGATIVE ⬇️</td></tr><tr><td align="right">RNA secondary structure</td><td align="right"><strong>Strong NEGATIVE ⬇️⬇️</strong></td><td align="right">NEGATIVE ⬇️</td></tr></table>
+<p><strong>Mechanism:</strong></p>
+<ul>
+<li><p>Cas13d <strong>initiates target recognition</strong> at the distal end first</p>
+</li>
+<li><p>Acts as internal &quot;seed&quot; region &#40;analogous to PAM-adjacent seed in Cas9&#41;</p>
+</li>
+<li><p>Must remain <strong>partially unstructured</strong> for efficient binding</p>
+</li>
+<li><p>More intramolecular base pairing → Lower binding affinity</p>
+</li>
+</ul>
+<h3 id="ol_start2_proximal_region_1-11_-_nuclease_activation_region"><a href="#ol_start2_proximal_region_1-11_-_nuclease_activation_region" class="header-anchor"><ol start="2">
+<li><p><strong>Proximal Region &#40;1-11&#41; - Nuclease Activation Region</strong></p>
+</li>
+</ol>
+</a></h3>
+<table><tr><th align="right">Factor</th><th align="right">Effect on Binding</th><th align="right">Effect on Cleavage</th></tr><tr><td align="right">Mismatches</td><td align="right"><strong>No effect ➡️</strong></td><td align="right">NEGATIVE ⬇️</td></tr><tr><td align="right">RNA secondary structure</td><td align="right"><strong>No effect ➡️</strong></td><td align="right">NEGATIVE ⬇️</td></tr></table>
+<p><strong>Mechanism:</strong></p>
+<ul>
+<li><p>Critical for <strong>activating HEPN nuclease domains</strong></p>
+</li>
+<li><p>Mutations here allow binding but prevent cleavage</p>
+</li>
+<li><p>Interacts with Helical-1 domain for nuclease activation</p>
+</li>
+</ul>
+<hr />
+<h2 id="summary_comparison"><a href="#summary_comparison" class="header-anchor">Summary Comparison</a></h2>
+<table><tr><th align="right">Aspect</th><th align="right">Proximal &#40;1-11&#41;</th><th align="right">Distal &#40;12-22&#41;</th></tr><tr><td align="right"><strong>Primary Role</strong></td><td align="right">Nuclease activation</td><td align="right">Target recognition/binding</td></tr><tr><td align="right"><strong>Binding Sensitivity</strong></td><td align="right">Low &#40;tolerant&#41;</td><td align="right">High &#40;sensitive&#41;</td></tr><tr><td align="right"><strong>Cleavage Sensitivity</strong></td><td align="right">High</td><td align="right">High</td></tr><tr><td align="right"><strong>Structure Tolerance</strong></td><td align="right">High</td><td align="right">Low</td></tr><tr><td align="right"><strong>Mismatch Tolerance</strong></td><td align="right">High for binding</td><td align="right">Low</td></tr></table>
+<hr />
+<h2 id="interpretation_for_csv_data"><a href="#interpretation_for_csv_data" class="header-anchor">Interpretation for CSV Data</a></h2>
+<p>Your CSV contains:</p>
+<ol>
+<li><p><strong>Sequence</strong> &#40;75nt total&#41;</p>
+</li>
+<li><p><strong>Structure prediction</strong> &#40;dot-bracket notation&#41;</p>
+</li>
+<li><p><strong>MFE</strong> &#40;Minimum Free Energy in kcal/mol&#41;</p>
+</li>
+<li><p><strong>Binding affinity</strong> &#40;normalized ΔABA value&#41;</p>
+</li>
+</ol>
+<h3 id="structure_column_interpretation"><a href="#structure_column_interpretation" class="header-anchor">Structure Column Interpretation:</a></h3>
+<ul>
+<li><p><code>.</code> &#61; unpaired nucleotide</p>
+</li>
+<li><p><code>&#40;</code> and <code>&#41;</code> &#61; base paired nucleotides</p>
+</li>
+</ul>
+<p><strong>Key principle:</strong></p>
+<ul>
+<li><p><strong>More parentheses in positions 42-52 &#40;distal&#41;</strong> → <strong>Lower binding affinity</strong></p>
+</li>
+<li><p>Parentheses in positions 31-41 &#40;proximal&#41; → No effect on binding</p>
+</li>
+</ul>
+<h3 id="example"><a href="#example" class="header-anchor">Example:</a></h3>
+<pre><code class="language-julia">Sequence: ...GCATAGAGAGGTTATCCGCTTC...
+Structure: ...&#40;&#40;&#40;&#40;&#40;&#40;...&#40;&#40;&#40;&#40;&#40;&#40;........&#41;&#41;..&#41;&#41;&#41;&#41;..&#41;&#41;..&#41;&#41;&#41;&#41;...
+                    ↑                    ↑
+                Proximal            Distal &#40;many pairs&#41;
+                &#40;no effect&#41;         &#40;NEGATIVE effect&#41;</code></pre>
+<hr />
+<h2 id="practical_applications"><a href="#practical_applications" class="header-anchor">Practical Applications</a></h2>
+<h3 id="for_binding_prediction"><a href="#for_binding_prediction" class="header-anchor">For Binding Prediction:</a></h3>
+<ol>
+<li><p><strong>Focus on distal region &#40;positions 42-52&#41;</strong> in your sequences</p>
+</li>
+<li><p>Count base pairs in structure prediction for this region</p>
+</li>
+<li><p>More structure → Expect lower binding affinity</p>
+</li>
+</ol>
+<h3 id="for_crispr_design"><a href="#for_crispr_design" class="header-anchor">For CRISPR Design:</a></h3>
+<ol>
+<li><p><strong>Avoid structured distal regions</strong> for high-affinity binding</p>
+</li>
+<li><p><strong>Use proximal mismatches</strong> to reduce cleavage while maintaining binding</p>
+</li>
+<li><p><strong>Use distal mismatches</strong> to discriminate between variants &#40;SNP detection&#41;</p>
+</li>
+</ol>
+<hr />
+<h2 id="detailed_quantitative_results"><a href="#detailed_quantitative_results" class="header-anchor">Detailed Quantitative Results</a></h2>
+<h3 id="position-specific_mismatch_effects"><a href="#position-specific_mismatch_effects" class="header-anchor"><ol>
+<li><p>Position-Specific Mismatch Effects</p>
+</li>
+</ol>
+</a></h3>
+<table><tr><th align="right">Position in Target</th><th align="right">Position in Full Sequence</th><th align="right">Effect on Binding &#40;ΔABA&#41;</th><th align="right">Notes</th></tr><tr><td align="right">1-12</td><td align="right">31-42</td><td align="right"><strong>Minimal/No effect</strong></td><td align="right">Tolerates single mismatches</td></tr><tr><td align="right">13-22</td><td align="right">43-52</td><td align="right"><strong>Significant decrease</strong></td><td align="right">Highly sensitive to mismatches</td></tr></table>
+<p><strong>Specific Examples:</strong></p>
+<ul>
+<li><p><strong>Position 21 &#40;Full seq: 51&#41;</strong></p>
+<ul>
+<li><p>C→U substitution: Similar to matched target &#40;G-U wobble tolerated&#41;</p>
+</li>
+<li><p>C→G substitution: Binding virtually undetectable &#40;~3&#43; fold decrease&#41;</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="ol_start2_pfs_flanking_sequence_effects_-_quantified"><a href="#ol_start2_pfs_flanking_sequence_effects_-_quantified" class="header-anchor"><ol start="2">
+<li><p>PFS &#40;Flanking Sequence&#41; Effects - Quantified</p>
+</li>
+</ol>
+</a></h3>
+<blockquote>
+<p><strong>PFS &#61; Protospacer Flanking Sequence:</strong> The nucleotides immediately adjacent to &#40;flanking&#41; the target sequence. In your data, these are the 3 nucleotides before and after the 22nt variable target region. Some CRISPR enzymes require specific PFS sequences for recognition, but Cas13d does not have a strong PFS requirement.</p>
+</blockquote>
+<blockquote>
+<p><strong>Note on &quot;Fold Change&quot;:</strong> Higher fold change &#61; <strong>stronger binding</strong> &#61; <strong>lower Kd</strong> &#61; <strong>higher affinity</strong>. </p>
+<ul>
+<li><p>&quot;2-fold stronger&quot; means the binding affinity is 2× better &#40;Kd is 2× lower&#41;</p>
+</li>
+<li><p>&quot;3-fold decrease&quot; means binding affinity is 3× worse &#40;Kd is 3× higher&#41;</p>
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>Note on PFS mechanism:</strong> The 3nt PFS sequences &#40;at positions 28-30 for 5&#39;-PFS, 53-55 for 3&#39;-PFS&#41; affect RNA secondary structure, which then exposes or occludes nucleotides in the target region.</p>
+</blockquote>
+<table><tr><th align="right">PFS Type</th><th align="right">PFS Position</th><th align="right">Example</th><th align="right">Fold Change</th><th align="right">Mechanism</th><th align="right">Target Positions Exposed/Affected</th></tr><tr><td align="right"><strong>5&#39;-PFS</strong></td><td align="right">28-30</td><td align="right">GUA vs UAA</td><td align="right"><strong>~2-fold</strong> stronger &#40;GUA&#41;</td><td align="right">GUA forms stem with constant region, exposing target positions 19-22</td><td align="right">Target: 19-22 &#40;Full seq: 49-52&#41;</td></tr><tr><td align="right"><strong>3&#39;-PFS</strong></td><td align="right">53-55</td><td align="right">GCU vs UGG</td><td align="right"><strong>~2-fold</strong> stronger &#40;GCU&#41;</td><td align="right">GCU forms stem with constant region, exposing target positions 14-20</td><td align="right">Target: 14-20 &#40;Full seq: 44-50&#41;</td></tr><tr><td align="right"><strong>Overall PFS range</strong></td><td align="right">28-30 &amp; 53-55</td><td align="right">All combinations</td><td align="right"><strong>~3-fold</strong> difference max</td><td align="right">Weak direct PFS preference; effect mainly through structure</td><td align="right">N/A</td></tr></table>
+<h3 id="ol_start3_rna_secondary_structure_impact_statistical"><a href="#ol_start3_rna_secondary_structure_impact_statistical" class="header-anchor"><ol start="3">
+<li><p>RNA Secondary Structure Impact &#40;Statistical&#41;</p>
+</li>
+</ol>
+</a></h3>
+<p><strong>Distal Region &#40;12-22, Full seq: 42-52&#41;:</strong></p>
+<table><tr><th align="right"># Base Pairs in Distal</th><th align="right">Effect on Binding</th><th align="right">Statistical Significance</th></tr><tr><td align="right">0-3 pairs</td><td align="right">High binding</td><td align="right">Baseline</td></tr><tr><td align="right">4-6 pairs</td><td align="right">Moderate decrease</td><td align="right">p &lt; 0.001</td></tr><tr><td align="right">7-9 pairs</td><td align="right">Strong decrease</td><td align="right">p &lt; 1e-08</td></tr><tr><td align="right">10&#43; pairs</td><td align="right">Very low/undetectable</td><td align="right">p &lt; 1e-22</td></tr></table>
+<p><strong>Proximal Region &#40;1-11, Full seq: 31-41&#41;:</strong></p>
+<ul>
+<li><p>No significant correlation between base pairs and binding &#40;p &gt; 0.05&#41;</p>
+</li>
+</ul>
+<h3 id="ol_start4_insertions_deletions_effects"><a href="#ol_start4_insertions_deletions_effects" class="header-anchor"><ol start="4">
+<li><p>Insertions &amp; Deletions Effects</p>
+</li>
+</ol>
+</a></h3>
+<table><tr><th align="right">Location</th><th align="right">Position in Target</th><th align="right">Position in Full Seq</th><th align="right">Effect on Binding</th></tr><tr><td align="right"><strong>Proximal</strong></td><td align="right">1-11</td><td align="right">31-41</td><td align="right">High affinity retained</td></tr><tr><td align="right"><strong>Distal</strong></td><td align="right">12-22</td><td align="right">42-52</td><td align="right">Not tolerated &#40;strong decrease&#41;</td></tr></table>
+<p><strong>Specific Example &#40;from paper&#41;:</strong></p>
+<ul>
+<li><p><strong>C insertion between 19-20</strong> &#40;Full seq: 49-50&#41;: Reduces base pairs at 13-20 → <strong>Increases</strong> ΔABA vs matched target</p>
+</li>
+<li><p><strong>G insertion at same position</strong>: Creates new base pairs → Undetectably low binding</p>
+</li>
+</ul>
+<h3 id="ol_start5_binding_kinetics_bli_measurements"><a href="#ol_start5_binding_kinetics_bli_measurements" class="header-anchor"><ol start="5">
+<li><p>Binding Kinetics &#40;BLI Measurements&#41;</p>
+</li>
+</ol>
+</a></h3>
+<table><tr><th align="right">Parameter</th><th align="right">Low-affinity PFS</th><th align="right">High-affinity PFS</th><th align="right">Interpretation</th></tr><tr><td align="right"><strong>ka &#40;on-rate&#41;</strong></td><td align="right">Slower</td><td align="right">Faster</td><td align="right">Structure affects initial recognition</td></tr><tr><td align="right"><strong>kd &#40;off-rate&#41;</strong></td><td align="right">Similar</td><td align="right">Similar</td><td align="right">Duplex stability similar once formed</td></tr><tr><td align="right"><strong>Kd &#40;affinity&#41;</strong></td><td align="right">Higher &#40;weaker&#41;</td><td align="right">Lower &#40;stronger&#41;</td><td align="right">Dominated by on-rate differences</td></tr></table>
+<h3 id="ol_start6_double_mismatch_effects"><a href="#ol_start6_double_mismatch_effects" class="header-anchor"><ol start="6">
+<li><p>Double Mismatch Effects</p>
+</li>
+</ol>
+</a></h3>
+<table><tr><th align="right">Mismatch Locations</th><th align="right">Effect on Binding</th><th align="right">Notes</th></tr><tr><td align="right">Both in proximal &#40;1-12&#41;</td><td align="right">Minimal effect</td><td align="right">Dark blue in Fig 3C</td></tr><tr><td align="right">One or both in distal &#40;13-22&#41;</td><td align="right">Strong decrease</td><td align="right">Yellow/red in Fig 3C</td></tr><tr><td align="right"><strong>C21U &#43; A20G</strong></td><td align="right">Undetectable</td><td align="right">Creates base pairs at 19-21 &#40;distal&#41;</td></tr><tr><td align="right"><strong>C21U &#43; any proximal</strong></td><td align="right">Similar to matched</td><td align="right">Structure remains favorable</td></tr></table>
+<h3 id="ol_start7_sars-cov-2_variant_discrimination"><a href="#ol_start7_sars-cov-2_variant_discrimination" class="header-anchor"><ol start="7">
+<li><p>SARS-CoV-2 Variant Discrimination</p>
+</li>
+</ol>
+</a></h3>
+<table><tr><th align="right">crRNA Design</th><th align="right">SNP Position</th><th align="right">Position Type</th><th align="right">Binding Difference</th><th align="right">Cleavage Discrimination</th></tr><tr><td align="right"><strong>crRNA-1</strong></td><td align="right">17 &#40;distal&#41;</td><td align="right">Full seq: 47</td><td align="right">~5-fold weaker for variant</td><td align="right">~5-fold reduction</td></tr><tr><td align="right"><strong>crRNA-2</strong></td><td align="right">1 &#40;proximal&#41;</td><td align="right">Full seq: 31</td><td align="right">Comparable binding</td><td align="right">~5-fold reduction</td></tr></table>
+<p><strong>Key insight:</strong> Both designs discriminate variants, but through different mechanisms &#40;binding vs cleavage&#41;.</p>
+<h2 id="model_performance"><a href="#model_performance" class="header-anchor">Model Performance</a></h2>
+<p>The paper developed 6 predictive models. <strong>Model VI</strong> performed best:</p>
+<ul>
+<li><p><strong>Pearson&#39;s r &#61; 0.76</strong></p>
+</li>
+<li><p>Combines: intramolecular base pairing &#43; relative encoding &#43; MFE</p>
+</li>
+</ul>
+<h3 id="model_components_performance"><a href="#model_components_performance" class="header-anchor">Model Components Performance:</a></h3>
+<table><tr><th align="right">Model</th><th align="right">Components</th><th align="right">Pearson&#39;s r</th><th align="right">Notes</th></tr><tr><td align="right">I</td><td align="right">Base pairing only</td><td align="right">0.51</td><td align="right">Structure matters but insufficient</td></tr><tr><td align="right">II</td><td align="right">Base pairing &#43; MFE</td><td align="right">~0.51</td><td align="right">MFE adds minimal improvement</td></tr><tr><td align="right">III</td><td align="right">Relative encoding only</td><td align="right">0.65</td><td align="right">Better than structure alone</td></tr><tr><td align="right">IV</td><td align="right">Relative encoding &#43; MFE</td><td align="right">~0.65</td><td align="right">MFE minor improvement</td></tr><tr><td align="right">V</td><td align="right">Base pairing &#43; Relative encoding</td><td align="right">0.75</td><td align="right">Best combination</td></tr><tr><td align="right">VI</td><td align="right">All three</td><td align="right"><strong>0.76</strong></td><td align="right">Marginal improvement from MFE</td></tr><tr><td align="right">ML &#40;CNN&#41;</td><td align="right">Machine learning</td><td align="right"><strong>0.77</strong></td><td align="right">Only slightly better</td></tr></table>
+<p><strong>Key features from Model VI:</strong></p>
+<ul>
+<li><p>Distal base pairing penalty: <strong>HIGH</strong></p>
+</li>
+<li><p>Proximal base pairing penalty: <strong>LOW</strong> </p>
+</li>
+<li><p>Distal mismatch penalty: <strong>HIGH</strong> &#40;positions 13-22&#41;</p>
+</li>
+<li><p>Proximal mismatch penalty: <strong>MINIMAL</strong> &#40;positions 1-12&#41;</p>
+</li>
+</ul>
+<hr />
+<h2 id="reference"><a href="#reference" class="header-anchor">Reference</a></h2>
+<p><strong>Paper:</strong> Kuo et al. &#40;2024&#41; &quot;Massively parallel profiling of RNA-targeting CRISPR-Cas13d&quot;   <em>Nature Communications</em> 15, 498   DOI: 10.1038/s41467-024-44738-w</p>
+<p><strong>Key Innovation:</strong> RNA-CHAMP platform - massively parallel profiling of &gt;10,000 RNA variants to understand Cas13d binding specificity</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: November 08, 2025.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>
