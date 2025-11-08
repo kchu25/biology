@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>A Compendium of RNA-Binding Motifs for Decoding Gene Regulation</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="a_compendium_of_rna-binding_motifs_for_decoding_gene_regulation"><a href="#a_compendium_of_rna-binding_motifs_for_decoding_gene_regulation" class="header-anchor">A Compendium of RNA-Binding Motifs for Decoding Gene Regulation</a></h1>
+<p><strong>Ray et al., Nature &#40;2013&#41;</strong></p>
+<h2 id="the_big_picture"><a href="#the_big_picture" class="header-anchor">The Big Picture</a></h2>
+<p>This paper is basically a massive catalog of how RNA-binding proteins &#40;RBPs&#41; recognize and grab onto RNA molecules. Think of RBPs as molecular readers that scan RNA sequences looking for specific &quot;words&quot; or patterns. The researchers figured out what those patterns are for 205 different RBPs from 24 different organisms.</p>
+<h2 id="what_they_did_the_rnacompete_method"><a href="#what_they_did_the_rnacompete_method" class="header-anchor">What They Did: The RNAcompete Method</a></h2>
+<p>The team used a technique called <strong>RNAcompete</strong> - a high-throughput in vitro binding assay. Here&#39;s how it works:</p>
+<blockquote>
+<p><strong>CRITICAL: RNAcompete is entirely IN VITRO</strong></p>
+<p>This is a cell-free, test-tube experiment with purified components:</p>
+<ul>
+<li><p>Recombinant RBP is produced in E. coli and purified with a GST tag</p>
+</li>
+<li><p>Synthetic RNA pool &#40;~240,000 designed sequences&#41; is chemically synthesized</p>
+</li>
+<li><p>Protein and RNA are mixed in a buffer and allowed to bind</p>
+</li>
+<li><p>Protein-RNA complexes are pulled down via the GST tag</p>
+</li>
+<li><p>Bound RNAs are extracted, labeled, and measured on a microarray</p>
+</li>
+</ul>
+<p><strong>No cells, no cellular context, no chromatin, no competing factors</strong> - just purified protein and naked RNA.</p>
+<p><strong>Strengths:</strong></p>
+<ul>
+<li><p>Measures &quot;intrinsic binding preference&quot; without confounding cellular factors</p>
+</li>
+<li><p>Systematic, reproducible, high-throughput across any organism</p>
+</li>
+<li><p>Can isolate the direct protein-RNA interaction</p>
+</li>
+</ul>
+<p><strong>Limitations:</strong></p>
+<ul>
+<li><p>Doesn&#39;t capture cellular context &#40;RNA secondary structure in vivo, competing RBPs, RNA modifications, accessibility, localization&#41;</p>
+</li>
+<li><p>RNA sequences are designed to be mostly unstructured/single-stranded</p>
+</li>
+<li><p>Binding affinity in vitro ≠ functional binding in cells</p>
+</li>
+</ul>
+<p>The paper validates that in vitro preferences generally correlate well with in vivo binding data &#40;from CLIP experiments&#41;, but they&#39;re not identical. These are &quot;intrinsic&quot; preferences that may be modulated by cellular context.</p>
+</blockquote>
+<h3 id="the_rna_pool"><a href="#the_rna_pool" class="header-anchor">The RNA Pool</a></h3>
+<ul>
+<li><p>Custom microarray with ~240,000 different RNA sequences &#40;30-40 nucleotides long&#41;</p>
+</li>
+<li><p><strong>Split into two halves: Set A and Set B</strong> &#40;~120,000 sequences each&#41;</p>
+<ul>
+<li><p>Both sets have similar k-mer coverage &#40;each contains most possible 7-mers&#41;</p>
+</li>
+<li><p>This creates built-in technical replicates for validation</p>
+</li>
+<li><p>If the binding preference is real, Set A and Set B should give highly correlated 7-mer scores</p>
+</li>
+</ul>
+</li>
+<li><p>Designed to cover all possible 7-mers comprehensively &#40;each 9-mer appears at least 16 times&#41;</p>
+</li>
+<li><p>The 2013 version used mostly unstructured RNA sequences</p>
+</li>
+</ul>
+<h3 id="the_binding_reaction"><a href="#the_binding_reaction" class="header-anchor">The Binding Reaction</a></h3>
+<ol>
+<li><p>Recombinant RBP &#40;tagged with epitope&#41; is incubated with the RNA pool</p>
+</li>
+<li><p>Single selection cycle - protein binds to preferred sequences</p>
+</li>
+<li><p>Bound RNAs are eluted</p>
+</li>
+<li><p>The bound RNAs are hybridized to a microarray containing complementary DNA probes</p>
+</li>
+<li><p>Fluorescence intensity measured for each probe</p>
+</li>
+</ol>
+<h3 id="from_raw_data_to_motifs"><a href="#from_raw_data_to_motifs" class="header-anchor">From Raw Data to Motifs</a></h3>
+<p><strong>Step 1: Normalization</strong></p>
+<ul>
+<li><p>Raw probe intensities are normalized using robust z-transformation</p>
+</li>
+<li><p>Each probe gets a Z-score &#40;standard deviations above median&#41;</p>
+</li>
+<li><p>Higher Z-scores &#61; stronger binding preference</p>
+</li>
+</ul>
+<p><strong>Step 2: Calculate 7-mer Scores</strong></p>
+<ul>
+<li><p>For all 16,384 possible 7-mers &#40;4^7&#41;, calculate enrichment</p>
+</li>
+<li><p><strong>Z-scores</strong>: Arbitrary range, higher &#61; stronger binding</p>
+</li>
+<li><p><strong>E-scores</strong>: Normalized to range -0.5 to &#43;0.5</p>
+<ul>
+<li><p>E-scores ≥ 0.45 considered &quot;strongly bound&quot;</p>
+</li>
+<li><p>E &#61; &#40;current<em>score - min</em>score&#41; / &#40;max<em>score - min</em>score&#41;</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>Step 3: Motif Derivation</strong></p>
+<ul>
+<li><p>Select the <strong>top 10 7-mers</strong> with the highest scores</p>
+</li>
+<li><p>Align these 10 sequences using pairwise gapless alignments</p>
+</li>
+<li><p>Build a Position Weight Matrix &#40;PWM&#41; from the alignment</p>
+</li>
+<li><p>That PWM is the final motif &#40;usually 5-7 nucleotides, but can vary&#41;</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>Important: Each PWM is built from only 10 sequences</strong></p>
+<p>This is a remarkably aggressive data reduction: from ~240,000 RNA sequences and 16,384 scored 7-mers down to just 10 sequences that define the final motif. The assumption is that if a protein has a clear binding preference, those top 10 7-mers should all be variations of the same core motif and align well together. If you need more than 10 sequences to see a pattern, it likely indicates a weak or non-specific binding preference.</p>
+<p>While efficient and simple, this approach discards a lot of potentially useful information. More sophisticated methods developed later &#40;RNAcontext, SSMART, DeepBind&#41; use all probe intensities rather than just the top 10 hits.</p>
+</blockquote>
+<blockquote>
+<p><strong>On the choice of parameters &#40;top 10 7-mers&#41;:</strong></p>
+<p>According to the methods paper &#40;Ray et al. 2017, Methods&#41;: <em>&quot;We initially evaluated several strategies for deriving motifs from the RNAcompete data, and concluded that a simple 7-mer alignment provides a surprisingly good overall outcome.&quot;</em></p>
+<p>The choice of <strong>7-mers</strong> is justified because:</p>
+<ul>
+<li><p>They&#39;re specific enough to discriminate individual binding sites within typical mRNAs</p>
+</li>
+<li><p>Each 7-mer appears at least 155 times in Set A and Set B, providing robust statistics</p>
+</li>
+<li><p>Anecdotally, the highest-scoring 7-mers matched known binding sites for well-studied proteins</p>
+</li>
+<li><p>~90&#37; of RBPs recognize 5-7 nucleotide motifs, making 7-mers an optimal resolution</p>
+</li>
+</ul>
+<p>The choice of <strong>top 10</strong> appears to be empirically determined - they tested several motif derivation strategies and found that aligning the top 10 scoring 7-mers gave the best overall results. This is essentially a heuristic that balances signal &#40;capturing the core binding preference&#41; with noise &#40;avoiding spurious low-scoring 7-mers&#41;.</p>
+<p><strong>Critical Note on Method Transparency:</strong> The paper does NOT provide specific details about:</p>
+<ul>
+<li><p>Which alternative strategies were tested &#40;e.g., top 5 vs top 20? different k-mer lengths? other alignment methods?&#41;</p>
+</li>
+<li><p>What statistical criteria or validation metrics were used to compare approaches</p>
+</li>
+<li><p>Whether systematic parameter sweeps were performed</p>
+</li>
+<li><p>Why 10 is optimal versus other choices</p>
+</li>
+</ul>
+<p>The justification is essentially pragmatic: &quot;we tried several things and this worked well on validation data.&quot; Later methods &#40;RNAcontext, SSMART, RCK, DeepBind&#41; have developed more sophisticated approaches that use all probe intensities and often outperform the simple top-10 7-mer heuristic. This is a common pattern in methods papers - practical choices that work get adopted without exhaustive optimization documentation.</p>
+</blockquote>
+<h3 id="quality_control"><a href="#quality_control" class="header-anchor">Quality Control</a></h3>
+<p>Successful experiments show:</p>
+<ul>
+<li><p>Maximum Z-scores &gt; 5</p>
+</li>
+<li><p><strong>High correlation between Set A and Set B scores</strong> </p>
+<ul>
+<li><p>Since Set A and Set B are independent RNA pools with similar composition, they act as technical replicates</p>
+</li>
+<li><p>If the protein has a real binding preference, the 7-mer rankings should be highly correlated between both sets</p>
+</li>
+<li><p>Low correlation suggests technical issues or weak/non-specific binding</p>
+</li>
+</ul>
+</li>
+<li><p>Clear, low-entropy motif in top 10 7-mers</p>
+</li>
+</ul>
+<h3 id="key_findings"><a href="#key_findings" class="header-anchor">Key Findings</a></h3>
+<p><strong>1. Yes, 7-mers are Central</strong></p>
+<ul>
+<li><p>The analysis focuses on <strong>all possible 7-mer sequences</strong> &#40;16,384 combinations&#41;</p>
+</li>
+<li><p>~90&#37; of RBPs tested recognized 5-7 nucleotide-long sequence motifs</p>
+</li>
+<li><p>7-mers provide optimal resolution for detecting binding preferences</p>
+</li>
+<li><p>The final motif PWMs are built from the top 10 scoring 7-mers</p>
+</li>
+</ul>
+<p><strong>2. One Motif Per RBP</strong></p>
+<ul>
+<li><p>Each RBP gets <strong>one primary motif</strong> derived from the experiment</p>
+</li>
+<li><p>This motif is represented as a PWM &#40;Position Weight Matrix&#41;</p>
+</li>
+<li><p>The PWM captures sequence flexibility at each position</p>
+</li>
+<li><p>205 RBPs &#61; 205 motifs reported</p>
+</li>
+</ul>
+<p><strong>3. Evolutionary Conservation is Real</strong></p>
+<ul>
+<li><p>RNA-binding preferences are deeply conserved across evolution</p>
+</li>
+<li><p>If you know the sequence of an RBP&#39;s RNA-binding domain, you can often predict what RNA sequences it will recognize, even across different species</p>
+</li>
+<li><p>This is huge because it means you can make educated guesses about proteins that haven&#39;t been studied yet</p>
+</li>
+</ul>
+<p><strong>4. The In Vitro Data Works In Vivo</strong></p>
+<ul>
+<li><p>The motifs they identified in test tubes correlated well with actual RNA-binding data from living cells</p>
+</li>
+<li><p>This validates that their lab results are biologically relevant</p>
+</li>
+</ul>
+<p><strong>5. Functional Insights</strong></p>
+<ul>
+<li><p>They could link specific binding motifs to different types of gene regulation:</p>
+<ul>
+<li><p>Alternative splicing &#40;how genes are cut and pasted&#41;</p>
+</li>
+<li><p>mRNA stability &#40;how long messages stick around&#41;</p>
+</li>
+<li><p>mRNA localization &#40;where messages go in the cell&#41;</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>6. Disease Connections</strong></p>
+<ul>
+<li><p>The data helps explain how RBPs function in normal biology and disease</p>
+</li>
+<li><p>For example, they found connections to autism through changes in splicing patterns</p>
+</li>
+</ul>
+<h2 id="why_it_matters"><a href="#why_it_matters" class="header-anchor">Why It Matters</a></h2>
+<p>Before this study, we only had detailed information for a small fraction of RBPs. This paper:</p>
+<ul>
+<li><p>Created an unprecedented resource for the research community</p>
+</li>
+<li><p>Enables researchers to predict which genes are regulated by which RBPs</p>
+</li>
+<li><p>Provides a framework for understanding post-transcriptional regulation &#40;everything that happens after DNA is copied to RNA&#41;</p>
+</li>
+</ul>
+<h2 id="the_resource"><a href="#the_resource" class="header-anchor">The Resource</a></h2>
+<p>All the data is publicly available, including:</p>
+<ul>
+<li><p>Raw microarray data &#40;GEO accession GSE41235&#41;</p>
+</li>
+<li><p>Derived motifs and analysis results</p>
+</li>
+<li><p>Supplementary datasets with detailed analyses</p>
+</li>
+</ul>
+<h2 id="biological_context"><a href="#biological_context" class="header-anchor">Biological Context</a></h2>
+<p>RNA-binding proteins are master regulators that control:</p>
+<ul>
+<li><p>When and where proteins are made from RNA</p>
+</li>
+<li><p>Which versions of proteins are produced &#40;through splicing&#41;</p>
+</li>
+<li><p>How long RNA messages survive in the cell</p>
+</li>
+<li><p>Where in the cell those messages end up</p>
+</li>
+</ul>
+<p>Understanding their binding preferences is like getting the decoder ring for post-transcriptional gene regulation.</p>
+<h2 id="impact"><a href="#impact" class="header-anchor">Impact</a></h2>
+<p>This 2013 paper has been highly influential &#40;cited over 1,000 times&#41; because it provided:</p>
+<ul>
+<li><p>A systematic, unbiased approach to mapping RNA-protein interactions</p>
+</li>
+<li><p>A resource that researchers can query to understand their favorite genes</p>
+</li>
+<li><p>Methods that can be extended to study more proteins</p>
+</li>
+<li><p>Insights into how evolution has shaped gene regulation</p>
+</li>
+</ul>
+<p>The work essentially created a &quot;Rosetta Stone&quot; for translating RBP sequences into their RNA recognition preferences.</p>
+<hr />
+<h2 id="update_2025_methods_evolution"><a href="#update_2025_methods_evolution" class="header-anchor">Update: 2025 Methods Evolution</a></h2>
+<p>In their recent 2025 Nature Biotechnology paper, the same group significantly improved upon the original 2013 methodology:</p>
+<h3 id="what_changed_in_motif_derivation"><a href="#what_changed_in_motif_derivation" class="header-anchor">What Changed in Motif Derivation?</a></h3>
+<p><strong>IMPORTANT CLARIFICATION: The logos shown on their website and in publications are STILL derived from the top 10 7-mers method</strong>, not from JPLE.</p>
+<p>Here&#39;s what&#39;s actually going on:</p>
+<ol>
+<li><p><strong>The RNAcompete experimental assay is identical</strong> - still measuring 7-mer preferences</p>
+</li>
+<li><p><strong>The sequence logos displayed &#40;those PWMs&#41; are STILL built from the top 10 7-mers</strong>:</p>
+<ul>
+<li><p>This is confirmed in their 2017 Methods paper &#40;Ray et al., Methods&#41;</p>
+</li>
+<li><p>&quot;Logos derived from the top 10 7-mers&quot; appears repeatedly in their documentation</p>
+</li>
+<li><p>The logos on the RBPZoo website are generated this way</p>
+</li>
+</ul>
+</li>
+<li><p><strong>JPLE is something completely different</strong>:</p>
+<ul>
+<li><p>JPLE is NOT about deriving motifs from experimental data</p>
+</li>
+<li><p>JPLE is about <strong>predicting</strong> motifs for <strong>unmeasured</strong> proteins based on their amino acid sequences</p>
+</li>
+<li><p>It learns relationships between protein sequences &#40;amino acid 5-mers&#41; and RNA binding preferences &#40;7-mer scores&#41;</p>
+</li>
+<li><p>It uses the full 7-mer score vector &#40;all 16,384 values&#41; as input to machine learning, but the OUTPUT for visualization is still a PWM</p>
+</li>
+</ul>
+</li>
+<li><p><strong>So JPLE doesn&#39;t replace the &quot;top 10&quot; method</strong> - it supplements it:</p>
+<ul>
+<li><p>For the 379 <strong>measured</strong> RBPs: motifs are still derived from top 10 7-mers → PWM → logo</p>
+</li>
+<li><p>For the ~28,000 <strong>predicted</strong> RBPs: JPLE predicts their full 7-mer score profile, then they probably derive a motif from that predicted profile</p>
+</li>
+</ul>
+</li>
+</ol>
+<p><strong>You&#39;re absolutely right</strong> - JPLE is stuck with 7-mers &#40;as input to the machine learning&#41;, finds one motif per RBP, and is applied to amino acid sequences &#40;not RNA binding sites&#41;. The innovation is in protein-to-motif prediction, not in experimental motif derivation.</p>
+<p>The 2025 paper doesn&#39;t actually update how they extract motifs from RNAcompete data - they still use the same simple heuristic from 2013&#33;</p>
+<h3 id="why_this_matters"><a href="#why_this_matters" class="header-anchor">Why This Matters</a></h3>
+<p><strong>The key takeaway</strong>: The 2025 JPLE method is NOT an improvement in how they derive motifs from experimental data. It&#39;s a way to PREDICT motifs for proteins they haven&#39;t measured.</p>
+<ul>
+<li><p><strong>For measured RBPs</strong>: Still using the pragmatic &quot;top 10 7-mers&quot; heuristic from 2013</p>
+</li>
+<li><p><strong>For unmeasured RBPs</strong>: JPLE can predict what their 7-mer profile would look like based on amino acid sequence</p>
+</li>
+</ul>
+<p>So your observation is spot-on: they&#39;re still fundamentally stuck with 7-mers, still deriving one motif per protein, and the logos you see are still built from 10 sequences. JPLE is about scaling predictions across genomes, not about improving the quality of individual motif derivations.</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: November 08, 2025.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+  </body>
+</html>

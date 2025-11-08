@@ -3,7 +3,13 @@
 
 <url>
     <loc>https://kchu25.github.io/index.html</loc>
-    <lastmod>2025-10-14</lastmod>
+    <lastmod>2025-11-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/rna/rna_compete_2013_and_2025/index.html</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
@@ -27,7 +33,7 @@
 </url>
 <url>
     <loc>https://kchu25.github.io/blog/index.html</loc>
-    <lastmod>2025-11-07</lastmod>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
