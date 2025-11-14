@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="/libs/katex/katex.min.css">
+     
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>ProteinGym: A Massive Benchmark for Protein Fitness Prediction</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="proteingym_a_massive_benchmark_for_protein_fitness_prediction"><a href="#proteingym_a_massive_benchmark_for_protein_fitness_prediction" class="header-anchor">ProteinGym: A Massive Benchmark for Protein Fitness Prediction</a></h1>
+<h2 id="whats_this_paper_about"><a href="#whats_this_paper_about" class="header-anchor">What&#39;s This Paper About?</a></h2>
+<p>Imagine you&#39;re a protein engineer. You want to know: &quot;If I mutate position 42 from Alanine to Glycine, will my protein still work?&quot; </p>
+<p>There are millions of possible mutations, but testing them all in the lab is expensive and slow. So we need <strong>machine learning models</strong> to predict which mutations are good or bad.</p>
+<p>But here&#39;s the problem: <strong>there are tons of ML models out there</strong> &#40;ESM, ProGen2, AlphaFold-based methods, etc.&#41;, and it&#39;s hard to compare them fairly because:</p>
+<ul>
+<li><p>Everyone tests on different proteins</p>
+</li>
+<li><p>Different metrics are used</p>
+</li>
+<li><p>Small benchmarks don&#39;t tell the full story</p>
+</li>
+</ul>
+<p><strong>Enter ProteinGym:</strong> A massive, standardized benchmark to finally answer: &quot;Which models actually work best?&quot;</p>
+<hr />
+<h2 id="the_scale_is_unprecedented"><a href="#the_scale_is_unprecedented" class="header-anchor">The Scale is Unprecedented</a></h2>
+<h3 id="dataset_size"><a href="#dataset_size" class="header-anchor">Dataset Size</a></h3>
+<ul>
+<li><p><strong>217 proteins</strong> with substitution data &#40;2.4M mutations tested&#33;&#41;</p>
+</li>
+<li><p><strong>66 proteins</strong> with insertion/deletion data &#40;289k mutations&#41;</p>
+</li>
+<li><p><strong>Plus clinical data:</strong> 65k human disease variants from ClinVar</p>
+</li>
+</ul>
+<p>For comparison, previous benchmarks had like 30-40 proteins with ~700k mutations total. This is 2-3 orders of magnitude larger.</p>
+<h3 id="diversity"><a href="#diversity" class="header-anchor">Diversity</a></h3>
+<p>The proteins come from:</p>
+<ul>
+<li><p>Humans, bacteria, viruses, other organisms</p>
+</li>
+<li><p>Different functions: enzymes, receptors, structural proteins</p>
+</li>
+<li><p>Different properties measured: stability, activity, binding, expression</p>
+</li>
+</ul>
+<h3 id="models_tested"><a href="#models_tested" class="header-anchor">Models Tested</a></h3>
+<p>They evaluated <strong>70&#43; models</strong> including:</p>
+<ul>
+<li><p>Protein language models &#40;ESM, ProGen2, RITA&#41;</p>
+</li>
+<li><p>Evolution-based models &#40;EVmutation, DeepSequence, EVE&#41;</p>
+</li>
+<li><p>Structure-based models &#40;ProteinMPNN, ESM-IF1&#41;</p>
+</li>
+<li><p>Hybrid approaches &#40;Tranception, TranceptEVE&#41;</p>
+</li>
+</ul>
+<hr />
+<h2 id="the_core_question_zero-shot_vs_supervised"><a href="#the_core_question_zero-shot_vs_supervised" class="header-anchor">The Core Question: Zero-Shot vs. Supervised</a></h2>
+<p>This is where it gets interesting. There are <strong>two fundamentally different ways</strong> to predict mutation effects:</p>
+<hr />
+<h2 id="zero-shot_learning_from_evolution_no_labels"><a href="#zero-shot_learning_from_evolution_no_labels" class="header-anchor">Zero-Shot: Learning from Evolution &#40;No Labels&#33;&#41;</a></h2>
+<h3 id="the_core_idea"><a href="#the_core_idea" class="header-anchor">The Core Idea</a></h3>
+<p><strong>Zero-shot models never see fitness measurements during training.</strong> Instead, they train on:</p>
+<ul>
+<li><p>Millions of unlabeled protein sequences from nature</p>
+</li>
+<li><p>Multiple sequence alignments showing evolutionary variation</p>
+</li>
+<li><p>3D structures from the Protein Data Bank</p>
+</li>
+</ul>
+<p>The <strong>key assumption:</strong> If a sequence exists in nature, evolution has already &quot;tested&quot; it. Sequences that are common in nature &#61; probably functional.</p>
+<blockquote>
+<h3>But Wait - Can They Predict Anything Beyond &quot;Natural Fitness&quot;?</h3>
+<p><strong>Short answer: Not really&#33;</strong> This is a crucial limitation.</p>
+<p><strong>What zero-shot models CAN predict:</strong></p>
+<ul>
+<li><p>Properties that evolution directly selects for &#40;stability, basic function&#41;</p>
+</li>
+<li><p>Properties correlated with evolutionary fitness</p>
+</li>
+<li><p>General &quot;will this protein fold and work?&quot;</p>
+</li>
+</ul>
+<p><strong>What zero-shot models CANNOT predict well:</strong></p>
+<ul>
+<li><p><strong>Novel functions</strong> not found in nature &#40;e.g., binding to synthetic drugs&#41;</p>
+</li>
+<li><p><strong>Exotic properties</strong> like:</p>
+<ul>
+<li><p>Fluorescence brightness &#40;GFP engineering&#41;</p>
+</li>
+<li><p>Specific binding to non-natural targets</p>
+</li>
+<li><p>Activity in non-physiological conditions &#40;industrial temps/pH&#41;</p>
+</li>
+<li><p>Repression vs activation &#40;if evolution doesn&#39;t distinguish them&#41;</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Trade-offs</strong> between competing objectives &#40;e.g., high activity but low stability&#41;</p>
+</li>
+<li><p><strong>Context-specific fitness</strong> that differs from natural environment</p>
+</li>
+</ul>
+<p><strong>Example where zero-shot fails:</strong></p>
+<ul>
+<li><p>Task: Engineer enzyme to work at 90°C for industrial biofuel production</p>
+</li>
+<li><p>Evolution optimized it to work at 37°C in E. coli</p>
+</li>
+<li><p>Zero-shot models predict mutations that maintain 37°C function</p>
+</li>
+<li><p>But you need something evolution never selected for&#33;</p>
+</li>
+</ul>
+<p><strong>That&#39;s why supervised learning matters:</strong> </p>
+<ul>
+<li><p>You collect data in YOUR conditions &#40;high temp, specific substrate, etc.&#41;</p>
+</li>
+<li><p>Train on YOUR objective function</p>
+</li>
+<li><p>Now the model learns what YOU care about, not what evolution cared about</p>
+</li>
+</ul>
+<p><strong>The paper shows this:</strong> Supervised models &#40;0.613 Spearman&#41; significantly outperform zero-shot &#40;0.456&#41; when you have data, because they learn the specific property being measured, not just evolutionary plausibility.</p>
+</blockquote>
+<h3 id="three_types_of_zero-shot_models"><a href="#three_types_of_zero-shot_models" class="header-anchor">Three Types of Zero-Shot Models</a></h3>
+<h4 id="protein_language_models_esm_progen2_rita"><a href="#protein_language_models_esm_progen2_rita" class="header-anchor"><ol>
+<li><p><strong>Protein Language Models</strong> &#40;ESM, ProGen2, RITA&#41;</p>
+</li>
+</ol>
+</a></h4>
+<p><strong>What they train on:</strong></p>
+<ul>
+<li><p>Millions of sequences like &quot;MKDLSTVQAPL...&quot; from UniRef databases</p>
+</li>
+<li><p>No labels, no annotations - just raw sequences</p>
+</li>
+</ul>
+<p><strong>Training objective:</strong></p>
+<ul>
+<li><p>Predict masked amino acids &#40;like BERT&#41;: &quot;MKD_STVQ&quot; → predict the blank</p>
+</li>
+<li><p>Or predict next amino acid &#40;like GPT&#41;: &quot;MKD&quot; → predict next is &quot;L&quot;</p>
+</li>
+</ul>
+<p><strong>What they learn:</strong></p>
+<ul>
+<li><p>Statistical patterns: &quot;Which amino acid combinations are common?&quot;</p>
+</li>
+<li><p>Context: &quot;If positions 10-20 form a helix, position 15 is probably hydrophobic&quot;</p>
+</li>
+<li><p>Global constraints: &quot;Cysteines often come in pairs &#40;disulfide bonds&#41;&quot;</p>
+</li>
+</ul>
+<p><strong>At test time:</strong></p>
+<pre><code class="language-julia">Wild-type: MKDLSTVQAPL  →  p&#40;sequence&#41; &#61; 0.0042
+Mutant:    MKDGSTVQAPL  →  p&#40;sequence&#41; &#61; 0.0001
+
+Score &#61; log&#40;0.0001 / 0.0042&#41; &#61; -3.6 &#40;negative &#61; bad mutation&#33;&#41;</code></pre>
+<p>The model thinks the mutant is much less likely to exist in nature → probably breaks the protein.</p>
+<h4 id="ol_start2_alignment-based_models_evmutation_deepsequence_eve"><a href="#ol_start2_alignment-based_models_evmutation_deepsequence_eve" class="header-anchor"><ol start="2">
+<li><p><strong>Alignment-Based Models</strong> &#40;EVmutation, DeepSequence, EVE&#41;</p>
+</li>
+</ol>
+</a></h4>
+<p><strong>What they train on:</strong></p>
+<ul>
+<li><p>Multiple Sequence Alignments &#40;MSAs&#41; of homologous proteins</p>
+</li>
+<li><p>Example: 10,000 sequences of kinase proteins from different species</p>
+</li>
+</ul>
+<p><strong>What they learn:</strong></p>
+<ul>
+<li><p><strong>Co-evolution patterns:</strong> &quot;If position 10 is Arginine, position 50 tends to be Aspartate &#40;they form a salt bridge&#33;&#41;&quot;</p>
+</li>
+<li><p><strong>Epistasis:</strong> How mutations interact with each other</p>
+</li>
+<li><p><strong>Conservation:</strong> Which positions never change &#40;probably important&#33;&#41;</p>
+</li>
+</ul>
+<p><strong>Training objective:</strong></p>
+<ul>
+<li><p>Learn probability distribution \(p(\text{sequence} | \text{family})\)</p>
+</li>
+<li><p>Capture pairwise dependencies between positions</p>
+</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-julia">Position:    10    50    72
+Wild-type:   R     D     W     ← Common in MSA &#40;high probability&#41;
+Mutant:      K     D     W     ← K at 10 breaks salt bridge with D at 50 &#40;lower probability&#41;</code></pre>
+<p><strong>Why this is different from language models:</strong></p>
+<ul>
+<li><p>Language models learn from ALL proteins &#40;general patterns&#41;</p>
+</li>
+<li><p>Alignment models learn from ONE protein family &#40;family-specific patterns&#41;</p>
+</li>
+<li><p>Alignment models explicitly model position interactions</p>
+</li>
+</ul>
+<h4 id="ol_start3_inverse_folding_models_proteinmpnn_esm-if1"><a href="#ol_start3_inverse_folding_models_proteinmpnn_esm-if1" class="header-anchor"><ol start="3">
+<li><p><strong>Inverse Folding Models</strong> &#40;ProteinMPNN, ESM-IF1&#41;</p>
+</li>
+</ol>
+</a></h4>
+<p><strong>What they train on:</strong></p>
+<ul>
+<li><p>3D protein structures from PDB</p>
+</li>
+<li><p>They see: structure coordinates &#43; the sequence that folds into it</p>
+</li>
+</ul>
+<p><strong>The &quot;inverse&quot; problem:</strong></p>
+<ul>
+<li><p><strong>Normal folding:</strong> sequence → structure &#40;what AlphaFold does&#41;</p>
+</li>
+<li><p><strong>Inverse folding:</strong> structure → sequence &#40;what these do&#41;</p>
+</li>
+</ul>
+<p><strong>Training objective:</strong></p>
+<ul>
+<li><p>Given a backbone structure, predict: \(p(\text{sequence} | \text{structure})\)</p>
+</li>
+<li><p>Learn: &quot;What amino acids fit well at each position given the 3D environment?&quot;</p>
+</li>
+</ul>
+<p><strong>What they learn:</strong></p>
+<pre><code class="language-julia">Position in hydrophobic core  →  prefers V, L, I, F &#40;hydrophobic&#41;
+Position on surface           →  prefers K, R, D, E &#40;charged&#41;
+Position in beta sheet        →  prefers V, I, Y &#40;beta-sheet formers&#41;</code></pre>
+<p><strong>At test time:</strong></p>
+<ol>
+<li><p>Get protein structure &#40;from experiment or AlphaFold2 prediction&#41;</p>
+</li>
+<li><p>Score wild-type: \(p(\text{MKDLST...} | \text{structure})\)</p>
+</li>
+<li><p>Score mutant: \(p(\text{MKDGST...} | \text{structure})\)</p>
+</li>
+<li><p>Compare: Does the mutant still fit the structure?</p>
+</li>
+</ol>
+<p><strong>Key limitation:</strong> Only works for substitutions&#33; Insertions/deletions change the backbone length, so you can&#39;t use the same structure.</p>
+<hr />
+<h3 id="wait_but_what_are_they_actually_predicting"><a href="#wait_but_what_are_they_actually_predicting" class="header-anchor">Wait, But What Are They Actually Predicting?</a></h3>
+<p>Here&#39;s the subtle part: <strong>These models don&#39;t directly predict &quot;fitness&quot;</strong> - they predict <strong>evolutionary plausibility</strong> or <strong>structural compatibility</strong>.</p>
+<p>The magic is that these often correlate with functional properties&#33;</p>
+<table><tr><th align="right">What Model Predicts</th><th align="right">What Benchmark Measures</th><th align="right">Does It Correlate?</th></tr><tr><td align="right">Evolutionary probability</td><td align="right">Enzyme activity</td><td align="right">✓ Usually yes</td></tr><tr><td align="right">Evolutionary probability</td><td align="right">Thermostability</td><td align="right">✓ Usually yes</td></tr><tr><td align="right">Evolutionary probability</td><td align="right">Binding affinity</td><td align="right">✓ Often yes</td></tr><tr><td align="right">Structural compatibility</td><td align="right">Expression level</td><td align="right">✓ Sometimes</td></tr></table>
+<p><strong>Why does this work?</strong></p>
+<ul>
+<li><p>Unstable proteins get degraded by evolution</p>
+</li>
+<li><p>Non-functional proteins don&#39;t help survival</p>
+</li>
+<li><p>Structure determines function</p>
+</li>
+</ul>
+<p><strong>But it&#39;s not perfect:</strong></p>
+<ul>
+<li><p>Lab conditions ≠ natural environment</p>
+</li>
+<li><p>Some assays measure properties evolution doesn&#39;t directly select for</p>
+</li>
+<li><p>That&#39;s why correlation isn&#39;t 1.0&#33;</p>
+</li>
+</ul>
+<h3 id="the_zero-shot_scoring_formula"><a href="#the_zero-shot_scoring_formula" class="header-anchor">The Zero-Shot Scoring Formula</a></h3>
+<p>Most zero-shot models use this:</p>
+\[\text{Mutation Score} = \log \frac{p(x_{\text{mutant}})}{p(x_{\text{wt}})}\]
+<p>Where:</p>
+<ul>
+<li><p>\(p(x)\) &#61; probability model assigns to sequence \(x\)</p>
+</li>
+<li><p>Positive score → mutant more likely than wild-type → probably good</p>
+</li>
+<li><p>Negative score → mutant less likely → probably bad</p>
+</li>
+</ul>
+<p><strong>But there are variations:</strong></p>
+<ul>
+<li><p>Some normalize by sequence length</p>
+</li>
+<li><p>Some use marginal probabilities at mutated positions only</p>
+</li>
+<li><p>TranceptEVE combines multiple scoring schemes</p>
+</li>
+</ul>
+<hr />
+<h2 id="supervised_learning_from_actual_fitness_data"><a href="#supervised_learning_from_actual_fitness_data" class="header-anchor">Supervised: Learning from Actual Fitness Data</a></h2>
+<p>Now let&#39;s talk about the <strong>completely different approach:</strong> supervised learning.</p>
+<h3 id="the_core_idea__2"><a href="#the_core_idea__2" class="header-anchor">The Core Idea</a></h3>
+<p><strong>Train on actual fitness measurements</strong> from the target protein &#40;or related proteins&#41;.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-julia">Training data for β-lactamase:
+MKDLST... → fitness &#61; 0.8
+MKDGST... → fitness &#61; 0.2
+MKDAST... → fitness &#61; 0.9
+... &#40;thousands more&#41;
+
+Now predict:
+MKDRST... → fitness &#61; ?</code></pre>
+<h3 id="why_is_this_different"><a href="#why_is_this_different" class="header-anchor">Why Is This Different?</a></h3>
+<table><tr><th align="right">Zero-Shot</th><th align="right">Supervised</th></tr><tr><td align="right">Learns from millions of proteins</td><td align="right">Learns from one protein family</td></tr><tr><td align="right">Never sees fitness labels</td><td align="right">Directly trained on fitness labels</td></tr><tr><td align="right">General patterns</td><td align="right">Task-specific patterns</td></tr><tr><td align="right">Works on any protein</td><td align="right">Needs data for each protein</td></tr></table>
+<h3 id="the_challenge_overfitting"><a href="#the_challenge_overfitting" class="header-anchor">The Challenge: Overfitting</a></h3>
+<p>Here&#39;s the problem: <strong>mutations aren&#39;t independent&#33;</strong></p>
+<p>If you train on mutation A42G and test on A42V:</p>
+<ul>
+<li><p>Both are at position 42</p>
+</li>
+<li><p>Both change from Alanine to small amino acids</p>
+</li>
+<li><p>The model might &quot;cheat&quot; by memorizing position 42 is important</p>
+</li>
+</ul>
+<p><strong>Solution: Careful cross-validation</strong></p>
+<p>The paper uses 3 schemes:</p>
+<ol>
+<li><p><strong>Random split:</strong> Randomly assign mutations to train/test</p>
+<ul>
+<li><p>Easiest task</p>
+</li>
+<li><p>Some position overlap between train and test</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Contiguous split:</strong> Split sequence into segments</p>
+</li>
+</ol>
+<pre><code class="language-julia">Positions 1-50   → Train
+   Positions 51-100 → Test
+   Positions 101-150 → Train
+   ...</code></pre>
+<ul>
+<li><p>Harder: Must predict on completely unseen positions</p>
+</li>
+</ul>
+<ol start="3">
+<li><p><strong>Modulo split:</strong> Assign positions by position &#37; 5</p>
+</li>
+</ol>
+<pre><code class="language-julia">Positions 1,6,11,16... → Fold 1
+   Positions 2,7,12,17... → Fold 2
+   ...</code></pre>
+<ul>
+<li><p>Hardest: Forces model to generalize across the sequence</p>
+</li>
+</ul>
+<h3 id="three_types_of_supervised_models"><a href="#three_types_of_supervised_models" class="header-anchor">Three Types of Supervised Models</a></h3>
+<h4 id="one-hot_encoding_ridge_regression"><a href="#one-hot_encoding_ridge_regression" class="header-anchor"><ol>
+<li><p><strong>One-Hot Encoding &#43; Ridge Regression</strong></p>
+</li>
+</ol>
+</a></h4>
+<p><strong>Simple baseline:</strong></p>
+<pre><code class="language-julia">Input:  &#91;0,1,0,...,0&#93; &#40;one-hot encoding of sequence&#41;
+        &#43; zero-shot scores from ESM, Tranception, etc.
+Output: predicted fitness
+
+Model:  Linear regression with L2 penalty</code></pre>
+<p><strong>Idea:</strong> Use zero-shot predictions as features, learn linear combination that best predicts fitness.</p>
+<h4 id="ol_start2_embedding_models"><a href="#ol_start2_embedding_models" class="header-anchor"><ol start="2">
+<li><p><strong>Embedding Models</strong></p>
+</li>
+</ol>
+</a></h4>
+<p><strong>Smarter approach:</strong></p>
+<pre><code class="language-julia">Input:  &#91;2.4, -1.1, 0.8, ...&#93; &#40;embedding from protein language model&#41;
+        &#43; zero-shot score
+Output: predicted fitness
+
+Model:  Ridge regression on embeddings</code></pre>
+<p><strong>Why better?</strong> Language model embeddings capture complex patterns &#40;secondary structure, hydrophobicity, etc.&#41; that one-hot encoding misses.</p>
+<h4 id="ol_start3_proteinnpt_best_supervised_model"><a href="#ol_start3_proteinnpt_best_supervised_model" class="header-anchor"><ol start="3">
+<li><p><strong>ProteinNPT</strong> &#40;Best Supervised Model&#41;</p>
+</li>
+</ol>
+</a></h4>
+<p><strong>Fancy architecture:</strong></p>
+<ul>
+<li><p>Non-parametric transformer that jointly models sequences AND labels</p>
+</li>
+<li><p>Uses &quot;axial attention&quot; across both data dimensions</p>
+</li>
+<li><p>Semi-supervised: Can use unlabeled sequences too</p>
+</li>
+</ul>
+<p><strong>Training objective:</strong> </p>
+<ul>
+<li><p>Predict fitness from sequence</p>
+</li>
+<li><p>Reconstruct masked amino acids</p>
+</li>
+<li><p>Learn rich representation of sequence-function relationship</p>
+</li>
+</ul>
+<hr />
+<h2 id="key_results_who_won"><a href="#key_results_who_won" class="header-anchor">Key Results: Who Won?</a></h2>
+<h3 id="zero-shot_champions"><a href="#zero-shot_champions" class="header-anchor">Zero-Shot Champions</a></h3>
+<p><strong>Winner: TranceptEVE</strong> &#40;Spearman correlation &#61; 0.456&#41;</p>
+<p>What is it? A <strong>hybrid model</strong> that combines:</p>
+<ul>
+<li><p>Autoregressive language model &#40;Tranception&#41;</p>
+</li>
+<li><p>Evolutionary priors from alignment models &#40;EVE&#41;</p>
+</li>
+<li><p>MSA retrieval at inference time</p>
+</li>
+</ul>
+<p><strong>Why did it win?</strong></p>
+<ul>
+<li><p>Gets general patterns from language model</p>
+</li>
+<li><p>Gets family-specific patterns from alignment</p>
+</li>
+<li><p>Best of both worlds&#33;</p>
+</li>
+</ul>
+<p><strong>Runners-up:</strong></p>
+<ul>
+<li><p>GEMME &#40;alignment-based&#41; - surprisingly good&#33;</p>
+</li>
+<li><p>VESPA &#40;language model &#43; conservation&#41;</p>
+</li>
+<li><p>ESM-IF1 &#40;inverse folding&#41; - best on high-quality structures</p>
+</li>
+</ul>
+<h3 id="supervised_champions"><a href="#supervised_champions" class="header-anchor">Supervised Champions</a></h3>
+<p><strong>Winner: ProteinNPT</strong> &#40;Spearman correlation &#61; 0.613&#41;</p>
+<p>Much better than zero-shot&#33; But requires training data from the target protein.</p>
+<p><strong>Performance by cross-validation:</strong></p>
+<ul>
+<li><p>Random split: 0.730 &#40;easiest&#41;</p>
+</li>
+<li><p>Modulo split: 0.564 &#40;harder&#41;</p>
+</li>
+<li><p>Contiguous split: 0.547 &#40;hardest&#41;</p>
+</li>
+</ul>
+<p><strong>Key insight:</strong> Big gap between random and positional splits → models rely heavily on learning which positions are important.</p>
+<h3 id="interesting_findings"><a href="#interesting_findings" class="header-anchor">Interesting Findings</a></h3>
+<ol>
+<li><p><strong>Autoregressive &gt; Masked models</strong> for zero-shot</p>
+<ul>
+<li><p>ProGen2, Tranception &gt; ESM models</p>
+</li>
+<li><p>Why? Autoregressive explicitly models sequence dependencies</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Alignment models still competitive</strong></p>
+<ul>
+<li><p>GEMME nearly ties with TranceptEVE</p>
+</li>
+<li><p>Especially good for viral proteins and low MSA depth</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Different models for different tasks</strong></p>
+<ul>
+<li><p>ESM models: better Spearman &#40;good at ranking all mutations&#41;</p>
+</li>
+<li><p>Alignment models: better NDCG &#40;better at finding top mutations&#41;</p>
+</li>
+<li><p>Matters for protein design vs. variant interpretation&#33;</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Structure helps when available</strong></p>
+<ul>
+<li><p>ESM-IF1 gets 0.422 Spearman</p>
+</li>
+<li><p>But needs good structure &#40;experimental or AlphaFold2&#41;</p>
+</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="what_does_fitness_even_mean"><a href="#what_does_fitness_even_mean" class="header-anchor">What Does &quot;Fitness&quot; Even Mean?</a></h2>
+<p>Here&#39;s something subtle: <strong>&quot;Fitness&quot; depends on the assay&#33;</strong></p>
+<p>The benchmark measures 5 different properties:</p>
+<table><tr><th align="right">Property</th><th align="right">What It Measures</th><th align="right">Example Assay</th></tr><tr><td align="right"><strong>Activity</strong></td><td align="right">Enzymatic/biochemical function</td><td align="right">β-lactamase antibiotic resistance</td></tr><tr><td align="right"><strong>Binding</strong></td><td align="right">Affinity to target</td><td align="right">ACE2 binding to SARS-CoV-2 spike</td></tr><tr><td align="right"><strong>Stability</strong></td><td align="right">Thermostability, folding</td><td align="right">Melting temperature</td></tr><tr><td align="right"><strong>Expression</strong></td><td align="right">Protein abundance</td><td align="right">Cell surface display</td></tr><tr><td align="right"><strong>Organismal Fitness</strong></td><td align="right">Cell growth/survival</td><td align="right">Yeast growth rate</td></tr></table>
+<p><strong>The models don&#39;t know what they&#39;re predicting&#33;</strong> They just predict:</p>
+<ul>
+<li><p>&quot;Is this mutation evolutionarily plausible?&quot; &#40;zero-shot&#41;</p>
+</li>
+<li><p>&quot;Based on training data, what&#39;s the fitness?&quot; &#40;supervised&#41;</p>
+</li>
+</ul>
+<p>Then we check: Does evolutionary plausibility correlate with the measured property?</p>
+<p><strong>Answer:</strong> Usually yes, but it varies:</p>
+<ul>
+<li><p>Best correlation: Stability, Activity</p>
+</li>
+<li><p>Moderate correlation: Binding, Expression</p>
+</li>
+<li><p>Variable: Organismal fitness &#40;depends on environment&#41;</p>
+</li>
+</ul>
+<hr />
+<h2 id="clinical_applications"><a href="#clinical_applications" class="header-anchor">Clinical Applications</a></h2>
+<p>The paper also tests on <strong>human disease variants</strong> from ClinVar:</p>
+<ul>
+<li><p>63k substitutions across 2,525 genes</p>
+</li>
+<li><p>Task: Predict pathogenic vs. benign</p>
+</li>
+</ul>
+<p><strong>Interesting result:</strong></p>
+<ul>
+<li><p>Best supervised model &#40;ClinPred&#41;: AUC &#61; 0.981</p>
+</li>
+<li><p>Best zero-shot model &#40;TranceptEVE&#41;: AUC &#61; 0.920</p>
+</li>
+</ul>
+<p><strong>But:</strong> Supervised models trained on ClinVar → potential circularity&#33;</p>
+<ul>
+<li><p>Zero-shot models are more &quot;honest&quot; predictors</p>
+</li>
+<li><p>Still achieve 0.92 AUC without ever seeing clinical labels</p>
+</li>
+</ul>
+<p><strong>Why care?</strong></p>
+<ul>
+<li><p>Clinical guidelines hesitate to use ML predictions</p>
+</li>
+<li><p>This shows zero-shot models can achieve good performance without bias from training labels</p>
+</li>
+</ul>
+<hr />
+<h2 id="why_this_matters"><a href="#why_this_matters" class="header-anchor">Why This Matters</a></h2>
+<h3 id="before_proteingym"><a href="#before_proteingym" class="header-anchor">Before ProteinGym:</a></h3>
+<ul>
+<li><p>30-40 protein benchmarks</p>
+</li>
+<li><p>Inconsistent evaluation</p>
+</li>
+<li><p>Hard to compare different model types</p>
+</li>
+<li><p>Mostly substitutions only</p>
+</li>
+</ul>
+<h3 id="after_proteingym"><a href="#after_proteingym" class="header-anchor">After ProteinGym:</a></h3>
+<ul>
+<li><p>250&#43; proteins, 2.7M mutations</p>
+</li>
+<li><p>Standardized metrics</p>
+</li>
+<li><p>Direct comparison of alignment-based, language models, inverse folding</p>
+</li>
+<li><p>Both substitutions AND indels</p>
+</li>
+<li><p>Both experimental AND clinical data</p>
+</li>
+</ul>
+<h3 id="practical_impact"><a href="#practical_impact" class="header-anchor">Practical Impact:</a></h3>
+<ol>
+<li><p><strong>Model selection guidance:</strong> </p>
+<ul>
+<li><p>Low MSA depth? Use language models</p>
+</li>
+<li><p>Good structure? Try inverse folding</p>
+</li>
+<li><p>Need top designs? Use alignment models &#40;better NDCG&#41;</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Reproducibility:</strong></p>
+<ul>
+<li><p>All code, data, predictions public</p>
+</li>
+<li><p>Interactive website: proteingym.org</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Future benchmark:</strong></p>
+<ul>
+<li><p>Will be updated with new assays and models</p>
+</li>
+<li><p>Community standard for evaluation</p>
+</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="the_big_picture"><a href="#the_big_picture" class="header-anchor">The Big Picture</a></h2>
+<p>This paper doesn&#39;t invent new models - it creates the <strong>benchmark infrastructure</strong> to fairly compare them.</p>
+<p>Think of it like:</p>
+<ul>
+<li><p><strong>ImageNet</strong> for computer vision</p>
+</li>
+<li><p><strong>GLUE/SuperGLUE</strong> for NLP</p>
+</li>
+<li><p><strong>CASP</strong> for protein structure prediction</p>
+</li>
+</ul>
+<p>Now protein fitness prediction has <strong>ProteinGym</strong>.</p>
+<p><strong>Key philosophical point:</strong> Zero-shot and supervised aren&#39;t competing - they&#39;re complementary&#33;</p>
+<ul>
+<li><p>Zero-shot: When you have no data for your protein</p>
+</li>
+<li><p>Supervised: When you have some data and want to optimize further</p>
+</li>
+</ul>
+<p>The best approach often combines both &#40;like TranceptEVE does&#41;.</p>
+<hr />
+<h2 id="resources"><a href="#resources" class="header-anchor">Resources</a></h2>
+<p>Everything is open source:</p>
+<ul>
+<li><p>GitHub: https://github.com/OATML-Markslab/ProteinGym</p>
+</li>
+<li><p>Website: https://www.proteingym.org</p>
+</li>
+<li><p>All datasets, MSAs, structures, predictions available</p>
+</li>
+<li><p>Unified codebase to run all 70&#43; models</p>
+</li>
+</ul>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: November 14, 2025.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+        <script src="/libs/katex/katex.min.js"></script>
+<script src="/libs/katex/contrib/auto-render.min.js"></script>
+<script>renderMathInElement(document.body)</script>
+
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>
