@@ -21,6 +21,227 @@ This dataset contains polysome profiling results for **280,000 random 50-nucleot
 
 ## Column Structure
 
+### IMPORTANT: What's Actually In The CSV Files 🚨
+
+**WARNING: The file formats are INCONSISTENT between replicates!**
+
+### File Format Differences:
+
+**`GSM3130435_egfp_unmod_1.csv.gz` (Replicate 1):**
+- ✅ Normalized fractions (`r_00` through `r_011`)
+- ✅ Mean Ribosome Load (`rl`)
+- ❌ **NO raw counts** (`00` through `011`)
+- ❌ **NO total column**
+
+**`GSM3130436_egfp_unmod_2.csv.gz` (Replicate 2):**
+- ✅ Raw counts (`00` through `011`)
+- ✅ Normalized fractions (`r_00` through `r_011`) - probably
+- ✅ Mean Ribosome Load (`rl`) - probably
+- ✅ Total column (`total`) - probably
+
+### Why This Inconsistency?
+
+This is... unusual and probably an oversight in data submission. Possible reasons:
+1. Different processing scripts used for the two files
+2. Updated one file but not the other during revision
+3. GEO submission error
+
+### What You Should Do:
+
+**Option 1: Use Replicate 2 (GSM3130436) as your reference**
+- It has the most complete data (raw counts + normalized)
+- You can verify the normalization is correct
+- More transparent about the data processing
+
+**Option 2: Use both, but be aware of format differences**
+```python
+# Replicate 1 - only normalized data
+df1 = pd.read_csv('GSM3130435_egfp_unmod_1.csv.gz')
+# Columns: sequence, r_00, r_01, ..., r_011, rl
+
+# Replicate 2 - has raw counts
+df2 = pd.read_csv('GSM3130436_egfp_unmod_2.csv.gz')  
+# Columns: sequence, 00, 01, ..., 011, r_00, r_01, ..., r_011, total, rl
+```
+
+**Option 3: Normalize Replicate 2 yourself**
+```python
+# If you want to verify or recalculate
+import pandas as pd
+
+df = pd.read_csv('GSM3130436_egfp_unmod_2.csv.gz')
+
+# Calculate normalized fractions from raw counts
+fraction_cols = [f'{i:02d}' for i in range(12)]  # ['00', '01', ..., '011']
+total = df[fraction_cols].sum(axis=1)
+
+for i, col in enumerate(fraction_cols):
+    df[f'r_{col}'] = df[col] / total
+
+# Calculate MRL from normalized fractions
+mrl = sum(i * df[f'r_{fraction_cols[i]}'] for i in range(12))
+df['rl_calculated'] = mrl
+
+# Verify it matches the provided rl column
+print((df['rl'] - df['rl_calculated']).abs().max())  # Should be ~0
+```
+
+### Recommended Approach:
+
+**For training the model:**
+1. Use Replicate 2 (GSM3130436) since it has complete data
+2. **IMPORTANT: Apply quality control filters (see below)**
+3. Verify the normalization calculations match what you expect
+4. Use the `rl` column as your target variable
+5. Cross-check with Replicate 1 for sequences they share
+
+**Or if you want both replicates:**
+1. Load both files
+2. Find intersection of sequences (sequences in both)
+3. Average the `rl` values for shared sequences
+4. Use averaged MRL as target
+
+---
+
+## Quality Control: Sequences to Exclude 🚨
+
+### Problem You Discovered:
+
+**Some sequences have counts ONLY in fraction 011 (or only in 1-2 fractions)**
+
+This is problematic because:
+- They likely failed to properly fractionate
+- Could be technical artifacts (aggregation, precipitation)
+- MRL calculation is unreliable with sparse data
+- The model shouldn't learn from these outliers
+
+### Quality Control Filters:
+
+**Filter 1: Minimum Total Reads**
+```julia
+# Exclude sequences with too few total reads
+min_reads = 50  # or 100, depending on dataset
+filter!(row -> row.total >= min_reads, df)
+```
+
+**Filter 2: Distribution Across Fractions**
+```julia
+# Exclude sequences present in only 1 fraction
+function count_nonzero_fractions(row)
+    fraction_cols = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "010", "011"]
+    return count(col -> row[col] > 0, fraction_cols)
+end
+
+df.num_fractions = [count_nonzero_fractions(row) for row in eachrow(df)]
+filter!(row -> row.num_fractions >= 3, df)  # At least 3 fractions
+```
+
+**Filter 3: Maximum Single Fraction Dominance**
+```julia
+# Exclude sequences where one fraction has >90% of reads
+function max_fraction_proportion(row)
+    fraction_cols = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "010", "011"]
+    counts = [row[col] for col in fraction_cols]
+    return maximum(counts) / sum(counts)
+end
+
+df.max_fraction_prop = [max_fraction_proportion(row) for row in eachrow(df)]
+filter!(row -> row.max_fraction_prop < 0.90, df)  # No single fraction dominates
+```
+
+**Filter 4: Exclude Only-Fraction-011 Sequences (Your Discovery)**
+```julia
+# Specifically exclude sequences with counts ONLY in heavy polysome
+function is_only_heavy_polysome(row)
+    light_fractions = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "010"]
+    heavy_fraction = "011"
+    
+    # Check if heavy fraction has counts but light fractions don't
+    light_sum = sum(row[col] for col in light_fractions)
+    heavy_count = row[heavy_fraction]
+    
+    return (heavy_count > 0) && (light_sum == 0)
+end
+
+filter!(row -> !is_only_heavy_polysome(row), df)
+```
+
+### Why These Sequences Exist:
+
+**Biological reasons:**
+- mRNA aggregation during lysis
+- Protein precipitation pulling mRNA down
+- Non-specific binding to heavy complexes
+
+**Technical reasons:**
+- Library construction artifacts
+- PCR chimeras
+- Sequencing errors
+
+**These are NOT representative of normal translation!**
+
+### Recommended Combined Filter:
+
+```julia
+function passes_qc(row)
+    # Minimum reads
+    if row.total < 50
+        return false
+    end
+    
+    # Count non-zero fractions
+    fraction_cols = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "010", "011"]
+    counts = [row[col] for col in fraction_cols]
+    num_nonzero = count(c -> c > 0, counts)
+    
+    if num_nonzero < 3
+        return false
+    end
+    
+    # Check single fraction doesn't dominate
+    max_proportion = maximum(counts) / sum(counts)
+    if max_proportion > 0.90
+        return false
+    end
+    
+    return true
+end
+
+# Apply filter
+df_clean = filter(passes_qc, df)
+
+println("Original sequences: ", nrow(df))
+println("After QC: ", nrow(df_clean))
+println("Removed: ", nrow(df) - nrow(df_clean))
+```
+
+### What The Paper Likely Did:
+
+Based on standard MPRA practices, they probably:
+1. Required minimum total reads (≥50-100)
+2. Excluded sequences in fewer than 2-3 fractions
+3. Removed extreme outliers in MRL distribution
+4. Only used sequences present in both replicates
+
+**You should do the same to reproduce their results!**
+
+### Check Your Data:
+
+```julia
+# Investigate problematic sequences
+println("\nSequences with counts only in fraction 011:")
+for row in eachrow(df)
+    light_sum = sum(row[col] for col in ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "010"])
+    if row["011"] > 0 && light_sum == 0
+        println("Sequence: ", row.sequence[1:20], "... | 011 count: ", row["011"], " | MRL: ", row.rl)
+    end
+end
+```
+
+This will help you see how many problematic sequences exist and their characteristics!
+
+### What You Actually Get:
+
 ### 1. **Sequence Column** ⚠️ IMPORTANT - READ THIS!
 
 **What you'll see:** 59-nucleotide sequences ending in `ATGGGCGAA`
@@ -54,29 +275,66 @@ utr_sequence = full_sequence[:-9]  # Remove last 9 bases
 utr_sequence = full_sequence[:50]  # Take first 50 bases
 ```
 
-### 2. **Unnormalized Fraction Counts: `00`, `01`, `02`, ..., `011`**
-- **Total:** 12 columns (fractions 0-11, numbered in base 12)
-- **Content:** Raw sequencing read counts for each polysome gradient fraction
-- **What they represent:**
-  - `00`: Untranslated mRNA (no ribosomes)
-  - `01`: Light polysome (1-2 ribosomes)
-  - `05`: Medium polysome (5-6 ribosomes)
-  - `011`: Heavy polysome (11+ ribosomes)
-
-### 3. **Normalized Fraction Counts: `r_00`, `r_01`, `r_02`, ..., `r_011`**
+### 2. **Normalized Fraction Counts: `r_00`, `r_01`, `r_02`, ..., `r_011`**
 - **Total:** 12 columns
 - **Content:** Normalized read counts (relative frequencies that sum to 1.0)
-- **Calculation:** `r_XX = count_XX / total`
+- **These ARE in the CSV files!**
 - **Purpose:** Shows the distribution of that sequence across polysome fractions
 
-### 4. **`total` Column**
-- **Content:** Sum of all raw read counts across all fractions
-- **Formula:** `total = sum(00, 01, 02, ..., 011)`
-- **Purpose:** Quality control and normalization denominator
-
-### 5. **`rl` Column (Mean Ribosome Load - MRL)**
+### 3. **`rl` Column (Mean Ribosome Load - MRL)**
 - **Content:** The weighted average number of ribosomes bound per mRNA
+- **This IS in the CSV files!**
 - **This is the TARGET VARIABLE the model predicts!**
+
+### 4. **Missing: Raw Count Columns** ❌
+
+**NOT in the processed CSV files:**
+- `00, 01, 02, ..., 011` (unnormalized read counts)
+- `total` (sum of all raw counts)
+
+**Where are they?**
+- Raw sequencing data is in SRA (Sequence Read Archive)
+- You'd need to download FASTQ files from SRA and process them yourself
+- The CSV files skip straight to normalized data
+
+### What This Means For You:
+
+**Good news:**
+- ✅ You have everything needed for model training!
+- ✅ `r_00` through `r_011` columns are the normalized fractions
+- ✅ `rl` column is your target variable (MRL)
+- ✅ You don't need to normalize anything - it's already done
+
+**If you wanted raw counts:**
+- Would need to download from SRA (ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByStudy/sra/SRP/SRP144/SRP144485/)
+- Would need to process FASTQ files yourself
+- Would need to count barcodes and assign to fractions
+- **Not necessary for reproducing the paper's model!**
+
+### Column Summary:
+
+**In GSM3130435 (Replicate 1):**
+```
+┌─────────────┬──────┬──────┬─────┬────────┬────┐
+│  sequence   │ r_00 │ r_01 │ ... │ r_011  │ rl │
+├─────────────┼──────┼──────┼─────┼────────┼────┤
+│ ACGT...CGAA │ 0.05 │ 0.10 │ ... │  0.15  │ 6.2│
+└─────────────┴──────┴──────┴─────┴────────┴────┘
+```
+
+**In GSM3130436 (Replicate 2):**
+```
+┌─────────────┬────┬────┬─────┬─────┬──────┬─────┬────────┬───────┬────┐
+│  sequence   │ 00 │ 01 │ ... │ 011 │ r_00 │ ... │ r_011  │ total │ rl │
+├─────────────┼────┼────┼─────┼─────┼──────┼─────┼────────┼───────┼────┤
+│ ACGT...CGAA │ 52 │ 103│ ... │ 156 │ 0.05 │ ... │  0.15  │ 1038  │ 6.2│
+└─────────────┴────┴────┴─────┴─────┴──────┴─────┴────────┴───────┴────┘
+     ↑          ↑                ↑       ↑                    ↑       ↑
+    59 nt    Raw counts      Raw     Normalized          Sum of    Target
+  (drop 9)   (missing in    counts   fractions           counts    (MRL)
+              replicate 1)           (in both)          (missing
+                                                        in rep 1)
+```
 
 ---
 
