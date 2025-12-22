@@ -8,20 +8,8 @@
     <priority>0.5</priority>
 </url>
 <url>
-    <loc>https://kchu25.github.io/index.html</loc>
-    <lastmod>2025-11-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-</url>
-<url>
     <loc>https://kchu25.github.io/blog/rna/rna_compete_2013_and_2025/index.html</loc>
     <lastmod>2025-11-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-</url>
-<url>
-    <loc>https://kchu25.github.io/blog/cas13d/cas13d_screen/index.html</loc>
-    <lastmod>2025-10-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
@@ -44,14 +32,44 @@
     <priority>0.5</priority>
 </url>
 <url>
-    <loc>https://kchu25.github.io/blog/index.html</loc>
+    <loc>https://kchu25.github.io/blog/lacI/deepReplacI/index.html</loc>
+    <lastmod>2025-10-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/screenings/utr_translation_assay/index.html</loc>
+    <lastmod>2025-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/index.html</loc>
+    <lastmod>2025-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/cas13d/cas13d_screen/index.html</loc>
+    <lastmod>2025-10-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/proteins/pdb_format/index.html</loc>
     <lastmod>2025-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
 <url>
-    <loc>https://kchu25.github.io/blog/lacI/deepReplacI/index.html</loc>
-    <lastmod>2025-10-14</lastmod>
+    <loc>https://kchu25.github.io/blog/screenings/utr_degradation/index.html</loc>
+    <lastmod>2025-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/index.html</loc>
+    <lastmod>2025-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>

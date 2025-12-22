@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>MPRA of 3′UTR sequences identifies in vivo rules for mRNA degradation</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="massively_parallel_reporter_assay_of_3utr_sequences_identifies_in_vivo_rules_for_mrna_degradation"><a href="#massively_parallel_reporter_assay_of_3utr_sequences_identifies_in_vivo_rules_for_mrna_degradation" class="header-anchor">Massively parallel reporter assay of 3′UTR sequences identifies in vivo rules for mRNA degradation</a></h1>
+<p><strong>Paper Link</strong>: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5994907/">https://pmc.ncbi.nlm.nih.gov/articles/PMC5994907/</a></p>
+<p><strong>Authors</strong>: Michal Rabani, Lindsey Pieper, Guo-Liang Chew, Alexander F Schier</p>
+<p><strong>Published</strong>: Molecular Cell, December 2017</p>
+<hr />
+<h2 id="what_this_paper_is_about"><a href="#what_this_paper_is_about" class="header-anchor">What This Paper is About</a></h2>
+<p>Hey&#33; So this paper introduces a really cool technique called UTR-Seq that helps scientists figure out the &quot;rules&quot; that determine how quickly mRNAs get degraded in cells. Think of it like cracking the code that decides which messages your cells keep around and which ones they throw away.</p>
+<h2 id="the_big_picture"><a href="#the_big_picture" class="header-anchor">The Big Picture</a></h2>
+<p>Basically, mRNAs are like instruction manuals for making proteins. They have these regions called 3&#39;UTRs &#40;the tail end of the message&#41; that contain signals telling the cell how long to keep each mRNA around. But until now, we didn&#39;t have a great systematic way to figure out what all these signals were and how they work.</p>
+<h2 id="what_they_did"><a href="#what_they_did" class="header-anchor">What They Did</a></h2>
+<p>The researchers created a massive library of about 90,000 different mRNA reporters - each one had a different piece of zebrafish 3&#39;UTR sequence attached to it. They injected these into zebrafish embryos and basically watched what happened to each one over the first 10 hours of development. It&#39;s like a huge experiment testing tens of thousands of different sequences all at once.</p>
+<h2 id="the_cool_findings"><a href="#the_cool_findings" class="header-anchor">The Cool Findings</a></h2>
+<p>They discovered two main &quot;programs&quot; for mRNA degradation:</p>
+<h3 id="early_program_maternal"><a href="#early_program_maternal" class="header-anchor"><strong>Early Program</strong> &#40;maternal&#41;</a></h3>
+<ul>
+<li><p>Kicks in right away after fertilization</p>
+</li>
+<li><p>Three main signals:</p>
+<ul>
+<li><p><strong>Poly-U sequences</strong> &#40;lots of U&#39;s&#41; → stabilize mRNAs &#40;make them last longer&#41;</p>
+</li>
+<li><p><strong>UUAG sequences</strong> → also stabilize</p>
+</li>
+<li><p><strong>GC-rich sequences</strong> → destabilize &#40;make them degrade faster&#41;</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="late_program_zygotic"><a href="#late_program_zygotic" class="header-anchor"><strong>Late Program</strong> &#40;zygotic&#41;</a></h3>
+<ul>
+<li><p>Starts when the embryo&#39;s own genes turn on &#40;around 3-5 hours&#41;</p>
+</li>
+<li><p>Three different signals:</p>
+<ul>
+<li><p><strong>miR-430 seeds</strong> → speed up degradation</p>
+</li>
+<li><p><strong>AU-rich elements &#40;AREs&#41;</strong> → speed up degradation</p>
+</li>
+<li><p><strong>Pumilio binding sites &#40;PUM&#41;</strong> → speed up degradation</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="the_machine_learning_bit"><a href="#the_machine_learning_bit" class="header-anchor">The Machine Learning Bit</a></h2>
+<p>Here&#39;s where it gets really neat: they built computational models that can actually <strong>predict</strong> how fast an mRNA will degrade just by looking at its sequence. They tested this by designing artificial mRNAs with specific decay patterns - and it worked&#33; The models explained about 70&#37; of the variation in how quickly different mRNAs broke down.</p>
+<h2 id="why_this_matters"><a href="#why_this_matters" class="header-anchor">Why This Matters</a></h2>
+<ol>
+<li><p><strong>Understanding development</strong>: This helps explain how embryos clear out mom&#39;s old mRNAs and start using their own genetic instructions</p>
+</li>
+<li><p><strong>Predicting mRNA behavior</strong>: The models can predict what will happen to an mRNA based on its sequence - super useful for both basic research and potential therapeutic applications</p>
+</li>
+<li><p><strong>Designing custom mRNAs</strong>: Want an mRNA that sticks around for exactly 2 hours? Or one that&#39;s stable until a certain developmental stage? Now there&#39;s a roadmap for designing that.</p>
+</li>
+<li><p><strong>General framework</strong>: The UTR-Seq approach can be applied to other organisms and other types of regulation - it&#39;s not just about zebrafish or degradation.</p>
+</li>
+</ol>
+<h2 id="the_technical_innovation"><a href="#the_technical_innovation" class="header-anchor">The Technical Innovation</a></h2>
+<p>They combined two powerful approaches:</p>
+<ul>
+<li><p><strong>MPRA</strong> &#40;massively parallel reporter assay&#41; - testing thousands of sequences at once</p>
+</li>
+<li><p><strong>Regression modeling</strong> - using machine learning to find patterns and make predictions</p>
+</li>
+</ul>
+<p>This combo lets them go from &quot;here are some sequences that matter&quot; to &quot;here&#39;s exactly how much each piece contributes to the overall behavior.&quot;</p>
+<h2 id="bottom_line"><a href="#bottom_line" class="header-anchor">Bottom Line</a></h2>
+<p>Think of this as creating a &quot;Rosetta Stone&quot; for mRNA stability. They systematically decoded the language written in 3&#39;UTRs that tells cells when to throw away their messages. And they built a translator &#40;the regression models&#41; that can read new sequences and predict what will happen to them. Pretty powerful stuff for understanding gene regulation&#33;</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: December 22, 2025.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+  </body>
+</html>

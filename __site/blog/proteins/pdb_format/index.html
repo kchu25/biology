@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>PDB Format: Visual Guide</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="pdb_format_visual_guide"><a href="#pdb_format_visual_guide" class="header-anchor">PDB Format: Visual Guide</a></h1>
+<h2 id="example_pdb_lines_with_explanations"><a href="#example_pdb_lines_with_explanations" class="header-anchor">Example PDB Lines with Explanations</a></h2>
+<table><tr><th align="right">PDB Line</th><th align="right">What It Means</th></tr><tr><td align="right"><code>HEADER    HYDROLASE                               15-MAR-09   3FGQ</code></td><td align="right"><strong>File header</strong> - Tells you this is a HYDROLASE enzyme, deposited on March 15, 2009, with ID code 3FGQ</td></tr><tr><td align="right"><code>TITLE     CRYSTAL STRUCTURE OF HUMAN LYSOZYME</code></td><td align="right"><strong>Title</strong> - Human-readable description of what structure this file contains</td></tr><tr><td align="right"><code>ATOM      1  N   MET A   1      27.340  24.430   2.614  1.00  9.67           N</code></td><td align="right"><strong>Atom #1</strong> - Nitrogen atom from Methionine &#40;MET&#41;, chain A, residue #1, at position &#40;27.340, 24.430, 2.614&#41; Ångströms in 3D space</td></tr><tr><td align="right"><code>ATOM      2  CA  MET A   1      26.266  25.413   2.842  1.00  9.48           C</code></td><td align="right"><strong>Atom #2</strong> - Alpha carbon &#40;CA&#41; of the same Methionine residue, different 3D coordinates</td></tr><tr><td align="right"><code>ATOM      3  C   MET A   1      26.913  26.639   3.531  1.00  9.38           C</code></td><td align="right"><strong>Atom #3</strong> - Backbone carbon of Methionine. Still residue #1 because it&#39;s the same amino acid</td></tr><tr><td align="right"><code>ATOM    130  N   GLY A   2      28.123  27.018   3.154  1.00  8.12           N</code></td><td align="right"><strong>New residue</strong> - Now on amino acid #2 &#40;Glycine&#41;. The protein chain is building up sequentially</td></tr><tr><td align="right"><code>HETATM 1001  O   HOH A 201      31.245  20.183   5.123  1.00 15.23           O</code></td><td align="right"><strong>Water molecule</strong> - HETATM &#61; non-protein atoms. HOH &#61; H₂O water, numbered separately &#40;201&#41;</td></tr><tr><td align="right"><code>CONECT 1001 1002 1003</code></td><td align="right"><strong>Bond connections</strong> - Tells you atom 1001 is bonded to atoms 1002 and 1003</td></tr><tr><td align="right"><code>TER     131      GLY A   2</code></td><td align="right"><strong>Chain terminator</strong> - Marks the end of chain A at residue 2</td></tr><tr><td align="right"><code>END</code></td><td align="right"><strong>File end</strong> - Signals the end of the PDB file</td></tr></table>
+<hr />
+<h2 id="understanding_atom_line_columns"><a href="#understanding_atom_line_columns" class="header-anchor">Understanding ATOM Line Columns</a></h2>
+<p>Breaking down: <code>ATOM      1  N   MET A   1      27.340  24.430   2.614  1.00  9.67           N</code></p>
+<table><tr><th align="right">Position</th><th align="right">Content</th><th align="right">Meaning</th></tr><tr><td align="right">1-6</td><td align="right"><code>ATOM</code></td><td align="right">Record type &#40;this is an atom&#41;</td></tr><tr><td align="right">7-11</td><td align="right"><code>1</code></td><td align="right">Atom serial number &#40;unique ID&#41;</td></tr><tr><td align="right">13-16</td><td align="right"><code>N</code></td><td align="right">Atom name &#40;Nitrogen&#41;</td></tr><tr><td align="right">17-20</td><td align="right"><code>MET</code></td><td align="right">Residue name &#40;Methionine amino acid&#41;</td></tr><tr><td align="right">22</td><td align="right"><code>A</code></td><td align="right">Chain identifier</td></tr><tr><td align="right">23-26</td><td align="right"><code>1</code></td><td align="right">Residue sequence number &#40;position in chain&#41;</td></tr><tr><td align="right">31-38</td><td align="right"><code>27.340</code></td><td align="right">X coordinate &#40;Ångströms&#41;</td></tr><tr><td align="right">39-46</td><td align="right"><code>24.430</code></td><td align="right">Y coordinate &#40;Ångströms&#41;</td></tr><tr><td align="right">47-54</td><td align="right"><code>2.614</code></td><td align="right">Z coordinate &#40;Ångströms&#41;</td></tr><tr><td align="right">55-60</td><td align="right"><code>1.00</code></td><td align="right">Occupancy &#40;how often atom is in this position&#41;</td></tr><tr><td align="right">61-66</td><td align="right"><code>9.67</code></td><td align="right">Temperature factor &#40;how much atom vibrates&#41;</td></tr><tr><td align="right">77-78</td><td align="right"><code>N</code></td><td align="right">Element symbol</td></tr></table>
+<hr />
+<h2 id="key_intuitions"><a href="#key_intuitions" class="header-anchor">Key Intuitions</a></h2>
+<p><strong>Think of it like a construction manual</strong></p>
+<ul>
+<li><p>Each line is an instruction: &quot;Place this specific atom at these exact coordinates&quot;</p>
+</li>
+<li><p>Read top to bottom to build the entire molecule</p>
+</li>
+</ul>
+<p><strong>Hierarchical structure</strong></p>
+<ul>
+<li><p>Atoms → Residues &#40;amino acids&#41; → Chains → Complete structure</p>
+</li>
+<li><p>Like: Letters → Words → Sentences → Paragraph</p>
+</li>
+</ul>
+<p><strong>It&#39;s just text</strong></p>
+<ul>
+<li><p>Despite being 3D structural data, PDB files are plain text</p>
+</li>
+<li><p>You can open them in Notepad and read them</p>
+</li>
+<li><p>Software visualizes them as beautiful 3D structures</p>
+</li>
+</ul>
+<p><strong>Coordinates are everything</strong></p>
+<ul>
+<li><p>The x, y, z numbers are the &quot;secret sauce&quot;</p>
+</li>
+<li><p>They define the exact 3D shape that determines biological function</p>
+</li>
+<li><p>Measured in Ångströms &#40;1 Å &#61; 0.0000000001 meters&#41;</p>
+</li>
+</ul>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: November 14, 2025.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+  </body>
+</html>

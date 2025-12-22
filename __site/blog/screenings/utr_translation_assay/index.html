@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Human 5′ UTR Design and Variant Effect Prediction from a MPTA</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="human_5_utr_design_and_variant_effect_prediction_from_a_massively_parallel_translation_assay"><a href="#human_5_utr_design_and_variant_effect_prediction_from_a_massively_parallel_translation_assay" class="header-anchor">Human 5′ UTR Design and Variant Effect Prediction from a Massively Parallel Translation Assay</a></h1>
+<p><strong>Paper Link:</strong> <a href="https://www.nature.com/articles/s41587-019-0164-5">https://www.nature.com/articles/s41587-019-0164-5</a></p>
+<hr />
+<h2 id="whats_this_paper_about"><a href="#whats_this_paper_about" class="header-anchor">What&#39;s This Paper About?</a></h2>
+<p>So imagine you&#39;re trying to control how much protein a cell makes from a gene. The 5′ UTR &#40;that&#39;s the &quot;untranslated region&quot; at the beginning of messenger RNA&#41; is like a dimmer switch – it doesn&#39;t code for protein itself, but it dramatically affects how much protein gets made. The problem? We&#39;ve never really understood the rules for how these sequences work in human cells.</p>
+<p>This team did something pretty clever: they created a massive library of 280,000 random 5′ UTR sequences, stuck them in front of a fluorescent reporter gene, and measured how well each one directed protein production. Then they used deep learning to crack the code.</p>
+<h2 id="the_dataset_random_sequences_not_classic_mutagenesis"><a href="#the_dataset_random_sequences_not_classic_mutagenesis" class="header-anchor">The Dataset: Random Sequences, Not Classic Mutagenesis</a></h2>
+<p>Here&#39;s an important distinction: this <strong>isn&#39;t</strong> a traditional mutagenesis dataset where they systematically mutate specific positions in known sequences. Instead, they created a library of 280,000 <strong>completely random 50-nucleotide sequences</strong> to serve as 5′ UTRs. Think of it as exploring the entire design space rather than just tweaking existing sequences.</p>
+<p>However, they <em>did</em> later test the model on variant data:</p>
+<p><strong>1. Truncated Human 5′ UTRs &#40;35,212 sequences&#41;</strong></p>
+<ul>
+<li><p>They took real human 5′ UTRs and created versions of different lengths</p>
+</li>
+<li><p>This tests whether the model works on natural sequences &#40;not just random ones&#41; and whether it can handle variable-length inputs</p>
+</li>
+<li><p>Think of it like: if the full 5′ UTR is 100 nucleotides, they&#39;d test versions that are 50, 75, or 90 nucleotides to see how length affects translation</p>
+</li>
+<li><p>This is important because in cells, alternative transcription start sites create naturally truncated UTRs</p>
+</li>
+</ul>
+<p><strong>2. Single-Nucleotide Variants &#40;3,577 SNVs&#41;</strong></p>
+<ul>
+<li><p>These are real genetic variations found in human populations</p>
+</li>
+<li><p>Each SNV is a single letter change &#40;like A→G&#41; in a 5′ UTR sequence</p>
+</li>
+<li><p>These variants exist naturally but we don&#39;t know which ones affect protein production</p>
+</li>
+<li><p>The model can predict which SNVs would increase or decrease translation</p>
+</li>
+</ul>
+<p><strong>3. Disease-Associated Mutations &#40;from ClinVar&#41;</strong></p>
+<ul>
+<li><p>ClinVar is a database of genetic variants linked to diseases</p>
+</li>
+<li><p>They found <strong>45 SNVs</strong> in 5′ UTRs that the model predicts would substantially change ribosome loading</p>
+</li>
+<li><p>These could be disease-causing because they mess up protein production</p>
+</li>
+<li><p>Example: a mutation in the CPOX gene &#40;causes hereditary coproporphyria&#41; that the model predicts reduces translation</p>
+</li>
+<li><p>This gives a molecular explanation for why some mutations cause disease</p>
+</li>
+</ul>
+<h2 id="the_cool_part_what_they_built"><a href="#the_cool_part_what_they_built" class="header-anchor">The Cool Part: What They Built</a></h2>
+<p>They developed <strong>&quot;Optimus 5-Prime&quot;</strong> – a neural network that can predict how any 5′ UTR sequence will affect translation &#40;the process of making protein from RNA&#41;. Think of it like having a crystal ball for gene expression.</p>
+<p>But they didn&#39;t stop there. They paired this predictor with a genetic algorithm &#40;basically evolutionary optimization&#41; to <em>design</em> new 5′ UTRs that hit specific expression targets. Want medium-high expression? Low expression? They can now engineer sequences that deliver exactly what you need.</p>
+<h2 id="why_this_matters"><a href="#why_this_matters" class="header-anchor">Why This Matters</a></h2>
+<p><strong>For Synthetic Biology &amp; Therapeutics:</strong></p>
+<ul>
+<li><p>You can now tune gene expression precisely – super useful for optimizing vaccines, gene therapies, and engineered cells</p>
+</li>
+<li><p>The model even works with chemically modified RNA &#40;like the kind used in mRNA vaccines&#33;&#41;</p>
+</li>
+</ul>
+<p><strong>For Understanding Disease:</strong></p>
+<ul>
+<li><p>They tested natural genetic variants and found 45 disease-associated mutations that significantly change how ribosomes load onto RNA</p>
+</li>
+<li><p>This could explain the molecular basis for some genetic diseases that we didn&#39;t understand before</p>
+</li>
+</ul>
+<p><strong>For Basic Science:</strong></p>
+<ul>
+<li><p>The model learned biologically meaningful patterns – things like upstream open reading frames &#40;uORFs&#41; that regulate translation</p>
+</li>
+<li><p>It can predict how changes in sequence length and structure affect expression</p>
+</li>
+</ul>
+<h2 id="the_technical_bits"><a href="#the_technical_bits" class="header-anchor">The Technical Bits</a></h2>
+<p>They used polysome profiling &#40;a way to measure how many ribosomes are translating an RNA&#41; combined with deep sequencing. The neural network architecture was a convolutional neural network &#40;CNN&#41; – kind of like what&#39;s used for image recognition, but for DNA/RNA sequences.</p>
+<h3 id="model_interpretation_what_did_it_learn"><a href="#model_interpretation_what_did_it_learn" class="header-anchor">Model Interpretation: What Did It Learn?</a></h3>
+<p>Yes&#33; They did extensive interpretation of the deep learning model to understand what regulatory elements it discovered:</p>
+<p><strong>1. Kozak Consensus Sequence</strong></p>
+<ul>
+<li><p>The model learned the importance of the Kozak sequence &#40;the context around the start codon AUG&#41;</p>
+</li>
+<li><p>This is a well-known regulatory element that affects translation initiation</p>
+</li>
+<li><p>The model rediscovered this from the data without being told about it&#33;</p>
+</li>
+</ul>
+<p><strong>2. Upstream Open Reading Frames &#40;uORFs&#41;</strong></p>
+<ul>
+<li><p>The model identified that small ATG codons upstream of the main start codon reduce translation</p>
+</li>
+<li><p>uORFs are regulatory elements where ribosomes start translating too early, then often don&#39;t make it to the real start codon</p>
+</li>
+<li><p>This matches known biology perfectly</p>
+</li>
+</ul>
+<p><strong>3. RNA Secondary Structure</strong></p>
+<ul>
+<li><p>The model learned that highly structured &#40;folded&#41; RNA near the start codon inhibits translation</p>
+</li>
+<li><p>Ribosomes need to access the RNA, so too much folding gets in the way</p>
+</li>
+<li><p>They validated this by comparing predictions with RNA folding energy calculations</p>
+</li>
+</ul>
+<p><strong>4. RNA-Binding Protein Motifs</strong></p>
+<ul>
+<li><p>By analyzing the convolutional filters in the neural network, they extracted sequence motifs</p>
+</li>
+<li><p>These motifs matched known binding sites for RNA-binding proteins from databases</p>
+</li>
+<li><p>Example: they found motifs similar to those recognized by translation regulatory proteins</p>
+</li>
+</ul>
+<p><strong>5. Position-Dependent Effects</strong></p>
+<ul>
+<li><p>The model learned that the <em>location</em> of regulatory elements matters</p>
+</li>
+<li><p>Features near the start codon have stronger effects than those further upstream</p>
+</li>
+<li><p>This matches the biology of how ribosomes scan along RNA</p>
+</li>
+</ul>
+<p>This interpretability is crucial - it shows the model isn&#39;t just memorizing patterns, but actually learning real biological mechanisms&#33;</p>
+<h2 id="real-world_applications"><a href="#real-world_applications" class="header-anchor">Real-World Applications</a></h2>
+<p>The researchers showed they could design 5′ UTRs that span the entire range of expression levels, and when they tested them experimentally, they worked as predicted. This has immediate applications in:</p>
+<ul>
+<li><p>mRNA vaccine design &#40;like COVID vaccines&#41;</p>
+</li>
+<li><p>Gene therapy optimization</p>
+</li>
+<li><p>Synthetic biology circuits</p>
+</li>
+<li><p>Metabolic engineering</p>
+</li>
+</ul>
+<h2 id="the_bottom_line"><a href="#the_bottom_line" class="header-anchor">The Bottom Line</a></h2>
+<p>This is one of those papers that gives us both a powerful predictive tool AND deeper biological insight. It&#39;s like going from guessing which light switch does what in a dark house, to suddenly having a blueprint and being able to design custom lighting systems. For anyone working with gene expression – whether you&#39;re making medicines or trying to understand diseases – this is a game-changer.</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: December 22, 2025.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+  </body>
+</html>
