@@ -184,3 +184,166 @@ By creating half a million random sequences and using deep learning, these resea
 - Position-dependent effects across the 5' UTR
 
 The key insight? Sometimes the best way to understand nature's rules is to create a bunch of random stuff and see what works. And with modern deep learning, you can actually interpret what patterns the model discovers. Who knew that 500,000 random sequences would teach us more than studying just the ~5,000 natural ones?
+
+# Data Flow: Which Datasets Were Used for What?
+
+## The Three Libraries (GSE104252)
+
+They generated **three distinct libraries**, each with input (before selection) and selected (after growth) samples:
+
+### 📊 Dataset Overview
+
+| Library | Input Sample | Selected Sample | Purpose | Size |
+|---------|--------------|-----------------|---------|------|
+| **Random Library** | GSM2793751 | GSM2793752 | **Training & Testing** | 489,348 sequences |
+| **Native Library** | GSM2793753 | GSM2793754 | **Validation** | ~10,000 sequences |
+| **Evolved Library** | GSM2793755 | GSM2793756 | **Experimental Validation** | 573 sequences |
+
+---
+
+## 🔄 The Complete Workflow
+
+### Phase 1: Generate Random Library Data
+```
+Random Library (489,348 sequences)
+├── Input (GSM2793751) - sequence counts before selection
+└── Selected (GSM2793752) - sequence counts after growth
+    └── Calculate enrichment = log2(Selected/Input)
+```
+
+**Training/Test Split:**
+- **Training Set**: 95% of sequences (464,880 sequences)
+  - Actually used ALL sequences with sufficient reads for training
+- **Test Set**: Top 5% by input read depth (24,468 sequences)
+  - These are the highest quality sequences with best sequencing coverage
+  - Used to minimize experimental noise when evaluating model performance
+
+---
+
+### Phase 2: Train the CNN Model
+```
+Training Data (464,880 sequences from Random Library)
+    ↓
+┌─────────────────────────────────────┐
+│   Convolutional Neural Network      │
+│   • 3 convolutional layers          │
+│   • 128 filters of length 13 each   │
+│   • Fully connected layer           │
+│   • Linear output                   │
+└─────────────────────────────────────┘
+    ↓
+Trained Model (predicts enrichment from 50-nt sequence)
+```
+
+**Key Point:** They trained ONLY on the random library, not the native sequences!
+
+---
+
+### Phase 3: Validate on Held-Out Random Sequences
+```
+Test Set (24,468 sequences - top 5% by read depth)
+    ↓
+Apply Trained Model
+    ↓
+R² = 0.62 (explains 62% of variance)
+```
+
+**Why top 5%?** These sequences had the most reads, meaning the enrichment scores are most accurate (less noise from low sequencing depth).
+
+---
+
+### Phase 4: Cross-Validate on Native Sequences
+```
+Native Library (GSM2793753 + GSM2793754)
+├── ~10,000 50-nt fragments from real yeast 5' UTRs
+├── Input & Selected samples (just like random library)
+└── Calculate enrichment scores
+    ↓
+Apply Random-Library-Trained Model
+    ↓
+R² = 0.60 (performs almost as well!)
+```
+
+**This is the key validation:** The model trained ONLY on random sequences generalizes beautifully to natural sequences!
+
+---
+
+### Phase 5: Computational Evolution
+```
+Starting Sequences:
+├── 100 from Random Library (various enrichment levels)
+└── 100 from Native Library (various enrichment levels)
+    ↓
+For each sequence, iteratively predict best single mutation
+    ↓
+Generate Evolved Sequences:
+├── Start points: 200 sequences
+├── Midpoints: 200 sequences  
+└── Endpoints: 173 sequences (when plateaued)
+    ↓
+Total: 573 sequences to test
+```
+
+---
+
+### Phase 6: Experimental Validation of Evolved Sequences
+```
+Evolved Library (GSM2793755 + GSM2793756)
+├── 573 evolved sequences synthesized and tested
+├── Input & Selected samples
+└── Calculate observed enrichment
+    ↓
+Compare Predicted vs Observed:
+├── 94% of random-derived sequences improved
+└── 84% of native-derived sequences improved
+```
+
+---
+
+## 🎯 Summary of Data Usage
+
+### Random Library (489K sequences)
+- **Used for:** Primary training + held-out testing
+- **Split:** 95% training / 5% testing
+- **Result:** R² = 0.62 on test set
+
+### Native Library (~10K sequences)
+- **Used for:** Independent validation (zero-shot)
+- **NOT used for training!**
+- **Result:** R² = 0.60 (comparable to random test set)
+
+### Evolved Library (573 sequences)
+- **Used for:** Experimental proof that model can design better sequences
+- **These are outputs of the model**, not training data
+- **Result:** 94% improved (random) / 84% improved (native)
+
+---
+
+## 🔍 Why This Design is Clever
+
+1. **Random library for training** = comprehensive coverage of sequence space
+   - Natural sequences are limited (~5,000 genes)
+   - Random sequences explore 450 possibilities
+
+2. **Native library for validation** = tests generalization
+   - Proves the model learned real biology, not just random patterns
+   - Never seen by the model during training!
+
+3. **Evolved library for practical demonstration** = shows utility
+   - Can actually design sequences with desired properties
+   - Closes the loop: learn from data → design new sequences → validate experimentally
+
+4. **Top 5% test set** = cleanest evaluation
+   - Minimizes noise from low-coverage sequences
+   - Gives most accurate assessment of model performance
+
+---
+
+## 📈 The Key Innovation
+
+**Training on random sequences instead of natural ones:**
+- Gets 100x more data (489K vs ~5K)
+- Sees motifs in many different contexts
+- Still generalizes to natural sequences perfectly
+
+This is like learning English grammar by reading randomly generated sentences instead of just literature - you see every rule in isolation and in every possible context!

@@ -18,6 +18,26 @@ This team did something pretty clever: they created a massive library of 280,000
 
 Here's an important distinction: this **isn't** a traditional mutagenesis dataset where they systematically mutate specific positions in known sequences. Instead, they created a library of 280,000 **completely random 50-nucleotide sequences** to serve as 5′ UTRs. Think of it as exploring the entire design space rather than just tweaking existing sequences.
 
+### The Complete Experimental Design (10 samples in GEO)
+
+The GEO dataset (GSE114002) contains 10 samples representing different experimental conditions:
+
+**Training Data (likely samples 1-2):**
+- **egfp_unmod_1 & egfp_unmod_2**: The 280,000 random 50-nt sequences with eGFP reporter, unmodified RNA (biological replicates)
+- This is the main training dataset for the Optimus 5-Prime model
+
+**Validation Experiments (samples 3-8):**
+- **egfp_pseudo_1 & egfp_pseudo_2**: Same random library but with pseudouridine-modified RNA
+- **egfp_m1pseudo_1 & egfp_m1pseudo_2**: Same library with 1-methylpseudouridine modification
+- **mcherry_unmod_1 & mcherry_unmod_2**: Random library with mCherry reporter instead of eGFP
+- These test whether the model generalizes to different RNA chemistries and reporter genes
+
+**Testing on Real/Designed Sequences (samples 9-10):**
+- **designed_library**: Contains human 5′ UTRs, naturally occurring SNVs, and sequences engineered with genetic algorithm
+- **designed_library_25-100_length_utrs**: Variable-length UTRs (testing length generalization)
+
+This is smart experimental design: train on one clean dataset (unmodified RNA with eGFP), then systematically test how well the model generalizes to different biological and chemical contexts.
+
 However, they *did* later test the model on variant data:
 
 **1. Truncated Human 5′ UTRs (35,212 sequences)**
