@@ -19,10 +19,40 @@ This dataset contains polysome profiling results for **280,000 random 50-nucleot
 
 ## Column Structure
 
-### 1. **Sequence Column**
-- **Content:** The 50-nucleotide random 5′ UTR sequence
-- **Format:** String of nucleotides (A, C, G, U)
-- **Example:** `ACGUACGUACGU...` (50 bases)
+## Column Structure
+
+### 1. **Sequence Column** ⚠️ IMPORTANT - READ THIS!
+
+**What you'll see:** 59-nucleotide sequences ending in `ATGGGCGAA`
+
+**What you need:**
+- **Remove the suffix `ATGGGCGAA`** (last 9 nucleotides)
+- Extract only the first 50 nucleotides
+- This is the variable 5′ UTR that the model predicts from
+
+**Structure:**
+```
+Full sequence in CSV: [50-nt variable UTR][ATGGGCGAA]
+                                            ↑
+                                    ATG = start codon
+                                    GGCGAA = start of eGFP
+
+After preprocessing:  [50-nt variable UTR only]
+```
+
+**Why the suffix is there:**
+- `ATG` is the translation start codon
+- `GGCGAA` is the beginning of eGFP coding sequence
+- It's constant across all constructs for fair comparison
+- **But the model was trained on only the 50-nt UTR!**
+
+**Preprocessing code:**
+```python
+# Remove constant suffix
+utr_sequence = full_sequence[:-9]  # Remove last 9 bases
+# Or equivalently
+utr_sequence = full_sequence[:50]  # Take first 50 bases
+```
 
 ### 2. **Unnormalized Fraction Counts: `00`, `01`, `02`, ..., `011`**
 - **Total:** 12 columns (fractions 0-11, numbered in base 12)
@@ -109,6 +139,10 @@ Each 🔵 represents a ribosome making a copy of the protein!
 - One mRNA with 10 ribosomes → making 10 protein molecules at once
 - One mRNA with 1 ribosome → making only 1 protein molecule
 - One mRNA with 0 ribosomes → making ZERO protein (not being translated)
+
+### Important Caveat: You Can't Actually Count Them!
+
+**The "ribosome numbers" are approximations based on sedimentation rate**, not literal counts. See the detailed explanation below.
 
 ---
 
@@ -321,11 +355,85 @@ The paper reports **very high correlation** between replicates:
 - This validates that pooling/averaging is appropriate
 - Low noise means either approach gives similar results
 
-### In Practice:
+## Why Do The Two Replicates Have Different Numbers of UTRs?
 
-For most sequences, the two approaches would give nearly identical results because:
-- Replicates are highly correlated
-- Most sequences have enough reads for stable estimates
-- The deep learning model is robust to small variations
+### Your Observation:
+**egfp_unmod_1 and egfp_unmod_2 don't have the same number of sequences!**
 
-**Bottom line:** They likely **pooled the read counts** before calculating MRL, which is the most statistically sound approach for high-throughput sequencing data.
+This is completely normal and expected! Here's why:
+
+### The Filtering Process:
+
+**Starting point:** Both replicates test the same 280,000 designed UTR sequences
+
+**But after sequencing, they filter out sequences with insufficient data:**
+
+1. **Low read count sequences** - If a UTR gets too few sequencing reads, the measurements are too noisy to be reliable
+   - Example: Only 5 total reads across all fractions → can't calculate accurate MRL
+   - Typical threshold: Require at least 50-100 total reads
+
+2. **Stochastic sampling** - Not all sequences get picked up equally well in sequencing
+   - Some sequences are underrepresented in library synthesis
+   - Some cells don't take up certain sequences as efficiently
+   - Random sampling during sequencing misses some rare sequences
+
+3. **Different filtering per replicate:**
+   - Replicate 1 might have sequence A drop out (too few reads)
+   - Replicate 2 might have sequence B drop out (too few reads)
+   - **The overlap is what matters for training!**
+
+### Example Scenario:
+
+```
+Original library: 280,000 sequences
+
+After sequencing and filtering:
+- egfp_unmod_1: 215,000 sequences pass filter
+- egfp_unmod_2: 218,000 sequences pass filter
+- OVERLAP: 205,000 sequences in BOTH replicates
+
+For training, they use only the overlap (205,000)
+```
+
+### Why This Is Standard Practice:
+
+**Quality over quantity:**
+- Better to have fewer high-quality measurements
+- Than to include noisy data that will confuse the model
+- The ~200k sequences they keep is still plenty for training!
+
+**Common in MPRA experiments:**
+- This happens in almost all high-throughput assays
+- Papers typically report something like: "We recovered 70-80% of designed sequences"
+- The exact dropout is random, so replicates differ slightly
+
+### What They Actually Do for Training:
+
+**Option 1: Use intersection** (most conservative)
+- Only use sequences present in BOTH replicates
+- Highest quality data
+- Typically ~70-80% of original library
+
+**Option 2: Use union with imputation** (more data)
+- Use all sequences from either replicate
+- For sequences in only one replicate, use single measurement
+- More sequences but noisier
+
+**Most likely for this paper:** They used the **intersection** (sequences in both replicates), then pooled the read counts for those sequences.
+
+### The Technical Reason:
+
+During the experiment:
+1. **Transfection efficiency varies** - Not all cells get all sequences
+2. **Amplification bias** - PCR doesn't amplify all sequences equally
+3. **Sequencing depth limits** - Can't sequence infinitely deep
+4. **Random sampling** - Each sequencing run samples randomly from the pool
+
+**Result:** Each replicate recovers a slightly different subset of the original library.
+
+### Bottom Line:
+
+**This is totally normal and expected!** The different counts don't mean something went wrong - it's just the reality of high-throughput sequencing. The key is:
+- Both replicates are highly correlated for sequences they share (r² > 0.95)
+- They have enough overlap (~200k sequences) for robust model training
+- The sequences that pass filter in both replicates are high-quality measurements
