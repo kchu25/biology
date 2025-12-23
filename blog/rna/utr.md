@@ -1,6 +1,6 @@
-@def title = "Understanding the GSM3130435_egfp_unmod_1.csv Data"
-@def published = "22 December 2025"
-@def tags = ["rna", "screening"]
+@def title = "What's So Special About UTRs in RNA?"
+@def published = "23 December 2025"
+@def tags = ["rna"]
 
 # What's So Special About UTRs in RNA?
 
