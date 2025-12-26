@@ -85,10 +85,10 @@ UTRs (untranslated regions) can serve as a foundation for a biotech company, but
 - Not just "this UTR is good" but "here's exactly why and how to improve it"
 
 **Revenue streams:**
-- Platform licensing: $50-200K/year per pharma/biotech
-- Custom analysis projects: $100-500K per therapeutic program
+- Platform licensing: \$50-200K/year per pharma/biotech
+- Custom analysis projects: \$100-500K per therapeutic program
 - Consulting: Help apply framework to specific contexts
-- Training: Workshops on mechanistic UTR engineering ($50K/session)
+- Training: Workshops on mechanistic UTR engineering (\$50K/session)
 
 **Moat comes from:**
 - Years of work identifying which mechanisms matter
@@ -111,11 +111,11 @@ UTRs (untranslated regions) can serve as a foundation for a biotech company, but
 
 **Revenue:**
 - Library access: Subscription or per-sequence licensing
-- Custom UTR design: $200K-1M per therapeutic program
+- Custom UTR design: \$200K-1M per therapeutic program
 - Combines pre-validated components using mechanistic principles
 
 **Moat:**
-- Dataset requires $20-50M and 3-5 years to replicate
+- Dataset requires \$20-50M and 3-5 years to replicate
 - Mechanistic annotations add unique value
 - Continuous expansion maintains lead
 
@@ -129,10 +129,10 @@ UTRs (untranslated regions) can serve as a foundation for a biotech company, but
 **Advantages:**
 - Complete solution: "Here's why this UTR works + proof it works"
 - Proprietary validation data improves models (flywheel)
-- Higher value capture ($50-100K per project vs. $10-20K for pure computation)
+- Higher value capture (\$50-100K per project vs. \$10-20K for pure computation)
 
 **Challenges:**
-- Capital intensive ($2-5M for minimal lab)
+- Capital intensive (\$2-5M for minimal lab)
 - Operational complexity (managing wetlab)
 - 90% of time on operations vs. innovation
 
@@ -154,9 +154,9 @@ UTRs (untranslated regions) can serve as a foundation for a biotech company, but
 - The approved drug itself
 
 **Requirements:**
-- $50-200M capital
+- \$50-200M capital
 - 5-10 year timeline
-- High risk, but potential $1B+ outcomes
+- High risk, but potential \$1B+ outcomes
 
 ---
 
@@ -175,7 +175,7 @@ UTRs (untranslated regions) can serve as a foundation for a biotech company, but
 - Small customer base (thousands vs. millions)
 - High-touch sales (months of negotiation per deal)
 - Integration complexity (workflows, data security, compliance)
-- Value capture mismatch (software helps create $1B drug, gets $50K/year)
+- Value capture mismatch (software helps create \$1B drug, gets \$50K/year)
 - Rapid commoditization (open source, academic papers, cloud platforms)
 
 ### When Computation Can Work
@@ -248,14 +248,14 @@ Build just enough wetlab capability to:
 **What this requires:**
 - Small lab: cell culture, reporter assays, qPCR/RNA-seq
 - 2-3 scientists
-- $2-5M capital
+- \$2-5M capital
 - Focus on validation, not full drug development
 
 **Why this is strategic:**
 - Credibility: "Mechanistic predictions backed by experimental proof"
 - Data moat: Validated mechanistic contributions (takes years to replicate)
-- Premium pricing: $50-100K per project vs. $10-20K pure computation
-- Defensibility: 2-3 years and $5M to build equivalent infrastructure + data
+- Premium pricing: \$50-100K per project vs. \$10-20K pure computation
+- Defensibility: 2-3 years and \$5M to build equivalent infrastructure + data
 
 **What you avoid:**
 - Full drug development (too capital intensive, too slow)
@@ -275,7 +275,7 @@ Build just enough wetlab capability to:
 ✅ **Own the proprietary dataset**
 - Clear legal agreements: validation data belongs to you
 - They help you build the library, you own it
-- Takes years and $$$ to replicate
+- Takes years and \$\$\$ to replicate
 
 ✅ **Move faster than they can react**
 - By the time they understand v1.0, you're on v2.0
@@ -318,7 +318,7 @@ Once you design optimized UTRs for a client, they own them forever. No recurring
 **1. Massive Validated Library**
 - 1,000+ experimentally validated UTRs with mechanistic annotations
 - Each validated across multiple contexts
-- Requires: $20-50M, 3-5 years
+- Requires: \$20-50M, 3-5 years
 - Moat = time/cost to replicate
 
 **2. Mechanistic Framework Expertise**
@@ -415,7 +415,7 @@ Once you design optimized UTRs for a client, they own them forever. No recurring
 - Equity upside + salary + interesting problems
 
 **2. Big pharma computational roles**
-- $300-400K+ salaries at major companies
+- \$300-400K+ salaries at major companies
 - Solve problems without commercialization headaches
 - Stable, well-compensated, intellectually engaging
 
@@ -452,39 +452,39 @@ Not a prediction tool, but an interpretability tool:
 **Phase 1 (Year 1): Proof of Concept**
 - Develop and validate mechanistic framework
 - Build initial library (100-200 validated UTRs)
-- Secure 1-2 pilot partnerships ($50-100K each)
+- Secure 1-2 pilot partnerships (\$50-100K each)
 - Publish framework paper (establish authority)
-- Raise seed: $2-4M
+- Raise seed: \$2-4M
 
 **Phase 2 (Years 1-2): Scale Validation**
 - Build minimal validation lab
 - Expand library to 500-1000 UTRs
-- Sign 3-5 partnerships ($100-200K each)
+- Sign 3-5 partnerships (\$100-200K each)
 - Develop v2.0 of mechanistic models
-- Raise Series A: $10-20M
+- Raise Series A: \$10-20M
 
 **Phase 3 (Years 2-4): Platform Maturity**
 - Comprehensive validated library (1000+ UTRs)
 - Software platform for customer self-service
 - Consulting practice for custom programs
 - Consider: Own therapeutic programs using platform
-- Potential exit: $200M-1B if category leader
+- Potential exit: \$200M-1B if category leader
 
 ### Revenue Model
 
 **Three complementary streams:**
 
-**1. Software Licensing: $50-200K/year**
+**1. Software Licensing: \$50-200K/year**
 - Platform access for mechanistic analysis
 - Self-service for customer teams
 - Annual subscriptions
 
-**2. Custom Projects: $100-500K per program**
+**2. Custom Projects: \$100-500K per program**
 - Deep mechanistic analysis of customer UTRs
 - Custom UTR design for specific applications
 - Combines software + human expertise
 
-**3. Consulting/Training: $50K per engagement**
+**3. Consulting/Training: \$50K per engagement**
 - Workshops on mechanistic UTR engineering
 - Help customers build internal capabilities using your framework
 - Ongoing advisory relationships
