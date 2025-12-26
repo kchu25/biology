@@ -31,6 +31,34 @@
 <p>This team did something pretty clever: they created a massive library of 280,000 random 5′ UTR sequences, stuck them in front of a fluorescent reporter gene, and measured how well each one directed protein production. Then they used deep learning to crack the code.</p>
 <h2 id="the_dataset_random_sequences_not_classic_mutagenesis"><a href="#the_dataset_random_sequences_not_classic_mutagenesis" class="header-anchor">The Dataset: Random Sequences, Not Classic Mutagenesis</a></h2>
 <p>Here&#39;s an important distinction: this <strong>isn&#39;t</strong> a traditional mutagenesis dataset where they systematically mutate specific positions in known sequences. Instead, they created a library of 280,000 <strong>completely random 50-nucleotide sequences</strong> to serve as 5′ UTRs. Think of it as exploring the entire design space rather than just tweaking existing sequences.</p>
+<h3 id="the_complete_experimental_design_10_samples_in_geo"><a href="#the_complete_experimental_design_10_samples_in_geo" class="header-anchor">The Complete Experimental Design &#40;10 samples in GEO&#41;</a></h3>
+<p>The GEO dataset &#40;GSE114002&#41; contains 10 samples representing different experimental conditions:</p>
+<p><strong>Training Data &#40;likely samples 1-2&#41;:</strong></p>
+<ul>
+<li><p><strong>egfp<em>unmod</em>1 &amp; egfp<em>unmod</em>2</strong>: The 280,000 random 50-nt sequences with eGFP reporter, unmodified RNA &#40;biological replicates&#41;</p>
+</li>
+<li><p>This is the main training dataset for the Optimus 5-Prime model</p>
+</li>
+</ul>
+<p><strong>Validation Experiments &#40;samples 3-8&#41;:</strong></p>
+<ul>
+<li><p><strong>egfp<em>pseudo</em>1 &amp; egfp<em>pseudo</em>2</strong>: Same random library but with pseudouridine-modified RNA</p>
+</li>
+<li><p><strong>egfp<em>m1pseudo</em>1 &amp; egfp<em>m1pseudo</em>2</strong>: Same library with 1-methylpseudouridine modification</p>
+</li>
+<li><p><strong>mcherry<em>unmod</em>1 &amp; mcherry<em>unmod</em>2</strong>: Random library with mCherry reporter instead of eGFP</p>
+</li>
+<li><p>These test whether the model generalizes to different RNA chemistries and reporter genes</p>
+</li>
+</ul>
+<p><strong>Testing on Real/Designed Sequences &#40;samples 9-10&#41;:</strong></p>
+<ul>
+<li><p><strong>designed_library</strong>: Contains human 5′ UTRs, naturally occurring SNVs, and sequences engineered with genetic algorithm</p>
+</li>
+<li><p><strong>designed<em>library</em>25-100<em>length</em>utrs</strong>: Variable-length UTRs &#40;testing length generalization&#41;</p>
+</li>
+</ul>
+<p>This is smart experimental design: train on one clean dataset &#40;unmodified RNA with eGFP&#41;, then systematically test how well the model generalizes to different biological and chemical contexts.</p>
 <p>However, they <em>did</em> later test the model on variant data:</p>
 <p><strong>1. Truncated Human 5′ UTRs &#40;35,212 sequences&#41;</strong></p>
 <ul>
@@ -159,7 +187,7 @@
 <div class="page-foot">
     Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
     <br>
-    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: December 22, 2025.
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: December 26, 2025.
     <br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
 </div>

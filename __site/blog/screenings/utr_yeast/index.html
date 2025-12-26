@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Deep Learning of the Regulatory Grammar of Yeast 5′ UTRs</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="deep_learning_of_the_regulatory_grammar_of_yeast_5_utrs"><a href="#deep_learning_of_the_regulatory_grammar_of_yeast_5_utrs" class="header-anchor">Deep Learning of the Regulatory Grammar of Yeast 5′ UTRs</a></h1>
+<p><strong>Paper Title:</strong> Deep learning of the regulatory grammar of yeast 5′ untranslated regions from 500,000 random sequences</p>
+<p><strong>Link:</strong> https://pmc.ncbi.nlm.nih.gov/articles/PMC5741052/</p>
+<h2 id="whats_this_paper_about"><a href="#whats_this_paper_about" class="header-anchor">What&#39;s This Paper About?</a></h2>
+<p>So here&#39;s the thing - scientists have always struggled to predict how much protein a gene will make just by looking at its DNA sequence. It&#39;s kind of like trying to predict how good a recipe will taste just by reading the ingredient list - there&#39;s a lot of nuance involved&#33; This paper tackles that problem by using machine learning to understand the 5&#39; UTR, which is basically the &quot;instruction manual&quot; that sits right before the actual protein-coding part of a gene.</p>
+<h2 id="the_big_idea"><a href="#the_big_idea" class="header-anchor">The Big Idea</a></h2>
+<p>The researchers created a massive library of <strong>500,000 completely random 5&#39; UTR sequences</strong> - basically half a million different &quot;instruction manuals&quot; - and tested how well each one worked in yeast cells. Then they used this enormous dataset to train a deep learning model &#40;specifically a convolutional neural network&#41; that can predict how any 5&#39; UTR sequence will affect protein production.</p>
+<p>Think of it like this: instead of studying just the natural instruction manuals that exist in nature, they created half a million random ones and figured out the rules by seeing which ones worked well and which ones flopped.</p>
+<h2 id="how_they_did_it"><a href="#how_they_did_it" class="header-anchor">How They Did It</a></h2>
+<p><strong>The Clever Experimental Setup:</strong></p>
+<ul>
+<li><p>They replaced the natural 5&#39; UTR in yeast with random 50-nucleotide sequences</p>
+</li>
+<li><p>Used a growth-based selection system with the HIS3 gene - basically, cells that made more His3 protein grew faster in the special media they used</p>
+</li>
+<li><p>Tracked which sequences were enriched &#40;more common&#41; or depleted &#40;less common&#41; after growth using deep sequencing</p>
+</li>
+</ul>
+<p><strong>Why this approach rocks:</strong></p>
+<ul>
+<li><p>Growth selection can handle way more sequences than traditional fluorescence sorting</p>
+</li>
+<li><p>You&#39;re measuring real protein expression in living cells, not just fluorescence</p>
+</li>
+<li><p>The selection naturally ranks sequences by how well they work</p>
+</li>
+</ul>
+<h2 id="what_they_discovered"><a href="#what_they_discovered" class="header-anchor">What They Discovered</a></h2>
+<h3 id="the_kozak_sequence_surprise"><a href="#the_kozak_sequence_surprise" class="header-anchor">The Kozak Sequence Surprise</a></h3>
+<p>You know how everyone thought the best Kozak sequence &#40;the part right before the start codon&#41; was all adenines &#40;AAAAA&#41;? <strong>Wrong&#33;</strong> They found 154 other sequences that actually work better. The most common Kozak sequence in the genome isn&#39;t the best performer - nature isn&#39;t always optimized for maximum expression&#33;</p>
+<h3 id="secondary_structure_matters_but_not_that_much"><a href="#secondary_structure_matters_but_not_that_much" class="header-anchor">Secondary Structure Matters &#40;But Not That Much&#41;</a></h3>
+<p>RNA can fold on itself like origami, and this affects translation. They found:</p>
+<ul>
+<li><p>Structure near the 5&#39; end or near the start codon has the biggest impact</p>
+</li>
+<li><p>Hairpins with longer stems and short loops are worst for expression</p>
+</li>
+<li><p>But overall, structure alone only explains about 8&#37; of the variation in expression</p>
+</li>
+</ul>
+<h3 id="uorfs_are_bad_news"><a href="#uorfs_are_bad_news" class="header-anchor">uORFs Are Bad News</a></h3>
+<p>Upstream open reading frames &#40;uORFs&#41; - basically fake start codons that appear before the real one - really mess things up. They&#39;re like false starts in a race. The model learned that:</p>
+<ul>
+<li><p>Out-of-frame uORFs drastically reduce protein expression</p>
+</li>
+<li><p>In-frame uORFs &#40;which just add extra amino acids&#41; have a milder effect</p>
+</li>
+<li><p>The position matters - uORFs further from the real start codon cause more problems</p>
+</li>
+</ul>
+<h2 id="the_deep_learning_model"><a href="#the_deep_learning_model" class="header-anchor">The Deep Learning Model</a></h2>
+<p>They built a <strong>three-layer convolutional neural network</strong> that could:</p>
+<ul>
+<li><p>Predict 62&#37; of the variation in protein expression &#40;R² &#61; 0.62&#41; - that&#39;s really good for biological data&#33;</p>
+</li>
+<li><p>Work on both their random sequences AND natural yeast 5&#39; UTRs</p>
+</li>
+<li><p>Identify important sequence motifs automatically</p>
+</li>
+</ul>
+<p><strong>Cool technical details:</strong></p>
+<ul>
+<li><p>Each layer had 128 filters of length 13</p>
+</li>
+<li><p>The first layer learned recognizable patterns like start codons, stop codons, and G-quadruplex sequences</p>
+</li>
+<li><p>Higher layers combined these patterns to understand complex features like uORFs</p>
+</li>
+<li><p>The model showed clear position-dependent effects - where a feature appears in the sequence matters&#33;</p>
+</li>
+</ul>
+<h2 id="designing_better_sequences"><a href="#designing_better_sequences" class="header-anchor">Designing Better Sequences</a></h2>
+<p>Here&#39;s where it gets practical - they used their model to <strong>computationally evolve better 5&#39; UTRs</strong>. Starting from 200 sequences &#40;100 random, 100 natural&#41;, they iteratively made single nucleotide changes predicted to increase expression.</p>
+<p><strong>The results were impressive:</strong></p>
+<ul>
+<li><p>About 94&#37; of random sequences and 84&#37; of natural sequences improved</p>
+</li>
+<li><p>Most evolved sequences ended up in the top 10&#37; of performers</p>
+</li>
+<li><p>The model selected for: A-rich composition, good Kozak sequences, removal of uORFs and secondary structure</p>
+</li>
+<li><p>Interestingly, it didn&#39;t collapse everything to the same sequence - many different paths led to high expression</p>
+</li>
+</ul>
+<h2 id="why_this_matters"><a href="#why_this_matters" class="header-anchor">Why This Matters</a></h2>
+<p><strong>For basic science:</strong></p>
+<ul>
+<li><p>We can now understand how sequence features combine to control gene expression</p>
+</li>
+<li><p>Identified novel regulatory motifs, including potential RNA-binding protein sites</p>
+</li>
+<li><p>Created a comprehensive map of where different motifs matter in the 5&#39; UTR</p>
+</li>
+</ul>
+<p><strong>For synthetic biology:</strong></p>
+<ul>
+<li><p>You can now design 5&#39; UTRs with predictable expression levels</p>
+</li>
+<li><p>Dramatically reduces trial-and-error in metabolic engineering</p>
+</li>
+<li><p>The model works as a &quot;protein expression optimizer&quot; you can use computationally</p>
+</li>
+</ul>
+<p><strong>For the future:</strong></p>
+<ul>
+<li><p>The approach could work for other organisms &#40;including humans&#33;&#41;</p>
+</li>
+<li><p>Could help predict the effects of genetic variants on gene expression</p>
+</li>
+<li><p>Shows the power of using large random libraries instead of just natural sequences</p>
+</li>
+</ul>
+<h2 id="deep_learning_model_interpretation_-_what_did_it_learn"><a href="#deep_learning_model_interpretation_-_what_did_it_learn" class="header-anchor">Deep Learning Model Interpretation - What Did It Learn?</a></h2>
+<p>Yes&#33; They did extensive interpretation of their neural network, which is one of the coolest parts of this paper. Here&#39;s what they found:</p>
+<h3 id="visualizing_the_first_layer_filters"><a href="#visualizing_the_first_layer_filters" class="header-anchor">Visualizing the First Layer Filters</a></h3>
+<p>They analyzed all 128 filters in the first convolutional layer by:</p>
+<ol>
+<li><p>Scoring 488,000 random 13-mers &#40;short sequences&#41; with each filter</p>
+</li>
+<li><p>Taking the top 1,000 scoring sequences</p>
+</li>
+<li><p>Creating position weight matrices &#40;PWMs&#41; to see what patterns each filter recognized</p>
+</li>
+</ol>
+<p><strong>What the filters learned:</strong></p>
+<ul>
+<li><p><strong>12 filters</strong> learned variants of upstream AUG &#40;start codon&#41; motifs</p>
+</li>
+<li><p><strong>8 filters</strong> learned stop codon patterns &#40;UAG/UGA/UAA&#41;</p>
+</li>
+<li><p><strong>Several filters</strong> recognized G-quadruplex sequences &#40;important RNA secondary structures&#41;</p>
+</li>
+<li><p><strong>Many filters</strong> had no obvious biological meaning at first glance - but could be detecting RNA-binding protein sites or other undiscovered regulatory elements</p>
+</li>
+</ul>
+<h3 id="positional_effects_-_location_matters"><a href="#positional_effects_-_location_matters" class="header-anchor">Positional Effects - Location Matters&#33;</a></h3>
+<p>They created heat maps showing where each motif had the most impact along the 5&#39; UTR:</p>
+<p><strong>Key findings:</strong></p>
+<ul>
+<li><p>Most motifs showed <strong>uniform effects</strong> across the middle of the UTR</p>
+</li>
+<li><p><strong>Position-dependent effects</strong> were strongest at the ends &#40;5&#39; and 3&#39;&#41;</p>
+</li>
+<li><p>Some motifs showed striking <strong>3-nucleotide periodicity</strong> - this reflected their position relative to the reading frame when upstream AUGs were present</p>
+</li>
+<li><p>When they analyzed sequences WITHOUT upstream AUGs, the periodicity disappeared - proving the model learned about reading frames&#33;</p>
+</li>
+</ul>
+<h3 id="higher_layers_-_learning_complex_rules"><a href="#higher_layers_-_learning_complex_rules" class="header-anchor">Higher Layers - Learning Complex Rules</a></h3>
+<p>The second and third convolutional layers combined lower-level features to understand more complex biology:</p>
+<p><strong>The model learned to recognize:</strong></p>
+<ul>
+<li><p><strong>uORFs</strong> by combining upstream AUG and stop codon filters</p>
+</li>
+<li><p>The difference between in-frame vs. out-of-frame upstream AUGs</p>
+</li>
+<li><p>That an in-frame uAUG &#43; in-frame stop codon is worse than just an in-frame uAUG alone</p>
+</li>
+<li><p>That an in-frame uAUG &#43; out-of-frame stop codon has minimal effect</p>
+</li>
+</ul>
+<p>This is really sophisticated - the model essentially figured out the concept of reading frames and translation without being explicitly told&#33;</p>
+<h3 id="novel_regulatory_motifs_discovered"><a href="#novel_regulatory_motifs_discovered" class="header-anchor">Novel Regulatory Motifs Discovered</a></h3>
+<p><strong>The Nrd1/Nab3 Connection:</strong> One of the most interesting discoveries was motifs matching the <strong>reverse complement of the Nrd1 complex binding site</strong> &#40;consensus: UCUUGU&#41;. During their computational evolution experiments, they found:</p>
+<ul>
+<li><p>Three specific 4-mers &#40;CAAG, ACAA, AAGA&#41; that match the reverse complement were highly enriched</p>
+</li>
+<li><p>These appeared 42,906 times total in the optimized sequences</p>
+</li>
+<li><p>The actual Nrd1 motif itself &#40;UCUU, CUUG, UUGU&#41; appeared only 48 times</p>
+</li>
+</ul>
+<p><strong>Why this matters:</strong> The Nrd1 complex is involved in transcription termination of non-coding RNAs. These reverse complement motifs might reduce antisense transcription from the opposite strand, which is known to regulate expression in yeast. This is a completely new regulatory mechanism they discovered just by interpreting the model&#33;</p>
+<p><strong>Potential RNA-binding protein sites:</strong> Several filters didn&#39;t match known motifs - these could represent:</p>
+<ul>
+<li><p>Novel RNA-binding protein recognition sites</p>
+</li>
+<li><p>Motifs affecting RNA stability</p>
+</li>
+<li><p>Sequences that change transcriptional start sites</p>
+</li>
+<li><p>Currently unknown regulatory mechanisms</p>
+</li>
+</ul>
+<h3 id="interpretable_evolution_patterns"><a href="#interpretable_evolution_patterns" class="header-anchor">Interpretable Evolution Patterns</a></h3>
+<p>When they evolved 5,000 sequences computationally, they tracked which features the model selected for:</p>
+<p><strong>Simple features that increased:</strong></p>
+<ul>
+<li><p>Adenine-rich composition &#40;especially A at position -3&#41;</p>
+</li>
+<li><p>Favorable Kozak sequences &#40;but diverse - no single winner&#41;</p>
+</li>
+<li><p>In-frame upstream AUGs</p>
+</li>
+</ul>
+<p><strong>Features that decreased:</strong></p>
+<ul>
+<li><p>uORFs &#40;out-of-frame start codons&#41;</p>
+</li>
+<li><p>Secondary structure &#40;lower MFE&#41;</p>
+</li>
+<li><p>Specific depleted 4-mers</p>
+</li>
+</ul>
+<p><strong>Complex features:</strong> They found that enriched 4-mers often appeared <strong>multiple times</strong> in a single UTR - and each additional copy correlated with higher expression. It&#39;s like the model learned that &quot;more of a good thing is better&quot; for certain motifs.</p>
+<h3 id="the_spatial_distribution_map"><a href="#the_spatial_distribution_map" class="header-anchor">The Spatial Distribution Map</a></h3>
+<p>One of their key contributions was creating a comprehensive <strong>position-dependent map</strong> of regulatory motifs. They showed:</p>
+<ul>
+<li><p>Most effects are <strong>position-independent</strong> across the bulk of the UTR</p>
+</li>
+<li><p><strong>Notable exception:</strong> Start and stop codon motifs are frame-sensitive relative to the primary start codon</p>
+</li>
+<li><p>Structure matters most at the ends</p>
+</li>
+<li><p>The -3 position &#40;Kozak sequence&#41; has outsized importance</p>
+</li>
+</ul>
+<h2 id="the_bottom_line"><a href="#the_bottom_line" class="header-anchor">The Bottom Line</a></h2>
+<p>By creating half a million random sequences and using deep learning, these researchers cracked a major part of the gene expression code. Their model can predict protein production from DNA sequence with impressive accuracy and can even design sequences with desired properties. It&#39;s like they built a &quot;Google Translate&quot; for the language of gene regulation - and it actually works&#33;</p>
+<p><strong>The interpretability aspect is huge</strong> - they didn&#39;t just build a black box. They systematically dissected what the model learned and discovered:</p>
+<ul>
+<li><p>Known regulatory elements &#40;validating the approach&#41;</p>
+</li>
+<li><p>Novel motifs like the Nrd1 reverse complement</p>
+</li>
+<li><p>Complex rules about reading frames and motif combinations</p>
+</li>
+<li><p>Position-dependent effects across the 5&#39; UTR</p>
+</li>
+</ul>
+<p>The key insight? Sometimes the best way to understand nature&#39;s rules is to create a bunch of random stuff and see what works. And with modern deep learning, you can actually interpret what patterns the model discovers. Who knew that 500,000 random sequences would teach us more than studying just the ~5,000 natural ones?</p>
+<h1 id="data_flow_which_datasets_were_used_for_what"><a href="#data_flow_which_datasets_were_used_for_what" class="header-anchor">Data Flow: Which Datasets Were Used for What?</a></h1>
+<h2 id="the_three_libraries_gse104252"><a href="#the_three_libraries_gse104252" class="header-anchor">The Three Libraries &#40;GSE104252&#41;</a></h2>
+<p>They generated <strong>three distinct libraries</strong>, each with input &#40;before selection&#41; and selected &#40;after growth&#41; samples:</p>
+<h3 id="dataset_overview"><a href="#dataset_overview" class="header-anchor">📊 Dataset Overview</a></h3>
+<table><tr><th align="right">Library</th><th align="right">Input Sample</th><th align="right">Selected Sample</th><th align="right">Purpose</th><th align="right">Size</th></tr><tr><td align="right"><strong>Random Library</strong></td><td align="right">GSM2793751</td><td align="right">GSM2793752</td><td align="right"><strong>Training &amp; Testing</strong></td><td align="right">489,348 sequences</td></tr><tr><td align="right"><strong>Native Library</strong></td><td align="right">GSM2793753</td><td align="right">GSM2793754</td><td align="right"><strong>Validation</strong></td><td align="right">~10,000 sequences</td></tr><tr><td align="right"><strong>Evolved Library</strong></td><td align="right">GSM2793755</td><td align="right">GSM2793756</td><td align="right"><strong>Experimental Validation</strong></td><td align="right">573 sequences</td></tr></table>
+<hr />
+<h2 id="the_complete_workflow"><a href="#the_complete_workflow" class="header-anchor">🔄 The Complete Workflow</a></h2>
+<h3 id="phase_1_generate_random_library_data"><a href="#phase_1_generate_random_library_data" class="header-anchor">Phase 1: Generate Random Library Data</a></h3>
+<pre><code class="language-julia">Random Library &#40;489,348 sequences&#41;
+├── Input &#40;GSM2793751&#41; - sequence counts before selection
+└── Selected &#40;GSM2793752&#41; - sequence counts after growth
+    └── Calculate enrichment &#61; log2&#40;Selected/Input&#41;</code></pre>
+<p><strong>Training/Test Split:</strong></p>
+<ul>
+<li><p><strong>Training Set</strong>: 95&#37; of sequences &#40;464,880 sequences&#41;</p>
+<ul>
+<li><p>Actually used ALL sequences with sufficient reads for training</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Test Set</strong>: Top 5&#37; by input read depth &#40;24,468 sequences&#41;</p>
+<ul>
+<li><p>These are the highest quality sequences with best sequencing coverage</p>
+</li>
+<li><p>Used to minimize experimental noise when evaluating model performance</p>
+</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="phase_2_train_the_cnn_model"><a href="#phase_2_train_the_cnn_model" class="header-anchor">Phase 2: Train the CNN Model</a></h3>
+<pre><code class="language-julia">Training Data &#40;464,880 sequences from Random Library&#41;
+    ↓
+┌─────────────────────────────────────┐
+│   Convolutional Neural Network      │
+│   • 3 convolutional layers          │
+│   • 128 filters of length 13 each   │
+│   • Fully connected layer           │
+│   • Linear output                   │
+└─────────────────────────────────────┘
+    ↓
+Trained Model &#40;predicts enrichment from 50-nt sequence&#41;</code></pre>
+<p><strong>Key Point:</strong> They trained ONLY on the random library, not the native sequences&#33;</p>
+<hr />
+<h3 id="phase_3_validate_on_held-out_random_sequences"><a href="#phase_3_validate_on_held-out_random_sequences" class="header-anchor">Phase 3: Validate on Held-Out Random Sequences</a></h3>
+<pre><code class="language-julia">Test Set &#40;24,468 sequences - top 5&#37; by read depth&#41;
+    ↓
+Apply Trained Model
+    ↓
+R² &#61; 0.62 &#40;explains 62&#37; of variance&#41;</code></pre>
+<p><strong>Why top 5&#37;?</strong> These sequences had the most reads, meaning the enrichment scores are most accurate &#40;less noise from low sequencing depth&#41;.</p>
+<hr />
+<h3 id="phase_4_cross-validate_on_native_sequences"><a href="#phase_4_cross-validate_on_native_sequences" class="header-anchor">Phase 4: Cross-Validate on Native Sequences</a></h3>
+<pre><code class="language-julia">Native Library &#40;GSM2793753 &#43; GSM2793754&#41;
+├── ~10,000 50-nt fragments from real yeast 5&#39; UTRs
+├── Input &amp; Selected samples &#40;just like random library&#41;
+└── Calculate enrichment scores
+    ↓
+Apply Random-Library-Trained Model
+    ↓
+R² &#61; 0.60 &#40;performs almost as well&#33;&#41;</code></pre>
+<p><strong>This is the key validation:</strong> The model trained ONLY on random sequences generalizes beautifully to natural sequences&#33;</p>
+<hr />
+<h3 id="phase_5_computational_evolution"><a href="#phase_5_computational_evolution" class="header-anchor">Phase 5: Computational Evolution</a></h3>
+<pre><code class="language-julia">Starting Sequences:
+├── 100 from Random Library &#40;various enrichment levels&#41;
+└── 100 from Native Library &#40;various enrichment levels&#41;
+    ↓
+For each sequence, iteratively predict best single mutation
+    ↓
+Generate Evolved Sequences:
+├── Start points: 200 sequences
+├── Midpoints: 200 sequences  
+└── Endpoints: 173 sequences &#40;when plateaued&#41;
+    ↓
+Total: 573 sequences to test</code></pre>
+<hr />
+<h3 id="phase_6_experimental_validation_of_evolved_sequences"><a href="#phase_6_experimental_validation_of_evolved_sequences" class="header-anchor">Phase 6: Experimental Validation of Evolved Sequences</a></h3>
+<pre><code class="language-julia">Evolved Library &#40;GSM2793755 &#43; GSM2793756&#41;
+├── 573 evolved sequences synthesized and tested
+├── Input &amp; Selected samples
+└── Calculate observed enrichment
+    ↓
+Compare Predicted vs Observed:
+├── 94&#37; of random-derived sequences improved
+└── 84&#37; of native-derived sequences improved</code></pre>
+<hr />
+<h2 id="summary_of_data_usage"><a href="#summary_of_data_usage" class="header-anchor">🎯 Summary of Data Usage</a></h2>
+<h3 id="random_library_489k_sequences"><a href="#random_library_489k_sequences" class="header-anchor">Random Library &#40;489K sequences&#41;</a></h3>
+<ul>
+<li><p><strong>Used for:</strong> Primary training &#43; held-out testing</p>
+</li>
+<li><p><strong>Split:</strong> 95&#37; training / 5&#37; testing</p>
+</li>
+<li><p><strong>Result:</strong> R² &#61; 0.62 on test set</p>
+</li>
+</ul>
+<h3 id="native_library_10k_sequences"><a href="#native_library_10k_sequences" class="header-anchor">Native Library &#40;~10K sequences&#41;</a></h3>
+<ul>
+<li><p><strong>Used for:</strong> Independent validation &#40;zero-shot&#41;</p>
+</li>
+<li><p><strong>NOT used for training&#33;</strong></p>
+</li>
+<li><p><strong>Result:</strong> R² &#61; 0.60 &#40;comparable to random test set&#41;</p>
+</li>
+</ul>
+<h3 id="evolved_library_573_sequences"><a href="#evolved_library_573_sequences" class="header-anchor">Evolved Library &#40;573 sequences&#41;</a></h3>
+<ul>
+<li><p><strong>Used for:</strong> Experimental proof that model can design better sequences</p>
+</li>
+<li><p><strong>These are outputs of the model</strong>, not training data</p>
+</li>
+<li><p><strong>Result:</strong> 94&#37; improved &#40;random&#41; / 84&#37; improved &#40;native&#41;</p>
+</li>
+</ul>
+<hr />
+<h2 id="why_this_design_is_clever"><a href="#why_this_design_is_clever" class="header-anchor">🔍 Why This Design is Clever</a></h2>
+<ol>
+<li><p><strong>Random library for training</strong> &#61; comprehensive coverage of sequence space</p>
+<ul>
+<li><p>Natural sequences are limited &#40;~5,000 genes&#41;</p>
+</li>
+<li><p>Random sequences explore 450 possibilities</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Native library for validation</strong> &#61; tests generalization</p>
+<ul>
+<li><p>Proves the model learned real biology, not just random patterns</p>
+</li>
+<li><p>Never seen by the model during training&#33;</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Evolved library for practical demonstration</strong> &#61; shows utility</p>
+<ul>
+<li><p>Can actually design sequences with desired properties</p>
+</li>
+<li><p>Closes the loop: learn from data → design new sequences → validate experimentally</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Top 5&#37; test set</strong> &#61; cleanest evaluation</p>
+<ul>
+<li><p>Minimizes noise from low-coverage sequences</p>
+</li>
+<li><p>Gives most accurate assessment of model performance</p>
+</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="the_key_innovation"><a href="#the_key_innovation" class="header-anchor">📈 The Key Innovation</a></h2>
+<p><strong>Training on random sequences instead of natural ones:</strong></p>
+<ul>
+<li><p>Gets 100x more data &#40;489K vs ~5K&#41;</p>
+</li>
+<li><p>Sees motifs in many different contexts</p>
+</li>
+<li><p>Still generalizes to natural sequences perfectly</p>
+</li>
+</ul>
+<p>This is like learning English grammar by reading randomly generated sentences instead of just literature - you see every rule in isolation and in every possible context&#33;</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: December 26, 2025.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>

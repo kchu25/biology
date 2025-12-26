@@ -1,4 +1,4 @@
-@def title = "UTRs as a Foundation for Biotech Companies: A Realistic Assessment"
+@def title = "Comprehensive Guide to UTRs and Their Applications"
 @def published = "26 December 2025"
 @def tags = ["rna", "utr", "start-ups"]
 

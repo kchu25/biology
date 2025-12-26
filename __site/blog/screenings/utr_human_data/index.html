@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Understanding the GSM3130435_egfp_unmod_1.csv Data</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="understanding_the_gsm3130435egfpunmod_1csv_data"><a href="#understanding_the_gsm3130435egfpunmod_1csv_data" class="header-anchor">Understanding the GSM3130435<em>egfp</em>unmod_1.csv Data</a></h1>
+<h2 id="paper_human_5_utr_design_and_variant_effect_prediction_from_a_massively_parallel_translation_assay"><a href="#paper_human_5_utr_design_and_variant_effect_prediction_from_a_massively_parallel_translation_assay" class="header-anchor">Paper: Human 5′ UTR Design and Variant Effect Prediction from a Massively Parallel Translation Assay</a></h2>
+<p><strong>Paper Link:</strong> https://www.nature.com/articles/s41587-019-0164-5   <strong>GEO Dataset:</strong> GSE114002</p>
+<hr />
+<h2 id="what_is_this_dataset"><a href="#what_is_this_dataset" class="header-anchor">What is This Dataset?</a></h2>
+<p>This dataset contains polysome profiling results for <strong>280,000 random 50-nucleotide sequences</strong> used as 5′ UTRs &#40;untranslated regions&#41; in front of an eGFP reporter gene. The experiment measures how well each sequence directs protein translation.</p>
+<hr />
+<h2 id="column_structure"><a href="#column_structure" class="header-anchor">Column Structure</a></h2>
+<h2 id="column_structure__2"><a href="#column_structure__2" class="header-anchor">Column Structure</a></h2>
+<h3 id="important_whats_actually_in_the_csv_files"><a href="#important_whats_actually_in_the_csv_files" class="header-anchor">IMPORTANT: What&#39;s Actually In The CSV Files 🚨</a></h3>
+<p><strong>WARNING: The file formats are INCONSISTENT between replicates&#33;</strong></p>
+<h3 id="file_format_differences"><a href="#file_format_differences" class="header-anchor">File Format Differences:</a></h3>
+<p><strong><code>GSM3130435_egfp_unmod_1.csv.gz</code> &#40;Replicate 1&#41;:</strong></p>
+<ul>
+<li><p>✅ Normalized fractions &#40;<code>r_00</code> through <code>r_011</code>&#41;</p>
+</li>
+<li><p>✅ Mean Ribosome Load &#40;<code>rl</code>&#41;</p>
+</li>
+<li><p>❌ <strong>NO raw counts</strong> &#40;<code>00</code> through <code>011</code>&#41;</p>
+</li>
+<li><p>❌ <strong>NO total column</strong></p>
+</li>
+</ul>
+<p><strong><code>GSM3130436_egfp_unmod_2.csv.gz</code> &#40;Replicate 2&#41;:</strong></p>
+<ul>
+<li><p>✅ Raw counts &#40;<code>00</code> through <code>011</code>&#41;</p>
+</li>
+<li><p>✅ Normalized fractions &#40;<code>r_00</code> through <code>r_011</code>&#41; - probably</p>
+</li>
+<li><p>✅ Mean Ribosome Load &#40;<code>rl</code>&#41; - probably</p>
+</li>
+<li><p>✅ Total column &#40;<code>total</code>&#41; - probably</p>
+</li>
+</ul>
+<h3 id="why_this_inconsistency"><a href="#why_this_inconsistency" class="header-anchor">Why This Inconsistency?</a></h3>
+<p>This is... unusual and probably an oversight in data submission. Possible reasons:</p>
+<ol>
+<li><p>Different processing scripts used for the two files</p>
+</li>
+<li><p>Updated one file but not the other during revision</p>
+</li>
+<li><p>GEO submission error</p>
+</li>
+</ol>
+<h3 id="what_you_should_do"><a href="#what_you_should_do" class="header-anchor">What You Should Do:</a></h3>
+<p><strong>Option 1: Use Replicate 2 &#40;GSM3130436&#41; as your reference</strong></p>
+<ul>
+<li><p>It has the most complete data &#40;raw counts &#43; normalized&#41;</p>
+</li>
+<li><p>You can verify the normalization is correct</p>
+</li>
+<li><p>More transparent about the data processing</p>
+</li>
+</ul>
+<p><strong>Option 2: Use both, but be aware of format differences</strong></p>
+<pre><code class="language-python"># Replicate 1 - only normalized data
+df1 &#61; pd.read_csv&#40;&#39;GSM3130435_egfp_unmod_1.csv.gz&#39;&#41;
+# Columns: sequence, r_00, r_01, ..., r_011, rl
+
+# Replicate 2 - has raw counts
+df2 &#61; pd.read_csv&#40;&#39;GSM3130436_egfp_unmod_2.csv.gz&#39;&#41;  
+# Columns: sequence, 00, 01, ..., 011, r_00, r_01, ..., r_011, total, rl</code></pre>
+<p><strong>Option 3: Normalize Replicate 2 yourself</strong></p>
+<pre><code class="language-python"># If you want to verify or recalculate
+import pandas as pd
+
+df &#61; pd.read_csv&#40;&#39;GSM3130436_egfp_unmod_2.csv.gz&#39;&#41;
+
+# Calculate normalized fractions from raw counts
+fraction_cols &#61; &#91;f&#39;&#123;i:02d&#125;&#39; for i in range&#40;12&#41;&#93;  # &#91;&#39;00&#39;, &#39;01&#39;, ..., &#39;011&#39;&#93;
+total &#61; df&#91;fraction_cols&#93;.sum&#40;axis&#61;1&#41;
+
+for i, col in enumerate&#40;fraction_cols&#41;:
+    df&#91;f&#39;r_&#123;col&#125;&#39;&#93; &#61; df&#91;col&#93; / total
+
+# Calculate MRL from normalized fractions
+mrl &#61; sum&#40;i * df&#91;f&#39;r_&#123;fraction_cols&#91;i&#93;&#125;&#39;&#93; for i in range&#40;12&#41;&#41;
+df&#91;&#39;rl_calculated&#39;&#93; &#61; mrl
+
+# Verify it matches the provided rl column
+print&#40;&#40;df&#91;&#39;rl&#39;&#93; - df&#91;&#39;rl_calculated&#39;&#93;&#41;.abs&#40;&#41;.max&#40;&#41;&#41;  # Should be ~0</code></pre>
+<h3 id="recommended_approach"><a href="#recommended_approach" class="header-anchor">Recommended Approach:</a></h3>
+<p><strong>For training the model:</strong></p>
+<ol>
+<li><p>Use Replicate 2 &#40;GSM3130436&#41; since it has complete data</p>
+</li>
+<li><p><strong>IMPORTANT: Apply quality control filters &#40;see below&#41;</strong></p>
+</li>
+<li><p>Verify the normalization calculations match what you expect</p>
+</li>
+<li><p>Use the <code>rl</code> column as your target variable</p>
+</li>
+<li><p>Cross-check with Replicate 1 for sequences they share</p>
+</li>
+</ol>
+<p><strong>Or if you want both replicates:</strong></p>
+<ol>
+<li><p>Load both files</p>
+</li>
+<li><p>Find intersection of sequences &#40;sequences in both&#41;</p>
+</li>
+<li><p>Average the <code>rl</code> values for shared sequences</p>
+</li>
+<li><p>Use averaged MRL as target</p>
+</li>
+</ol>
+<hr />
+<h2 id="quality_control_sequences_to_exclude"><a href="#quality_control_sequences_to_exclude" class="header-anchor">Quality Control: Sequences to Exclude 🚨</a></h2>
+<h3 id="problem_you_discovered"><a href="#problem_you_discovered" class="header-anchor">Problem You Discovered:</a></h3>
+<p><strong>Some sequences have counts ONLY in fraction 011 &#40;or only in 1-2 fractions&#41;</strong></p>
+<p>This is problematic because:</p>
+<ul>
+<li><p>They likely failed to properly fractionate</p>
+</li>
+<li><p>Could be technical artifacts &#40;aggregation, precipitation&#41;</p>
+</li>
+<li><p>MRL calculation is unreliable with sparse data</p>
+</li>
+<li><p>The model shouldn&#39;t learn from these outliers</p>
+</li>
+</ul>
+<h3 id="quality_control_filters"><a href="#quality_control_filters" class="header-anchor">Quality Control Filters:</a></h3>
+<p><strong>Filter 1: Minimum Total Reads</strong></p>
+<pre><code class="language-julia"># Exclude sequences with too few total reads
+min_reads &#61; 50  # or 100, depending on dataset
+filter&#33;&#40;row -&gt; row.total &gt;&#61; min_reads, df&#41;</code></pre>
+<p><strong>Filter 2: Distribution Across Fractions</strong></p>
+<pre><code class="language-julia"># Exclude sequences present in only 1 fraction
+function count_nonzero_fractions&#40;row&#41;
+    fraction_cols &#61; &#91;&quot;00&quot;, &quot;01&quot;, &quot;02&quot;, &quot;03&quot;, &quot;04&quot;, &quot;05&quot;, &quot;06&quot;, &quot;07&quot;, &quot;08&quot;, &quot;09&quot;, &quot;010&quot;, &quot;011&quot;&#93;
+    return count&#40;col -&gt; row&#91;col&#93; &gt; 0, fraction_cols&#41;
+end
+
+df.num_fractions &#61; &#91;count_nonzero_fractions&#40;row&#41; for row in eachrow&#40;df&#41;&#93;
+filter&#33;&#40;row -&gt; row.num_fractions &gt;&#61; 3, df&#41;  # At least 3 fractions</code></pre>
+<p><strong>Filter 3: Maximum Single Fraction Dominance</strong></p>
+<pre><code class="language-julia"># Exclude sequences where one fraction has &gt;90&#37; of reads
+function max_fraction_proportion&#40;row&#41;
+    fraction_cols &#61; &#91;&quot;00&quot;, &quot;01&quot;, &quot;02&quot;, &quot;03&quot;, &quot;04&quot;, &quot;05&quot;, &quot;06&quot;, &quot;07&quot;, &quot;08&quot;, &quot;09&quot;, &quot;010&quot;, &quot;011&quot;&#93;
+    counts &#61; &#91;row&#91;col&#93; for col in fraction_cols&#93;
+    return maximum&#40;counts&#41; / sum&#40;counts&#41;
+end
+
+df.max_fraction_prop &#61; &#91;max_fraction_proportion&#40;row&#41; for row in eachrow&#40;df&#41;&#93;
+filter&#33;&#40;row -&gt; row.max_fraction_prop &lt; 0.90, df&#41;  # No single fraction dominates</code></pre>
+<p><strong>Filter 4: Exclude Only-Fraction-011 Sequences &#40;Your Discovery&#41;</strong></p>
+<pre><code class="language-julia"># Specifically exclude sequences with counts ONLY in heavy polysome
+function is_only_heavy_polysome&#40;row&#41;
+    light_fractions &#61; &#91;&quot;00&quot;, &quot;01&quot;, &quot;02&quot;, &quot;03&quot;, &quot;04&quot;, &quot;05&quot;, &quot;06&quot;, &quot;07&quot;, &quot;08&quot;, &quot;09&quot;, &quot;010&quot;&#93;
+    heavy_fraction &#61; &quot;011&quot;
+    
+    # Check if heavy fraction has counts but light fractions don&#39;t
+    light_sum &#61; sum&#40;row&#91;col&#93; for col in light_fractions&#41;
+    heavy_count &#61; row&#91;heavy_fraction&#93;
+    
+    return &#40;heavy_count &gt; 0&#41; &amp;&amp; &#40;light_sum &#61;&#61; 0&#41;
+end
+
+filter&#33;&#40;row -&gt; &#33;is_only_heavy_polysome&#40;row&#41;, df&#41;</code></pre>
+<h3 id="why_these_sequences_exist"><a href="#why_these_sequences_exist" class="header-anchor">Why These Sequences Exist:</a></h3>
+<p><strong>Biological reasons:</strong></p>
+<ul>
+<li><p>mRNA aggregation during lysis</p>
+</li>
+<li><p>Protein precipitation pulling mRNA down</p>
+</li>
+<li><p>Non-specific binding to heavy complexes</p>
+</li>
+</ul>
+<p><strong>Technical reasons:</strong></p>
+<ul>
+<li><p>Library construction artifacts</p>
+</li>
+<li><p>PCR chimeras</p>
+</li>
+<li><p>Sequencing errors</p>
+</li>
+</ul>
+<p><strong>These are NOT representative of normal translation&#33;</strong></p>
+<h3 id="recommended_combined_filter"><a href="#recommended_combined_filter" class="header-anchor">Recommended Combined Filter:</a></h3>
+<pre><code class="language-julia">function passes_qc&#40;row&#41;
+    # Minimum reads
+    if row.total &lt; 50
+        return false
+    end
+    
+    # Count non-zero fractions
+    fraction_cols &#61; &#91;&quot;00&quot;, &quot;01&quot;, &quot;02&quot;, &quot;03&quot;, &quot;04&quot;, &quot;05&quot;, &quot;06&quot;, &quot;07&quot;, &quot;08&quot;, &quot;09&quot;, &quot;010&quot;, &quot;011&quot;&#93;
+    counts &#61; &#91;row&#91;col&#93; for col in fraction_cols&#93;
+    num_nonzero &#61; count&#40;c -&gt; c &gt; 0, counts&#41;
+    
+    if num_nonzero &lt; 3
+        return false
+    end
+    
+    # Check single fraction doesn&#39;t dominate
+    max_proportion &#61; maximum&#40;counts&#41; / sum&#40;counts&#41;
+    if max_proportion &gt; 0.90
+        return false
+    end
+    
+    return true
+end
+
+# Apply filter
+df_clean &#61; filter&#40;passes_qc, df&#41;
+
+println&#40;&quot;Original sequences: &quot;, nrow&#40;df&#41;&#41;
+println&#40;&quot;After QC: &quot;, nrow&#40;df_clean&#41;&#41;
+println&#40;&quot;Removed: &quot;, nrow&#40;df&#41; - nrow&#40;df_clean&#41;&#41;</code></pre>
+<h3 id="what_the_paper_likely_did"><a href="#what_the_paper_likely_did" class="header-anchor">What The Paper Likely Did:</a></h3>
+<p>Based on standard MPRA practices, they probably:</p>
+<ol>
+<li><p>Required minimum total reads &#40;≥50-100&#41;</p>
+</li>
+<li><p>Excluded sequences in fewer than 2-3 fractions</p>
+</li>
+<li><p>Removed extreme outliers in MRL distribution</p>
+</li>
+<li><p>Only used sequences present in both replicates</p>
+</li>
+</ol>
+<p><strong>You should do the same to reproduce their results&#33;</strong></p>
+<h3 id="check_your_data"><a href="#check_your_data" class="header-anchor">Check Your Data:</a></h3>
+<pre><code class="language-julia"># Investigate problematic sequences
+println&#40;&quot;\nSequences with counts only in fraction 011:&quot;&#41;
+for row in eachrow&#40;df&#41;
+    light_sum &#61; sum&#40;row&#91;col&#93; for col in &#91;&quot;00&quot;, &quot;01&quot;, &quot;02&quot;, &quot;03&quot;, &quot;04&quot;, &quot;05&quot;, &quot;06&quot;, &quot;07&quot;, &quot;08&quot;, &quot;09&quot;, &quot;010&quot;&#93;&#41;
+    if row&#91;&quot;011&quot;&#93; &gt; 0 &amp;&amp; light_sum &#61;&#61; 0
+        println&#40;&quot;Sequence: &quot;, row.sequence&#91;1:20&#93;, &quot;... | 011 count: &quot;, row&#91;&quot;011&quot;&#93;, &quot; | MRL: &quot;, row.rl&#41;
+    end
+end</code></pre>
+<p>This will help you see how many problematic sequences exist and their characteristics&#33;</p>
+<h3 id="what_you_actually_get"><a href="#what_you_actually_get" class="header-anchor">What You Actually Get:</a></h3>
+<h3 id="sequence_column_important_-_read_this"><a href="#sequence_column_important_-_read_this" class="header-anchor"><ol>
+<li><p><strong>Sequence Column</strong> ⚠️ IMPORTANT - READ THIS&#33;</p>
+</li>
+</ol>
+</a></h3>
+<p><strong>What you&#39;ll see:</strong> 59-nucleotide sequences ending in <code>ATGGGCGAA</code></p>
+<p><strong>What you need:</strong></p>
+<ul>
+<li><p><strong>Remove the suffix <code>ATGGGCGAA</code></strong> &#40;last 9 nucleotides&#41;</p>
+</li>
+<li><p>Extract only the first 50 nucleotides</p>
+</li>
+<li><p>This is the variable 5′ UTR that the model predicts from</p>
+</li>
+</ul>
+<p><strong>Structure:</strong></p>
+<pre><code class="language-julia">Full sequence in CSV: &#91;50-nt variable UTR&#93;&#91;ATGGGCGAA&#93;
+                                            ↑
+                                    ATG &#61; start codon
+                                    GGCGAA &#61; start of eGFP
+
+After preprocessing:  &#91;50-nt variable UTR only&#93;</code></pre>
+<p><strong>Why the suffix is there:</strong></p>
+<ul>
+<li><p><code>ATG</code> is the translation start codon</p>
+</li>
+<li><p><code>GGCGAA</code> is the beginning of eGFP coding sequence</p>
+</li>
+<li><p>It&#39;s constant across all constructs for fair comparison</p>
+</li>
+<li><p><strong>But the model was trained on only the 50-nt UTR&#33;</strong></p>
+</li>
+</ul>
+<p><strong>Preprocessing code:</strong></p>
+<pre><code class="language-python"># Remove constant suffix
+utr_sequence &#61; full_sequence&#91;:-9&#93;  # Remove last 9 bases
+# Or equivalently
+utr_sequence &#61; full_sequence&#91;:50&#93;  # Take first 50 bases</code></pre>
+<h3 id="ol_start2_normalized_fraction_counts_r_00_r_01_r_02_r_011"><a href="#ol_start2_normalized_fraction_counts_r_00_r_01_r_02_r_011" class="header-anchor"><ol start="2">
+<li><p><strong>Normalized Fraction Counts: <code>r_00</code>, <code>r_01</code>, <code>r_02</code>, ..., <code>r_011</code></strong></p>
+</li>
+</ol>
+</a></h3>
+<ul>
+<li><p><strong>Total:</strong> 12 columns</p>
+</li>
+<li><p><strong>Content:</strong> Normalized read counts &#40;relative frequencies that sum to 1.0&#41;</p>
+</li>
+<li><p><strong>These ARE in the CSV files&#33;</strong></p>
+</li>
+<li><p><strong>Purpose:</strong> Shows the distribution of that sequence across polysome fractions</p>
+</li>
+</ul>
+<h3 id="ol_start3_rl_column_mean_ribosome_load_-_mrl"><a href="#ol_start3_rl_column_mean_ribosome_load_-_mrl" class="header-anchor"><ol start="3">
+<li><p><strong><code>rl</code> Column &#40;Mean Ribosome Load - MRL&#41;</strong></p>
+</li>
+</ol>
+</a></h3>
+<ul>
+<li><p><strong>Content:</strong> The weighted average number of ribosomes bound per mRNA</p>
+</li>
+<li><p><strong>This IS in the CSV files&#33;</strong></p>
+</li>
+<li><p><strong>This is the TARGET VARIABLE the model predicts&#33;</strong></p>
+</li>
+</ul>
+<h3 id="ol_start4_missing_raw_count_columns"><a href="#ol_start4_missing_raw_count_columns" class="header-anchor"><ol start="4">
+<li><p><strong>Missing: Raw Count Columns</strong> ❌</p>
+</li>
+</ol>
+</a></h3>
+<p><strong>NOT in the processed CSV files:</strong></p>
+<ul>
+<li><p><code>00, 01, 02, ..., 011</code> &#40;unnormalized read counts&#41;</p>
+</li>
+<li><p><code>total</code> &#40;sum of all raw counts&#41;</p>
+</li>
+</ul>
+<p><strong>Where are they?</strong></p>
+<ul>
+<li><p>Raw sequencing data is in SRA &#40;Sequence Read Archive&#41;</p>
+</li>
+<li><p>You&#39;d need to download FASTQ files from SRA and process them yourself</p>
+</li>
+<li><p>The CSV files skip straight to normalized data</p>
+</li>
+</ul>
+<h3 id="what_this_means_for_you"><a href="#what_this_means_for_you" class="header-anchor">What This Means For You:</a></h3>
+<p><strong>Good news:</strong></p>
+<ul>
+<li><p>✅ You have everything needed for model training&#33;</p>
+</li>
+<li><p>✅ <code>r_00</code> through <code>r_011</code> columns are the normalized fractions</p>
+</li>
+<li><p>✅ <code>rl</code> column is your target variable &#40;MRL&#41;</p>
+</li>
+<li><p>✅ You don&#39;t need to normalize anything - it&#39;s already done</p>
+</li>
+</ul>
+<p><strong>If you wanted raw counts:</strong></p>
+<ul>
+<li><p>Would need to download from SRA &#40;ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByStudy/sra/SRP/SRP144/SRP144485/&#41;</p>
+</li>
+<li><p>Would need to process FASTQ files yourself</p>
+</li>
+<li><p>Would need to count barcodes and assign to fractions</p>
+</li>
+<li><p><strong>Not necessary for reproducing the paper&#39;s model&#33;</strong></p>
+</li>
+</ul>
+<h3 id="column_summary"><a href="#column_summary" class="header-anchor">Column Summary:</a></h3>
+<p><strong>In GSM3130435 &#40;Replicate 1&#41;:</strong></p>
+<pre><code class="language-julia">┌─────────────┬──────┬──────┬─────┬────────┬────┐
+│  sequence   │ r_00 │ r_01 │ ... │ r_011  │ rl │
+├─────────────┼──────┼──────┼─────┼────────┼────┤
+│ ACGT...CGAA │ 0.05 │ 0.10 │ ... │  0.15  │ 6.2│
+└─────────────┴──────┴──────┴─────┴────────┴────┘</code></pre>
+<p><strong>In GSM3130436 &#40;Replicate 2&#41;:</strong></p>
+<pre><code class="language-julia">┌─────────────┬────┬────┬─────┬─────┬──────┬─────┬────────┬───────┬────┐
+│  sequence   │ 00 │ 01 │ ... │ 011 │ r_00 │ ... │ r_011  │ total │ rl │
+├─────────────┼────┼────┼─────┼─────┼──────┼─────┼────────┼───────┼────┤
+│ ACGT...CGAA │ 52 │ 103│ ... │ 156 │ 0.05 │ ... │  0.15  │ 1038  │ 6.2│
+└─────────────┴────┴────┴─────┴─────┴──────┴─────┴────────┴───────┴────┘
+     ↑          ↑                ↑       ↑                    ↑       ↑
+    59 nt    Raw counts      Raw     Normalized          Sum of    Target
+  &#40;drop 9&#41;   &#40;missing in    counts   fractions           counts    &#40;MRL&#41;
+              replicate 1&#41;           &#40;in both&#41;          &#40;missing
+                                                        in rep 1&#41;</code></pre>
+<hr />
+<h2 id="how_mean_ribosome_load_mrl_is_calculated"><a href="#how_mean_ribosome_load_mrl_is_calculated" class="header-anchor">How Mean Ribosome Load &#40;MRL&#41; is Calculated</a></h2>
+<h3 id="formula"><a href="#formula" class="header-anchor">Formula:</a></h3>
+<pre><code class="language-julia">MRL &#61; Σ &#40;fraction_number × relative_count_in_fraction&#41;</code></pre>
+<h3 id="explicit_calculation"><a href="#explicit_calculation" class="header-anchor">Explicit Calculation:</a></h3>
+<pre><code class="language-julia">MRL &#61; &#40;0 × r_00&#41; &#43; &#40;1 × r_01&#41; &#43; &#40;2 × r_02&#41; &#43; ... &#43; &#40;11 × r_011&#41;</code></pre>
+<h3 id="example"><a href="#example" class="header-anchor">Example:</a></h3>
+<p>If a sequence has this distribution:</p>
+<ul>
+<li><p>10&#37; in fraction 0 &#40;untranslated&#41;: <code>0 × 0.10 &#61; 0.00</code></p>
+</li>
+<li><p>20&#37; in fraction 5 &#40;medium&#41;: <code>5 × 0.20 &#61; 1.00</code></p>
+</li>
+<li><p>70&#37; in fraction 10 &#40;heavy&#41;: <code>10 × 0.70 &#61; 7.00</code></p>
+</li>
+</ul>
+<p><strong>MRL &#61; 0.00 &#43; 1.00 &#43; 7.00 &#61; 8.0</strong></p>
+<p>This sequence has an average of 8 ribosomes per mRNA molecule&#33;</p>
+<hr />
+<h2 id="what_is_a_polysome"><a href="#what_is_a_polysome" class="header-anchor">What is a Polysome?</a></h2>
+<p><strong>Polysome &#61; Poly-ribosome &#61; Multiple ribosomes on one mRNA</strong></p>
+<h3 id="the_biology"><a href="#the_biology" class="header-anchor">The Biology:</a></h3>
+<p>When an mRNA is being <strong>actively translated</strong> into protein:</p>
+<ul>
+<li><p><strong>NOT just one ribosome</strong> translates it at a time</p>
+</li>
+<li><p><strong>Multiple ribosomes</strong> can be on the same mRNA simultaneously</p>
+</li>
+<li><p>Each ribosome reads the mRNA like a train on a track</p>
+</li>
+<li><p>They queue up and translate in sequence, like beads on a string</p>
+</li>
+</ul>
+<h3 id="visual_analogy"><a href="#visual_analogy" class="header-anchor">Visual Analogy:</a></h3>
+<pre><code class="language-julia">Single mRNA molecule:
+5&#39;UTR---START---CODING-SEQUENCE---STOP---3&#39;UTR
+
+Without translation &#40;no ribosomes&#41;:
+5&#39;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;3&#39;
+
+With active translation &#40;polysome with 5 ribosomes&#41;:
+5&#39;&#61;&#61;&#61;🔵&#61;&#61;&#61;🔵&#61;&#61;&#61;🔵&#61;&#61;&#61;🔵&#61;&#61;&#61;🔵&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;3&#39;
+    R1   R2   R3   R4   R5</code></pre>
+<p>Each 🔵 represents a ribosome making a copy of the protein&#33;</p>
+<h3 id="why_multiple_ribosomes"><a href="#why_multiple_ribosomes" class="header-anchor">Why Multiple Ribosomes?</a></h3>
+<p><strong>More ribosomes &#61; More protein copies made simultaneously</strong></p>
+<ul>
+<li><p>One mRNA with 10 ribosomes → making 10 protein molecules at once</p>
+</li>
+<li><p>One mRNA with 1 ribosome → making only 1 protein molecule</p>
+</li>
+<li><p>One mRNA with 0 ribosomes → making ZERO protein &#40;not being translated&#41;</p>
+</li>
+</ul>
+<h3 id="important_caveat_you_cant_actually_count_them"><a href="#important_caveat_you_cant_actually_count_them" class="header-anchor">Important Caveat: You Can&#39;t Actually Count Them&#33;</a></h3>
+<p><strong>The &quot;ribosome numbers&quot; are approximations based on sedimentation rate</strong>, not literal counts. See the detailed explanation below.</p>
+<hr />
+<h2 id="why_predict_mrl_why_does_this_matter"><a href="#why_predict_mrl_why_does_this_matter" class="header-anchor">Why Predict MRL? &#40;Why Does This Matter?&#41;</a></h2>
+<h3 id="the_central_question_of_gene_expression"><a href="#the_central_question_of_gene_expression" class="header-anchor">The Central Question of Gene Expression:</a></h3>
+<p><strong>&quot;How do we control how much protein a cell makes?&quot;</strong></p>
+<h3 id="three_main_factors_control_protein_production"><a href="#three_main_factors_control_protein_production" class="header-anchor">Three Main Factors Control Protein Production:</a></h3>
+<ol>
+<li><p><strong>Transcription:</strong> How much mRNA is made from DNA</p>
+</li>
+<li><p><strong>mRNA Stability:</strong> How long the mRNA lasts before degrading</p>
+</li>
+<li><p><strong>Translation Efficiency:</strong> How many ribosomes load onto each mRNA ← <strong>This is what MRL measures&#33;</strong></p>
+</li>
+</ol>
+<h3 id="why_translation_efficiency_matters"><a href="#why_translation_efficiency_matters" class="header-anchor">Why Translation Efficiency Matters:</a></h3>
+<p>Even if you have lots of mRNA, if ribosomes don&#39;t bind well:</p>
+<ul>
+<li><p>❌ <strong>Low MRL</strong> → Few ribosomes → Little protein made</p>
+</li>
+<li><p>✅ <strong>High MRL</strong> → Many ribosomes → Lots of protein made</p>
+</li>
+</ul>
+<p><strong>The 5&#39; UTR sequence is the &quot;on/off switch&quot; for translation efficiency&#33;</strong></p>
+<hr />
+<h2 id="how_polysome_profiling_works"><a href="#how_polysome_profiling_works" class="header-anchor">How Polysome Profiling Works</a></h2>
+<h3 id="the_experimental_process"><a href="#the_experimental_process" class="header-anchor">The Experimental Process:</a></h3>
+<ol>
+<li><p><strong>Transfect cells</strong> with mRNA library &#40;each with different 5′ UTR&#41;</p>
+<ul>
+<li><p>All have same coding sequence &#40;eGFP&#41;</p>
+</li>
+<li><p>Only difference is the 50-nt sequence at the start &#40;5&#39; UTR&#41;</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Let cells translate</strong> the mRNAs into protein</p>
+<ul>
+<li><p>Good 5&#39; UTRs → many ribosomes bind → heavy polysomes</p>
+</li>
+<li><p>Bad 5&#39; UTRs → few/no ribosomes bind → stay light</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Freeze ribosomes</strong> on mRNA &#40;with cycloheximide drug&#41;</p>
+<ul>
+<li><p>Stops ribosomes mid-translation</p>
+</li>
+<li><p>Preserves the polysome structure</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Lyse cells</strong> and extract ribosome-mRNA complexes</p>
+</li>
+<li><p><strong>Centrifuge through sucrose gradient:</strong></p>
+<ul>
+<li><p><strong>Top &#40;light&#41;:</strong> Free mRNA with 0-1 ribosomes</p>
+</li>
+<li><p><strong>Middle:</strong> Light polysomes &#40;2-5 ribosomes&#41;</p>
+</li>
+<li><p><strong>Bottom &#40;heavy&#41;:</strong> Heavy polysomes &#40;6&#43; ribosomes&#41;</p>
+</li>
+<li><p>Physics: More ribosomes &#61; heavier &#61; sinks deeper</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Collect 12 fractions</strong> from top to bottom</p>
+</li>
+<li><p><strong>Extract mRNA</strong> from each fraction and <strong>sequence it</strong></p>
+</li>
+<li><p><strong>Count reads</strong> to see where each 5′ UTR sequence ended up</p>
+</li>
+</ol>
+<h3 id="why_12_fractions"><a href="#why_12_fractions" class="header-anchor">Why 12 Fractions?</a></h3>
+<p>Each fraction represents a &quot;bin&quot; of different ribosome numbers:</p>
+<ul>
+<li><p><strong>Fraction 0:</strong> 0 ribosomes &#40;untranslated&#41;</p>
+</li>
+<li><p><strong>Fraction 1:</strong> ~1 ribosome</p>
+</li>
+<li><p><strong>Fraction 5:</strong> ~5 ribosomes</p>
+</li>
+<li><p><strong>Fraction 11:</strong> 11&#43; ribosomes &#40;very heavy polysomes&#41;</p>
+</li>
+</ul>
+<p><strong>Key Insight:</strong> Where your sequence ends up &#61; how many ribosomes it recruited &#61; how well it translates&#33;</p>
+<hr />
+<h2 id="what_the_model_predicts"><a href="#what_the_model_predicts" class="header-anchor">What the Model Predicts</a></h2>
+<p><strong>Input:</strong> 50-nucleotide sequence &#40;the 5′ UTR&#41;   <strong>Output:</strong> <code>rl</code> value &#40;Mean Ribosome Load&#41;</p>
+<h3 id="two_types_of_models"><a href="#two_types_of_models" class="header-anchor">Two Types of Models:</a></h3>
+<ol>
+<li><p><strong>Main Model &#40;Optimus 5-Prime&#41;:</strong> </p>
+<ul>
+<li><p>Predicts the <code>rl</code> column directly</p>
+</li>
+<li><p>Single value prediction: how many ribosomes on average</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Advanced Model:</strong></p>
+<ul>
+<li><p>Predicts full distribution: all 12 <code>r_XX</code> values</p>
+</li>
+<li><p>More detailed but more complex</p>
+</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="biological_interpretation"><a href="#biological_interpretation" class="header-anchor">Biological Interpretation</a></h2>
+<table><tr><th align="right">MRL Value</th><th align="right">Translation Level</th><th align="right">Polysome Pattern</th></tr><tr><td align="right">0-2</td><td align="right">Very low</td><td align="right">Mostly untranslated</td></tr><tr><td align="right">3-5</td><td align="right">Low-moderate</td><td align="right">Light polysomes</td></tr><tr><td align="right">6-8</td><td align="right">Moderate-high</td><td align="right">Medium polysomes</td></tr><tr><td align="right">9-11</td><td align="right">Very high</td><td align="right">Heavy polysomes</td></tr></table>
+<p><strong>Higher MRL &#61; More Translation &#61; More Protein Production</strong></p>
+<hr />
+<h2 id="the_10_samples_in_gse114002"><a href="#the_10_samples_in_gse114002" class="header-anchor">The 10 Samples in GSE114002</a></h2>
+<ol>
+<li><p><strong>egfp<em>unmod</em>1 &amp; 2</strong> - Random library, unmodified RNA &#40;training data&#41;</p>
+</li>
+<li><p><strong>egfp<em>pseudo</em>1 &amp; 2</strong> - Pseudouridine-modified RNA</p>
+</li>
+<li><p><strong>egfp<em>m1pseudo</em>1 &amp; 2</strong> - 1-methylpseudouridine-modified RNA</p>
+</li>
+<li><p><strong>mcherry<em>unmod</em>1 &amp; 2</strong> - Different reporter gene &#40;mCherry&#41;</p>
+</li>
+<li><p><strong>designed_library</strong> - Human UTRs, SNVs, engineered sequences</p>
+</li>
+<li><p><strong>designed<em>library</em>25-100<em>length</em>utrs</strong> - Variable-length UTRs</p>
+</li>
+</ol>
+<hr />
+<h2 id="why_predict_mrl_real-world_applications"><a href="#why_predict_mrl_real-world_applications" class="header-anchor">Why Predict MRL? &#40;Real-World Applications&#41;</a></h2>
+<h3 id="designing_better_mrna_vaccines"><a href="#designing_better_mrna_vaccines" class="header-anchor"><ol>
+<li><p><strong>Designing Better mRNA Vaccines</strong> 💉</p>
+</li>
+</ol>
+</a></h3>
+<p><strong>Problem:</strong> COVID mRNA vaccines need to make lots of spike protein</p>
+<ul>
+<li><p>If 5&#39; UTR is bad → low MRL → weak immune response</p>
+</li>
+<li><p>If 5&#39; UTR is optimized → high MRL → strong immune response</p>
+</li>
+</ul>
+<p><strong>Solution:</strong> Use model to design 5&#39; UTRs that maximize protein production</p>
+<h3 id="ol_start2_gene_therapy_optimization"><a href="#ol_start2_gene_therapy_optimization" class="header-anchor"><ol start="2">
+<li><p><strong>Gene Therapy Optimization</strong> 🧬</p>
+</li>
+</ol>
+</a></h3>
+<p><strong>Problem:</strong> Need precise protein levels for therapy</p>
+<ul>
+<li><p>Too little → therapy doesn&#39;t work</p>
+</li>
+<li><p>Too much → toxic side effects</p>
+</li>
+</ul>
+<p><strong>Solution:</strong> Engineer 5&#39; UTRs with exact MRL to hit the &quot;Goldilocks zone&quot;</p>
+<h3 id="ol_start3_understanding_disease_mutations"><a href="#ol_start3_understanding_disease_mutations" class="header-anchor"><ol start="3">
+<li><p><strong>Understanding Disease Mutations</strong> 🔬</p>
+</li>
+</ol>
+</a></h3>
+<p><strong>Problem:</strong> Genetic mutations in 5&#39; UTRs can cause disease, but we don&#39;t know why</p>
+<p><strong>Example from the paper:</strong></p>
+<ul>
+<li><p>Mutation in CPOX gene &#40;hereditary coproporphyria&#41;</p>
+</li>
+<li><p>Model predicts: mutation drops MRL by 40&#37;</p>
+</li>
+<li><p>Result: Not enough enzyme → disease symptoms</p>
+</li>
+</ul>
+<p><strong>The model found 45 disease-associated mutations that dramatically change MRL&#33;</strong></p>
+<h3 id="ol_start4_synthetic_biology_metabolic_engineering"><a href="#ol_start4_synthetic_biology_metabolic_engineering" class="header-anchor"><ol start="4">
+<li><p><strong>Synthetic Biology &amp; Metabolic Engineering</strong> 🏭</p>
+</li>
+</ol>
+</a></h3>
+<p><strong>Problem:</strong> Building genetic circuits that need precise tuning</p>
+<ul>
+<li><p>Need enzymes at different levels in pathway</p>
+</li>
+<li><p>Like tuning volume knobs for different instruments</p>
+</li>
+</ul>
+<p><strong>Solution:</strong> Use model to design 5&#39; UTRs that dial each enzyme to optimal level</p>
+<h3 id="ol_start5_drug_discovery"><a href="#ol_start5_drug_discovery" class="header-anchor"><ol start="5">
+<li><p><strong>Drug Discovery</strong> 💊</p>
+</li>
+</ol>
+</a></h3>
+<p><strong>Problem:</strong> Some drug targets need translation control</p>
+<ul>
+<li><p>Can&#39;t drug the protein directly</p>
+</li>
+<li><p>But can design RNA therapeutics targeting translation</p>
+</li>
+</ul>
+<p><strong>Solution:</strong> Understand which sequences control translation → design drugs that modify it</p>
+<hr />
+<h2 id="the_power_of_the_model"><a href="#the_power_of_the_model" class="header-anchor">The Power of the Model</a></h2>
+<h3 id="before_this_paper"><a href="#before_this_paper" class="header-anchor">Before This Paper:</a></h3>
+<ul>
+<li><p>❌ Trial and error testing of UTRs</p>
+</li>
+<li><p>❌ No way to predict effects of new sequences</p>
+</li>
+<li><p>❌ Can&#39;t explain disease mutations</p>
+</li>
+</ul>
+<h3 id="after_this_paper"><a href="#after_this_paper" class="header-anchor">After This Paper:</a></h3>
+<ul>
+<li><p>✅ Type in any sequence → get MRL prediction</p>
+</li>
+<li><p>✅ Design custom UTRs for target expression level</p>
+</li>
+<li><p>✅ Predict impact of genetic variants</p>
+</li>
+<li><p>✅ Understand molecular basis of disease</p>
+</li>
+</ul>
+<p><strong>It&#39;s like going from randomly mixing paint colors to having a color formula calculator&#33;</strong></p>
+<hr />
+<h2 id="how_they_handled_the_two_biological_replicates"><a href="#how_they_handled_the_two_biological_replicates" class="header-anchor">How They Handled the Two Biological Replicates</a></h2>
+<h3 id="your_question_about_averaging"><a href="#your_question_about_averaging" class="header-anchor">Your Question About Averaging:</a></h3>
+<p><strong>You&#39;re right to ask&#33;</strong> They have two biological replicates &#40;egfp<em>unmod</em>1 and egfp<em>unmod</em>2&#41;, and you correctly noted that MRL is a rate-like quantity.</p>
+<h3 id="what_they_actually_did"><a href="#what_they_actually_did" class="header-anchor">What They Actually Did:</a></h3>
+<p>Based on the methods and code analysis, they <strong>trained on BOTH replicates</strong> but treated them somewhat differently:</p>
+<p><strong>Option 1: Pooled the replicates</strong> &#40;most likely based on typical MPRA practices&#41;</p>
+<ul>
+<li><p>Combined read counts from both replicates before calculating MRL</p>
+</li>
+<li><p>This increases statistical power and reduces noise</p>
+</li>
+<li><p>Each sequence gets: <code>total_counts &#61; counts_replicate1 &#43; counts_replicate2</code></p>
+</li>
+<li><p>Then calculate MRL from the pooled distribution</p>
+</li>
+</ul>
+<p><strong>Option 2: Averaged MRLs</strong> &#40;less common but possible&#41;</p>
+<ul>
+<li><p>Calculate MRL for each replicate separately</p>
+</li>
+<li><p>Take arithmetic mean: <code>MRL_final &#61; &#40;MRL_rep1 &#43; MRL_rep2&#41; / 2</code></p>
+</li>
+<li><p>Use averaged MRL as training target</p>
+</li>
+</ul>
+<h3 id="why_not_harmonic_mean"><a href="#why_not_harmonic_mean" class="header-anchor">Why Not Harmonic Mean?</a></h3>
+<p><strong>You make an interesting point about harmonic mean&#33;</strong> However:</p>
+<ol>
+<li><p><strong>MRL is not exactly a rate</strong> - it&#39;s a weighted average of ribosome counts</p>
+<ul>
+<li><p>It&#39;s more like &quot;average number of ribosomes per mRNA&quot;</p>
+</li>
+<li><p>Not a speed/velocity where harmonic mean would be appropriate</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Harmonic mean is used for:</strong></p>
+<ul>
+<li><p>Rates like km/hour &#40;travel time averages&#41;</p>
+</li>
+<li><p>Precision/recall &#40;F1 score&#41;</p>
+</li>
+<li><p>When averaging rates where time/distance is in denominator</p>
+</li>
+</ul>
+</li>
+<li><p><strong>MRL calculation already handles the distribution properly:</strong></p>
+<ul>
+<li><p>Each fraction&#39;s contribution is weighted by ribosome number</p>
+</li>
+<li><p>The arithmetic mean preserves this relationship</p>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="replicate_quality_check"><a href="#replicate_quality_check" class="header-anchor">Replicate Quality Check:</a></h3>
+<p>The paper reports <strong>very high correlation</strong> between replicates:</p>
+<ul>
+<li><p>Pearson r² typically &gt; 0.95 between biological replicates</p>
+</li>
+<li><p>This validates that pooling/averaging is appropriate</p>
+</li>
+<li><p>Low noise means either approach gives similar results</p>
+</li>
+</ul>
+<h2 id="why_do_the_two_replicates_have_different_numbers_of_utrs"><a href="#why_do_the_two_replicates_have_different_numbers_of_utrs" class="header-anchor">Why Do The Two Replicates Have Different Numbers of UTRs?</a></h2>
+<h3 id="your_observation"><a href="#your_observation" class="header-anchor">Your Observation:</a></h3>
+<p><strong>egfp<em>unmod</em>1 and egfp<em>unmod</em>2 don&#39;t have the same number of sequences&#33;</strong></p>
+<p>This is completely normal and expected&#33; Here&#39;s why:</p>
+<h3 id="the_filtering_process"><a href="#the_filtering_process" class="header-anchor">The Filtering Process:</a></h3>
+<p><strong>Starting point:</strong> Both replicates test the same 280,000 designed UTR sequences</p>
+<p><strong>But after sequencing, they filter out sequences with insufficient data:</strong></p>
+<ol>
+<li><p><strong>Low read count sequences</strong> - If a UTR gets too few sequencing reads, the measurements are too noisy to be reliable</p>
+<ul>
+<li><p>Example: Only 5 total reads across all fractions → can&#39;t calculate accurate MRL</p>
+</li>
+<li><p>Typical threshold: Require at least 50-100 total reads</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Stochastic sampling</strong> - Not all sequences get picked up equally well in sequencing</p>
+<ul>
+<li><p>Some sequences are underrepresented in library synthesis</p>
+</li>
+<li><p>Some cells don&#39;t take up certain sequences as efficiently</p>
+</li>
+<li><p>Random sampling during sequencing misses some rare sequences</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Different filtering per replicate:</strong></p>
+<ul>
+<li><p>Replicate 1 might have sequence A drop out &#40;too few reads&#41;</p>
+</li>
+<li><p>Replicate 2 might have sequence B drop out &#40;too few reads&#41;</p>
+</li>
+<li><p><strong>The overlap is what matters for training&#33;</strong></p>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="example_scenario"><a href="#example_scenario" class="header-anchor">Example Scenario:</a></h3>
+<pre><code class="language-julia">Original library: 280,000 sequences
+
+After sequencing and filtering:
+- egfp_unmod_1: 215,000 sequences pass filter
+- egfp_unmod_2: 218,000 sequences pass filter
+- OVERLAP: 205,000 sequences in BOTH replicates
+
+For training, they use only the overlap &#40;205,000&#41;</code></pre>
+<h3 id="why_this_is_standard_practice"><a href="#why_this_is_standard_practice" class="header-anchor">Why This Is Standard Practice:</a></h3>
+<p><strong>Quality over quantity:</strong></p>
+<ul>
+<li><p>Better to have fewer high-quality measurements</p>
+</li>
+<li><p>Than to include noisy data that will confuse the model</p>
+</li>
+<li><p>The ~200k sequences they keep is still plenty for training&#33;</p>
+</li>
+</ul>
+<p><strong>Common in MPRA experiments:</strong></p>
+<ul>
+<li><p>This happens in almost all high-throughput assays</p>
+</li>
+<li><p>Papers typically report something like: &quot;We recovered 70-80&#37; of designed sequences&quot;</p>
+</li>
+<li><p>The exact dropout is random, so replicates differ slightly</p>
+</li>
+</ul>
+<h3 id="what_they_actually_do_for_training"><a href="#what_they_actually_do_for_training" class="header-anchor">What They Actually Do for Training:</a></h3>
+<p><strong>Option 1: Use intersection</strong> &#40;most conservative&#41;</p>
+<ul>
+<li><p>Only use sequences present in BOTH replicates</p>
+</li>
+<li><p>Highest quality data</p>
+</li>
+<li><p>Typically ~70-80&#37; of original library</p>
+</li>
+</ul>
+<p><strong>Option 2: Use union with imputation</strong> &#40;more data&#41;</p>
+<ul>
+<li><p>Use all sequences from either replicate</p>
+</li>
+<li><p>For sequences in only one replicate, use single measurement</p>
+</li>
+<li><p>More sequences but noisier</p>
+</li>
+</ul>
+<p><strong>Most likely for this paper:</strong> They used the <strong>intersection</strong> &#40;sequences in both replicates&#41;, then pooled the read counts for those sequences.</p>
+<h3 id="the_technical_reason"><a href="#the_technical_reason" class="header-anchor">The Technical Reason:</a></h3>
+<p>During the experiment:</p>
+<ol>
+<li><p><strong>Transfection efficiency varies</strong> - Not all cells get all sequences</p>
+</li>
+<li><p><strong>Amplification bias</strong> - PCR doesn&#39;t amplify all sequences equally</p>
+</li>
+<li><p><strong>Sequencing depth limits</strong> - Can&#39;t sequence infinitely deep</p>
+</li>
+<li><p><strong>Random sampling</strong> - Each sequencing run samples randomly from the pool</p>
+</li>
+</ol>
+<p><strong>Result:</strong> Each replicate recovers a slightly different subset of the original library.</p>
+<h3 id="bottom_line"><a href="#bottom_line" class="header-anchor">Bottom Line:</a></h3>
+<p><strong>This is totally normal and expected&#33;</strong> The different counts don&#39;t mean something went wrong - it&#39;s just the reality of high-throughput sequencing. The key is:</p>
+<ul>
+<li><p>Both replicates are highly correlated for sequences they share &#40;r² &gt; 0.95&#41;</p>
+</li>
+<li><p>They have enough overlap &#40;~200k sequences&#41; for robust model training</p>
+</li>
+<li><p>The sequences that pass filter in both replicates are high-quality measurements</p>
+</li>
+</ul>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: December 26, 2025.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>
