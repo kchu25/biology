@@ -1,4 +1,4 @@
-@def title = "A Compendium of RNA-Binding Motifs for Decoding Gene Regulation"
+@def title = "UTR-Seq Paper Overview (Rabani et al., 2017)"
 @def published = "3 January 2026"
 @def tags = ["rna", "binding-sites", "utr"]
 
