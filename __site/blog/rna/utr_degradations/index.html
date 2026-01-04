@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="/libs/katex/katex.min.css">
+     
+  
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>UTR-Seq Paper Overview (Rabani et al., 2017)</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="utr-seq_paper_overview_rabani_et_al_2017"><a href="#utr-seq_paper_overview_rabani_et_al_2017" class="header-anchor">UTR-Seq Paper Overview &#40;Rabani et al., 2017&#41;</a></h1>
+<p><strong>Reference</strong>: Rabani, M., Pieper, L., Chew, G.L., &amp; Schier, A.F. &#40;2017&#41;. Massively parallel reporter assay of 3′UTR sequences identifies in vivo rules for mRNA degradation. <em>Molecular Cell</em>, 68&#40;6&#41;, 1083-1094.e5.</p>
+<p>Hey&#33; So this paper introduces a really cool technique called <strong>UTR-Seq</strong> that figures out how the sequences in mRNA molecules affect how quickly they get degraded in cells.</p>
+<h2 id="the_big_picture"><a href="#the_big_picture" class="header-anchor">The Big Picture</a></h2>
+<p>The researchers wanted to understand: <strong>What parts of an mRNA&#39;s sequence tell the cell &quot;hey, break me down now&quot; versus &quot;keep me around longer&quot;?</strong></p>
+<p>They focused on the <strong>3′UTR</strong> &#40;the tail end of mRNA molecules&#41; and studied this during early zebrafish embryo development—specifically when maternal mRNAs are being cleared out.</p>
+<h2 id="what_theyre_trying_to_predict"><a href="#what_theyre_trying_to_predict" class="header-anchor">What They&#39;re Trying to Predict</a></h2>
+<p>The paper is trying to predict <strong>mRNA degradation rates</strong>—basically, how fast different mRNAs get broken down over time. They measure two key things:</p>
+<ol>
+<li><p><strong>Degradation rate &#40;β&#41;</strong> - How quickly the mRNA disappears &#40;they report this as half-life in hours&#41;</p>
+</li>
+<li><p><strong>Onset time &#40;t₀&#41;</strong> - When the degradation accelerates &#40;some mRNAs stay stable early, then suddenly decay faster after ~3-5 hours&#41;</p>
+</li>
+</ol>
+<h2 id="about_those_labels_1h_2h_etc"><a href="#about_those_labels_1h_2h_etc" class="header-anchor">About Those Labels &#40;1h, 2h, etc.&#41;</a></h2>
+<p>Yes&#33; Each sequence in their dataset has associated measurements at different time points—<strong>1 hour post-fertilization &#40;hpf&#41;, 2hpf, 3hpf</strong>, and so on up to 10hpf. These time-series measurements let them track how each mRNA decays over time, which is way more informative than just a single snapshot.</p>
+<p><strong>hpf &#61; hours post-fertilization</strong> - it&#39;s the standard way developmental biologists measure time in early embryos. It starts counting from when the egg is fertilized:</p>
+<ul>
+<li><p><strong>1hpf</strong>: 1 hour after fertilization</p>
+</li>
+<li><p><strong>2hpf</strong>: 2 hours after fertilization</p>
+</li>
+<li><p><strong>3-5hpf</strong>: When zebrafish genome activation happens &#40;zygotic transcription kicks in&#41;</p>
+</li>
+<li><p><strong>10hpf</strong>: Late in early development</p>
+</li>
+</ul>
+<p>They&#39;re tracking how the injected mRNA reporters decay during the first 10 hours of zebrafish embryo development.</p>
+<h3 id="what_are_they_actually_measuring"><a href="#what_are_they_actually_measuring" class="header-anchor">What Are They Actually Measuring?</a></h3>
+<p>At each time point, they measure <strong>mRNA abundance</strong> - how much of each reporter mRNA is still present in the embryo.</p>
+<p><strong>The measurement process:</strong></p>
+<ol>
+<li><p>Inject synthetic mRNA reporters into zebrafish embryos</p>
+</li>
+<li><p>Collect embryos at different time points &#40;1h, 2h, 3h, etc.&#41;</p>
+</li>
+<li><p>Extract total RNA and sequence the 3′UTR regions</p>
+</li>
+<li><p>Count reads using <strong>UMIs &#40;Unique Molecular Identifiers&#41;</strong> to get absolute molecule counts</p>
+</li>
+<li><p>Normalize using spike-in controls &#40;known quantities of control mRNAs&#41;</p>
+</li>
+</ol>
+<blockquote>
+<p><strong>Why &quot;Unique Molecular Identifiers&quot;?</strong></p>
+<p>UMIs are random DNA barcodes &#40;like 8 random nucleotides: ACGTTAGC&#41; that get attached to each individual mRNA molecule during the reverse transcription step. Here&#39;s why they&#39;re crucial:</p>
+<p><strong>The problem</strong>: When you do PCR amplification before sequencing, some molecules get copied way more than others &#40;PCR bias&#41;. If you just count sequencing reads, a single mRNA molecule that got lucky and amplified 100x looks like 100 different molecules&#33;</p>
+<p><strong>The solution</strong>: Tag each original molecule with a random barcode <em>before</em> any amplification. Now after PCR, you can look at the barcodes - if you see the same barcode 100 times, you know it came from just 1 original molecule. Different barcodes &#61; different original molecules.</p>
+<p>So &quot;Unique Molecular Identifier&quot; literally means: each original molecule gets a unique ID tag that lets you identify and count it, even after all the amplification noise. It&#39;s the difference between counting <em>sequencing reads</em> &#40;inflated by PCR&#41; vs counting <em>actual original molecules</em> &#40;what you really care about&#41;.</p>
+</blockquote>
+<p><strong>Units:</strong> The values are <strong>normalized UMI counts</strong> - essentially representing the number of mRNA molecules of each reporter present in the sample. After normalization to spike-ins, these are on a common scale across all time points, allowing direct comparison of how levels change over time.</p>
+<p>Think of it like this: if you start with 1000 molecules at 1hpf and measure 500 at 2hpf, the mRNA is decaying with a half-life of ~1 hour.</p>
+<h3 id="data_format"><a href="#data_format" class="header-anchor">Data Format</a></h3>
+<p>Here&#39;s what their data looks like:</p>
+<p><strong>Raw MPRA Data Structure:</strong></p>
+<table><tr><th align="right">Reporter ID</th><th align="right">3′UTR Sequence &#40;110nt&#41;</th><th align="right">1hpf</th><th align="right">2hpf</th><th align="right">3hpf</th><th align="right">4hpf</th><th align="right">5hpf</th><th align="right">6hpf</th><th align="right">7hpf</th><th align="right">8hpf</th><th align="right">10hpf</th></tr><tr><td align="right">Reporter_1</td><td align="right">AUGC...UAAA</td><td align="right">1245</td><td align="right">1189</td><td align="right">1098</td><td align="right">987</td><td align="right">856</td><td align="right">723</td><td align="right">612</td><td align="right">498</td><td align="right">301</td></tr><tr><td align="right">Reporter_2</td><td align="right">GCUA...CUUG</td><td align="right">2341</td><td align="right">2298</td><td align="right">2156</td><td align="right">1876</td><td align="right">1234</td><td align="right">789</td><td align="right">445</td><td align="right">289</td><td align="right">134</td></tr><tr><td align="right">Reporter_3</td><td align="right">UUUU...GUAU</td><td align="right">891</td><td align="right">883</td><td align="right">879</td><td align="right">871</td><td align="right">865</td><td align="right">854</td><td align="right">847</td><td align="right">839</td><td align="right">821</td></tr><tr><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td></tr></table>
+<p><em>Note: Values are <strong>normalized UMI counts</strong> &#40;proportional to actual mRNA molecule counts&#41;</em></p>
+<p><strong>After Fitting Degradation Models:</strong></p>
+<table><tr><th align="right">Reporter ID</th><th align="right">3′UTR Sequence</th><th align="right">Model Type</th><th align="right">\(X_0\)</th><th align="right">\(\beta\) &#40;h⁻¹&#41;</th><th align="right">\(t_0\) &#40;hpf&#41;</th><th align="right">\(\beta_0\) &#40;h⁻¹&#41;</th><th align="right">Half-life &#40;h&#41;</th><th align="right">Class</th></tr><tr><td align="right">Reporter_1</td><td align="right">AUGC...UAAA</td><td align="right">Early-onset</td><td align="right">1245</td><td align="right">0.38</td><td align="right">-</td><td align="right">-</td><td align="right">1.8</td><td align="right">I</td></tr><tr><td align="right">Reporter_2</td><td align="right">GCUA...CUUG</td><td align="right">Late-onset</td><td align="right">2341</td><td align="right">0.63</td><td align="right">4.2</td><td align="right">0.08</td><td align="right">1.1</td><td align="right">II</td></tr><tr><td align="right">Reporter_3</td><td align="right">UUUU...GUAU</td><td align="right">Early-onset</td><td align="right">891</td><td align="right">0.05</td><td align="right">-</td><td align="right">-</td><td align="right">13.9</td><td align="right">I</td></tr><tr><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td></tr></table>
+<p><strong>For Regression Input &#40;k-mer Features&#41;:</strong></p>
+<table><tr><th align="right">Reporter ID</th><th align="right">AAA</th><th align="right">AAC</th><th align="right">AAG</th><th align="right">AAU</th><th align="right">...</th><th align="right">UUUUUUU</th><th align="right">GCACUU</th><th align="right">UAUUUAU</th><th align="right">...</th><th align="right">\(\beta\) &#40;target&#41;</th></tr><tr><td align="right">Reporter_1</td><td align="right">3</td><td align="right">2</td><td align="right">5</td><td align="right">1</td><td align="right">...</td><td align="right">0</td><td align="right">1</td><td align="right">0</td><td align="right">...</td><td align="right">0.38</td></tr><tr><td align="right">Reporter_2</td><td align="right">1</td><td align="right">4</td><td align="right">2</td><td align="right">3</td><td align="right">...</td><td align="right">0</td><td align="right">2</td><td align="right">1</td><td align="right">...</td><td align="right">0.63</td></tr><tr><td align="right">Reporter_3</td><td align="right">2</td><td align="right">1</td><td align="right">3</td><td align="right">2</td><td align="right">...</td><td align="right">3</td><td align="right">0</td><td align="right">0</td><td align="right">...</td><td align="right">0.05</td></tr><tr><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td><td align="right">...</td></tr></table>
+<p><em>21,824 possible k-mer features &#40;all 3-7nt sequences&#41;</em></p>
+<h3 id="scale"><a href="#scale" class="header-anchor">Scale</a></h3>
+<ul>
+<li><p><strong>90,000</strong> designed sequences</p>
+</li>
+<li><p><strong>~35,000</strong> reporters with sufficient coverage</p>
+</li>
+<li><p><strong>~31,000</strong> successfully fitted with degradation models</p>
+</li>
+<li><p><strong>9-10</strong> time points per reporter</p>
+</li>
+<li><p><strong>Two libraries</strong>: A&#43; &#40;with poly&#40;A&#41; tail&#41; and A- &#40;without&#41;</p>
+</li>
+</ul>
+<h2 id="the_key_findings"><a href="#the_key_findings" class="header-anchor">The Key Findings</a></h2>
+<p>They discovered <strong>six major sequence signals</strong> that control mRNA stability:</p>
+<p><strong>Stabilizing signals &#40;keep mRNA around longer&#41;:</strong></p>
+<ul>
+<li><p>Poly-U sequences &#40;lots of U&#39;s&#41;</p>
+</li>
+<li><p>UUAG sequences</p>
+</li>
+</ul>
+<p><strong>Destabilizing signals &#40;make mRNA decay faster&#41;:</strong></p>
+<ul>
+<li><p>GC-rich sequences &#40;early degradation&#41;</p>
+</li>
+<li><p>miR-430 binding sites &#40;late degradation, after genome activation&#41;</p>
+</li>
+<li><p>AU-rich elements &#40;AREs - late degradation&#41;</p>
+</li>
+<li><p>Pumilio recognition sites &#40;late degradation&#41;</p>
+</li>
+</ul>
+<h2 id="the_prediction_models_-_how_they_work"><a href="#the_prediction_models_-_how_they_work" class="header-anchor">The Prediction Models - How They Work</a></h2>
+<p>Yes, they built prediction models, but it&#39;s more sophisticated than just regressing on individual time points&#33; Here&#39;s the breakdown:</p>
+<h3 id="step_1_model_the_degradation_kinetics_first"><a href="#step_1_model_the_degradation_kinetics_first" class="header-anchor">Step 1: Model the Degradation Kinetics First</a></h3>
+<p>They <strong>don&#39;t</strong> regress on 1h, 2h individually. Instead, they:</p>
+<ol>
+<li><p><strong>Fit degradation models</strong> to the time-series data &#40;all time points together&#41; for each mRNA</p>
+</li>
+<li><p>Extract <strong>kinetic parameters</strong> from these models:</p>
+<ul>
+<li><p>\(\beta\) &#40;degradation rate&#41;</p>
+</li>
+<li><p>\(t_0\) &#40;onset time, if applicable&#41;</p>
+</li>
+<li><p>\(X_0\) &#40;initial level&#41;</p>
+</li>
+</ul>
+</li>
+</ol>
+<p>They use first-order exponential decay kinetics:</p>
+\(\frac{dX}{dt} = -b(t) \cdot X(t)\)
+<p>Two models are tested:</p>
+<ul>
+<li><p><strong>Early-onset model</strong>: Constant rate throughout &#40;\(b(t) = \beta\)&#41;</p>
+</li>
+<li><p><strong>Late-onset model</strong>: Step function that changes at onset time</p>
+</li>
+</ul>
+\(b(t) = \begin{cases} \beta_0 & t \leq t_0 \\ \beta & t > t_0 \end{cases}\)
+<p>They pick the best model for each mRNA using likelihood ratio tests.</p>
+<h3 id="step_2_regression_on_kinetic_parameters"><a href="#step_2_regression_on_kinetic_parameters" class="header-anchor">Step 2: Regression on Kinetic Parameters</a></h3>
+<p>Now here&#39;s the clever part—they regress <strong>from sequence to degradation rates</strong>, not directly to time points&#33;</p>
+<p><strong>Input</strong>: k-mer composition &#40;counts of all 3-7 nucleotide sequences in the 3′UTR&#41;</p>
+<p><strong>Output</strong>: Degradation rate &#40;\(\beta\)&#41;</p>
+<p>The regression equation:</p>
+\(\beta_g = w_0 + \sum_{k} N_{kg} \cdot w_k\)
+<p>Where:</p>
+<ul>
+<li><p>\(N_{kg}\) &#61; number of times k-mer \(k\) appears in sequence \(g\)</p>
+</li>
+<li><p>\(w_k\) &#61; weight for each k-mer &#40;learned by the model&#41;</p>
+</li>
+</ul>
+<h3 id="step_3_lasso_regularization"><a href="#step_3_lasso_regularization" class="header-anchor">Step 3: LASSO Regularization</a></h3>
+<p>They use <strong>lasso-regularized linear regression</strong> &#40;not just plain regression&#33;&#41; which:</p>
+<ul>
+<li><p>Automatically selects important k-mers &#40;feature selection&#41;</p>
+</li>
+<li><p>Shrinks most k-mer weights to exactly zero</p>
+</li>
+<li><p>Keeps only the most informative sequence signals</p>
+</li>
+</ul>
+<p>Their two-step approach:</p>
+<ol>
+<li><p><strong>First pass</strong>: LASSO on high-confidence reporters &#40;up to 20,000&#41; to identify relevant k-mers</p>
+</li>
+<li><p><strong>Second pass</strong>: Standard linear regression on ALL reporters, but only using the k-mers selected in step 1</p>
+</li>
+</ol>
+<p><strong>No neural nets or deep learning here&#33;</strong> They kept it simple and interpretable:</p>
+<ul>
+<li><p>Linear regression with LASSO regularization</p>
+</li>
+<li><p>Each k-mer contributes independently and additively &#40;no interactions modeled&#41;</p>
+</li>
+<li><p>You can directly see which sequences matter and by how much &#40;the weights \(w_k\)&#41;</p>
+</li>
+<li><p>Published in 2017, before the deep learning craze fully took over biology</p>
+</li>
+</ul>
+<p>This simplicity is actually a feature, not a bug—it makes the model interpretable and biologically meaningful. You can look at the weights and say &quot;poly-U sequences stabilize mRNAs by X amount&quot; rather than having some black-box neural net.</p>
+<h3 id="two_separate_models"><a href="#two_separate_models" class="header-anchor">Two Separate Models</a></h3>
+<p>They actually built <strong>two different regression models</strong>:</p>
+<ol>
+<li><p><strong>Early-onset regression</strong>: Trained on class I reporters &#40;constant degradation&#41;</p>
+</li>
+<li><p><strong>Late-onset regression</strong>: Trained on all reporters, predicts the accelerated rate after genome activation</p>
+</li>
+</ol>
+<h3 id="performance"><a href="#performance" class="header-anchor">Performance</a></h3>
+<ul>
+<li><p>Early-onset model explains <strong>60&#37;</strong> of variance &#40;\(r^2 = 0.60\)&#41;</p>
+</li>
+<li><p>Late-onset model explains <strong>43&#37;</strong> of variance &#40;\(r^2 = 0.43\)&#41;</p>
+</li>
+<li><p>Combined predictions explain <strong>70&#37;</strong> of overall variation</p>
+</li>
+</ul>
+<p>They validated using 10-fold cross-validation—training on 90&#37; of data, testing on the remaining 10&#37;, repeated multiple times.</p>
+<h3 id="the_cool_part"><a href="#the_cool_part" class="header-anchor">The Cool Part</a></h3>
+<p>The models work&#33; They can predict degradation rates just from sequence, and they even used these predictions to <strong>design artificial 3′UTRs</strong> with specific decay patterns—stable, unstable, or transitional—and experimentally validated them.</p>
+<h2 id="two_temporal_programs"><a href="#two_temporal_programs" class="header-anchor">Two Temporal Programs</a></h2>
+<p>They found two distinct degradation programs:</p>
+<ul>
+<li><p><strong>Early-onset</strong>: Constant degradation from the start &#40;maternally encoded&#41;</p>
+</li>
+<li><p><strong>Late-onset</strong>: Stable initially, then rapid degradation after ~3-5 hours when the embryo&#39;s own genome kicks in</p>
+</li>
+</ul>
+<p>Pretty neat system for understanding how cells control which mRNAs stick around and which get destroyed&#33;</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 04, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+        <script src="/libs/katex/katex.min.js"></script>
+<script src="/libs/katex/contrib/auto-render.min.js"></script>
+<script>renderMathInElement(document.body)</script>
+
+    
+    
+  </body>
+</html>

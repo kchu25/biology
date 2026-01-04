@@ -2,6 +2,12 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
+    <loc>https://kchu25.github.io/blog/rna/utr_degradations/index.html</loc>
+    <lastmod>2026-01-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
     <loc>https://kchu25.github.io/blog/screenings/utr_translation_assay/index.html</loc>
     <lastmod>2025-12-26</lastmod>
     <changefreq>monthly</changefreq>
@@ -38,6 +44,12 @@
     <priority>0.5</priority>
 </url>
 <url>
+    <loc>https://kchu25.github.io/blog/screenings/te/index.html</loc>
+    <lastmod>2026-01-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
     <loc>https://kchu25.github.io/blog/start_ups/blockchain/index.html</loc>
     <lastmod>2025-12-26</lastmod>
     <changefreq>monthly</changefreq>
@@ -63,7 +75,7 @@
 </url>
 <url>
     <loc>https://kchu25.github.io/blog/index.html</loc>
-    <lastmod>2025-12-26</lastmod>
+    <lastmod>2026-01-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
@@ -87,7 +99,7 @@
 </url>
 <url>
     <loc>https://kchu25.github.io/blog/screenings/utr_degradation/index.html</loc>
-    <lastmod>2025-12-26</lastmod>
+    <lastmod>2026-01-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>

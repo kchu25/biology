@@ -1,6 +1,6 @@
 @def title = "MPRA of 3′UTR sequences identifies in vivo rules for mRNA degradation"
 @def published = "22 December 2025"
-@def tags = ["rna", "screening"]
+@def tags = ["rna", "screening", "utr"]
 
 # Massively parallel reporter assay of 3′UTR sequences identifies in vivo rules for mRNA degradation
 

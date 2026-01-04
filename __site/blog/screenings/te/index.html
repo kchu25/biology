@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="/libs/katex/katex.min.css">
+     
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>5'UTR Optimizer: Understanding the Prediction Task</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><p><strong>TE Units: ribosomes per mRNA</strong></p>
+<ul>
+<li><p>More precisely: TE ∝ &#40;ribosome density on transcript&#41; / &#40;transcript abundance&#41;</p>
+</li>
+<li><p>The RPKM normalization cancels some units, but conceptually TE represents <strong>how many ribosomes are translating each mRNA molecule</strong></p>
+</li>
+<li><p>Typical range: ~0.1 to 10&#43; ribosomes per mRNA</p>
+</li>
+<li><p>TE &#61; 1 means ~1 ribosome per mRNA on average</p>
+</li>
+<li><p>TE &#61; 5 means ~5 ribosomes per mRNA &#40;high translation activity&#41;</p>
+</li>
+<li><p>Higher TE &#61; more protein produced per mRNA molecule &#61; more efficient translation</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>Is TE an accurate measure of translation efficiency?</strong></p>
+<p>It&#39;s a <strong>good proxy, but not perfect</strong>. Here&#39;s why:</p>
+<p><strong>What TE captures well:</strong></p>
+<ul>
+<li><p>How heavily loaded with ribosomes each mRNA is &#40;more ribosomes &#61; more translation happening&#41;</p>
+</li>
+<li><p>Relative differences between sequences &#40;sequence A with TE&#61;5 is genuinely producing more protein than sequence B with TE&#61;1&#41;</p>
+</li>
+</ul>
+<p><strong>What TE misses:</strong></p>
+<ul>
+<li><p><strong>Translation speed</strong> - some ribosomes move fast, others stall. TE just counts them, not how productive they are</p>
+</li>
+<li><p><strong>Protein stability</strong> - the final protein might degrade quickly, so high TE doesn&#39;t always mean high final protein levels</p>
+</li>
+<li><p><strong>Ribosome stalling</strong> - stuck ribosomes inflate the count without making protein</p>
+</li>
+</ul>
+<p>Think of it like counting workers in a factory &#40;ribosomes&#41; vs measuring actual output &#40;protein&#41;. More workers usually means more output, but not always - they could be slow, or the product might break. Still, for comparing different factory designs &#40;5&#39;UTR sequences&#41;, worker count is a pretty reliable indicator of productivity.# 5&#39;UTR Optimizer: Understanding the Prediction Task</p>
+</blockquote>
+<h2 id="what_are_they_trying_to_predict"><a href="#what_are_they_trying_to_predict" class="header-anchor">What are they trying to predict?</a></h2>
+<p>The researchers are predicting <strong>Translation Efficiency &#40;TE&#41;</strong> from 5&#39; UTR sequences. Think of it as: given a DNA/RNA sequence that sits at the beginning of a gene &#40;the 5&#39; UTR region&#41;, how well will the cell translate this into protein?</p>
+<p>Translation Efficiency is specifically defined as:</p>
+\(\text{TE} = \frac{\text{Ribo-seq RPKM}}{\text{RNA-seq RPKM}}\)
+<h3 id="breaking_down_the_te_formula"><a href="#breaking_down_the_te_formula" class="header-anchor">Breaking down the TE formula:</a></h3>
+<p><strong>Numerator: Ribo-seq RPKM</strong></p>
+<ul>
+<li><p><strong>Ribo-seq</strong> &#40;Ribosome profiling&#41; &#61; measures how many ribosomes are bound to and translating a specific mRNA</p>
+</li>
+<li><p><strong>RPKM</strong> &#61; Reads Per Kilobase per Million mapped reads &#40;a normalization method&#41;</p>
+</li>
+<li><p>Units: essentially &quot;ribosome density&quot; - more reads &#61; more active translation</p>
+</li>
+</ul>
+<p><strong>Denominator: RNA-seq RPKM</strong></p>
+<ul>
+<li><p><strong>RNA-seq</strong> &#61; measures the abundance of mRNA transcripts in the cell</p>
+</li>
+<li><p><strong>RPKM</strong> &#61; same normalization &#40;Reads Per Kilobase per Million&#41;</p>
+</li>
+<li><p>Units: essentially &quot;mRNA abundance&quot; - how many copies of the transcript exist</p>
+</li>
+</ul>
+<p><strong>TE Units: ribosomes per mRNA &#40;approximately&#41;</strong></p>
+<ul>
+<li><p>More precisely: TE ∝ &#40;ribosome density on transcript&#41; / &#40;transcript abundance&#41;</p>
+</li>
+<li><p>The RPKM normalization cancels some units, but conceptually TE represents <strong>how many ribosomes are translating each mRNA molecule</strong></p>
+</li>
+<li><p>Typical range: ~0.1 to 10&#43; ribosomes per mRNA</p>
+</li>
+<li><p>TE &#61; 1 means ~1 ribosome per mRNA on average</p>
+</li>
+<li><p>TE &#61; 5 means ~5 ribosomes per mRNA &#40;high translation activity&#41;</p>
+</li>
+<li><p>Higher TE &#61; more protein produced per mRNA molecule &#61; more efficient translation</p>
+</li>
+</ul>
+<p>This ratio tells you: for every mRNA molecule present &#40;denominator&#41;, how many ribosomes are actively translating it &#40;numerator&#41;. Higher TE &#61; more protein production.</p>
+<hr />
+<h2 id="whats_the_actual_problem_type"><a href="#whats_the_actual_problem_type" class="header-anchor">What&#39;s the actual problem type?</a></h2>
+<p><strong>Yes, it&#39;s essentially a sequence-to-label regression problem.</strong></p>
+<h3 id="the_endogenous_vs_synthetic_distinction"><a href="#the_endogenous_vs_synthetic_distinction" class="header-anchor">The &quot;Endogenous&quot; vs &quot;Synthetic&quot; Distinction</a></h3>
+<p><strong>Endogenous sequences</strong> &#61; naturally occurring 5&#39;UTRs that come directly from the human genome. These are the &quot;real&quot; sequences that evolution has produced, extracted from actual genes using genomic annotations &#40;like GENCODE&#41;.</p>
+<p><strong>Synthetic sequences</strong> &#61; artificially designed 5&#39;UTRs, either:</p>
+<ul>
+<li><p>Randomly generated sequences</p>
+</li>
+<li><p>Sequences created by genetic algorithms</p>
+</li>
+<li><p>Sequences evolved from endogenous ones</p>
+</li>
+</ul>
+<p>In their workflow:</p>
+<ol>
+<li><p>They <strong>train on endogenous sequences</strong> &#40;with measured TE from Ribo-seq data&#41;</p>
+</li>
+<li><p>They <strong>generate synthetic sequences</strong> using genetic algorithms to optimize for high TE</p>
+</li>
+<li><p>They experimentally validate the best synthetic sequences</p>
+</li>
+</ol>
+<p>So yes, &quot;endogenous&quot; simply means &quot;derived from the genome&quot; - these are real 5&#39;UTRs from real genes, not made up&#33;</p>
+<h3 id="input"><a href="#input" class="header-anchor">Input</a></h3>
+<p>A nucleotide sequence representing:</p>
+<ul>
+<li><p>The <strong>5&#39; UTR</strong> &#40;untranslated region before the protein-coding sequence&#41;</p>
+</li>
+<li><p>The <strong>first 15 base pairs of the CDS</strong> &#40;coding sequence&#41;</p>
+</li>
+</ul>
+<p><strong>What&#39;s CDS?</strong> The <strong>Coding DNA Sequence</strong> - the part of the gene that actually gets translated into protein. It starts with the start codon &#40;ATG&#41; and continues until a stop codon.</p>
+<p><strong>Why include 15bp of CDS?</strong> The transition region between the 5&#39;UTR and the coding sequence affects translation efficiency&#33; The first few codons, RNA secondary structure across this boundary, and the Kozak sequence context all matter.</p>
+<p>Example format: </p>
+<pre><code class="language-julia">&#91;5&#39;UTR: variable length&#93;...&#91;CDS: first 15bp starting with ATG&#93;
+GCCGCCGCCATGGCTACG...ATGAAACCGTGG
+                    ↑
+                start codon &#40;ATG&#41;</code></pre>
+<p>Total sequence length: typically &lt;300bp</p>
+<h3 id="output"><a href="#output" class="header-anchor">Output</a></h3>
+<p>A continuous numerical value representing translation efficiency &#40;TE&#41; or sometimes RNA expression level &#40;EL&#41;.</p>
+<hr />
+<h2 id="data_format_details"><a href="#data_format_details" class="header-anchor">Data Format Details</a></h2>
+<h3 id="sequence_structure"><a href="#sequence_structure" class="header-anchor">Sequence Structure</a></h3>
+<pre><code class="language-julia">&#91;5&#39; UTR sequence &#40;variable length&#41;&#93; &#43; &#91;First 15bp of CDS&#93;</code></pre>
+<p>For instance:</p>
+<pre><code class="language-julia">5&#39;UTR: GCCGCCGCCATGGCTACG...  &#40;50-250 bp typically&#41;
+CDS:   ATGAAACCGTGG...        &#40;first 15 bp&#41;</code></pre>
+<h3 id="feature_extraction"><a href="#feature_extraction" class="header-anchor">Feature Extraction</a></h3>
+<p>They don&#39;t just feed raw sequences into the model. They extract engineered features:</p>
+<ol>
+<li><p><strong>K-mer frequencies</strong> &#40;k&#61;1 to 6&#41;</p>
+<ul>
+<li><p>How often do short subsequences appear?</p>
+</li>
+</ul>
+</li>
+<li><p><strong>RNA folding energy</strong> &#40;using ViennaRNA&#41;</p>
+<ul>
+<li><p>Energy of first 100bp of 5&#39;UTR</p>
+</li>
+<li><p>Energy of last 30bp &#40;15bp UTR &#43; 15bp CDS&#41;</p>
+</li>
+<li><p>Whole sequence energy</p>
+</li>
+<li><p>With/without G-quadruplex structures</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Codon usage</strong> in the first 15bp of CDS</p>
+</li>
+<li><p><strong>Sequence properties</strong></p>
+<ul>
+<li><p>Number of start codons &#40;ATG&#41; in 5&#39;UTR</p>
+</li>
+<li><p>Number of stop codons</p>
+</li>
+<li><p>Total 5&#39;UTR length</p>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="training_data"><a href="#training_data" class="header-anchor">Training Data</a></h3>
+<ul>
+<li><p><strong>Source</strong>: Ribosome profiling &#40;Ribo-seq&#41; and RNA-seq data from:</p>
+<ul>
+<li><p>Human muscle tissue</p>
+</li>
+<li><p>HEK293T cells</p>
+</li>
+<li><p>PC3 cells</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Filters applied</strong>:</p>
+<ul>
+<li><p>Minimum RNA-seq RPKM ≥ 5</p>
+</li>
+<li><p>Minimum Ribo-seq RPKM ≥ 0.1</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Size</strong>: Thousands of endogenous 5&#39;UTR sequences with measured TE values</p>
+</li>
+</ul>
+<hr />
+<h2 id="model_architecture"><a href="#model_architecture" class="header-anchor">Model Architecture</a></h2>
+<p><strong>Primary algorithm</strong>: Random Forest regression &#40;though they tested glmnet, Rpart, and SVM too&#41;</p>
+<p><strong>Performance</strong>:</p>
+<ul>
+<li><p>Spearman correlation: <strong>0.71</strong> for TE prediction</p>
+</li>
+<li><p>Spearman correlation: <strong>0.74</strong> for RNA expression prediction</p>
+</li>
+<li><p>Validated with 10-fold cross-validation</p>
+</li>
+</ul>
+<hr />
+<h2 id="the_bigger_picture_why_does_this_matter"><a href="#the_bigger_picture_why_does_this_matter" class="header-anchor">The Bigger Picture: Why Does This Matter?</a></h2>
+<p>This isn&#39;t just prediction—it&#39;s <strong>optimization</strong>. After building the model, they:</p>
+<ol>
+<li><p><strong>Train</strong> on natural 5&#39;UTRs with known TE</p>
+</li>
+<li><p><strong>Use a Genetic Algorithm</strong> to evolve synthetic 5&#39;UTRs</p>
+</li>
+<li><p><strong>Generate ~12,000 synthetic sequences</strong> optimized for high translation efficiency</p>
+</li>
+<li><p><strong>Screen them experimentally</strong> to find the best ones</p>
+</li>
+</ol>
+<p>Think of it as: learn what makes a good 5&#39;UTR from nature, then design even better ones for gene therapy applications where you want maximum protein production.</p>
+<hr />
+<h2 id="key_references"><a href="#key_references" class="header-anchor">Key References</a></h2>
+<h3 id="original_paper"><a href="#original_paper" class="header-anchor">Original Paper</a></h3>
+<ul>
+<li><p><strong>Cao et al. &#40;2021&#41;</strong> - &quot;High-Throughput 5&#39; UTR Engineering for Enhanced Protein Production in Non-Viral Gene Therapies&quot;</p>
+<ul>
+<li><p>bioRxiv: https://doi.org/10.1101/2020.03.24.006486</p>
+</li>
+<li><p>Published in <em>Nature Communications</em></p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="related_work_on_5utr_design"><a href="#related_work_on_5utr_design" class="header-anchor">Related Work on 5&#39;UTR Design</a></h3>
+<ul>
+<li><p><strong>Sample et al. &#40;2019&#41;</strong> - Developed &quot;Optimus 5-Prime&quot; CNN model for MRL prediction</p>
+</li>
+<li><p><strong>Recent approaches</strong> use deep learning on both endogenous and synthetic sequences to guide UTR design <sup id="fnref:1"><a href="#fndef:1" class="fnref">[1]</a></sup><sup id="fnref:2"><a href="#fndef:2" class="fnref">[2]</a></sup></p>
+</li>
+</ul>
+<h3 id="data_sources"><a href="#data_sources" class="header-anchor">Data Sources</a></h3>
+<ul>
+<li><p><strong>GENCODE v17</strong> - Human genome annotations for endogenous 5&#39;UTRs</p>
+</li>
+<li><p><strong>Ribo-seq &amp; RNA-seq data</strong> from:</p>
+<ul>
+<li><p>Human muscle tissue</p>
+</li>
+<li><p>HEK293T cells  </p>
+</li>
+<li><p>PC3 cells</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><table class="fndef" id="fndef:1">
+    <tr>
+        <td class="fndef-backref"><a href="#fnref:1">[1]</a></td>
+        <td class="fndef-content">See search results on UTR-Insight and other recent deep learning models</td>
+    </tr>
+</table>
+<table class="fndef" id="fndef:2">
+    <tr>
+        <td class="fndef-backref"><a href="#fnref:2">[2]</a></td>
+        <td class="fndef-content">Multiple studies show synthetic 5&#39;UTRs can outperform natural ones when properly designed</td>
+    </tr>
+</table>
+ <hr /></p>
+<h2 id="quick_summary"><a href="#quick_summary" class="header-anchor">Quick Summary</a></h2>
+<table><tr><th align="right">Aspect</th><th align="right">Details</th></tr><tr><td align="right"><strong>Problem Type</strong></td><td align="right">Sequence-to-label regression</td></tr><tr><td align="right"><strong>Input</strong></td><td align="right">5&#39;UTR &#43; 15bp CDS nucleotide sequence</td></tr><tr><td align="right"><strong>Output</strong></td><td align="right">Translation Efficiency &#40;continuous value&#41;</td></tr><tr><td align="right"><strong>Method</strong></td><td align="right">Engineered features → Random Forest</td></tr><tr><td align="right"><strong>Goal</strong></td><td align="right">Design synthetic 5&#39;UTRs for enhanced protein production</td></tr><tr><td align="right"><strong>Application</strong></td><td align="right">Non-viral gene therapies</td></tr></table>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 04, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+        <script src="/libs/katex/katex.min.js"></script>
+<script src="/libs/katex/contrib/auto-render.min.js"></script>
+<script>renderMathInElement(document.body)</script>
+
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>
