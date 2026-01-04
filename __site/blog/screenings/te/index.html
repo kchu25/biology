@@ -195,15 +195,23 @@ CDS:   ATGAAACCGTGG...        &#40;first 15 bp&#41;</code></pre>
 </li>
 </ul>
 </li>
-<li><p><strong>Filters applied</strong>:</p>
+<li><p><strong>Critical filters applied</strong>:</p>
 <ul>
-<li><p>Minimum RNA-seq RPKM ≥ 5</p>
+<li><p>Minimum RNA-seq RPKM ≥ 5 &#40;ensures mRNA is detectably expressed&#41;</p>
 </li>
-<li><p>Minimum Ribo-seq RPKM ≥ 0.1</p>
+<li><p>Minimum Ribo-seq RPKM ≥ 0.1 &#40;ensures ribosome binding is measurable&#41;</p>
+</li>
+<li><p><strong>Only sequences with both measurements passing these thresholds are used for training</strong></p>
 </li>
 </ul>
 </li>
-<li><p><strong>Size</strong>: Thousands of endogenous 5&#39;UTR sequences with measured TE values</p>
+<li><p><strong>Size</strong>: ~6,700 endogenous 5&#39;UTR sequences &#40;out of ~57,000 total human genes&#41;</p>
+<ul>
+<li><p>The <code>final_endogenous.txt</code> file contains many sequences, but only those with valid TE measurements &#40;passing the RPKM filters&#41; are actually used for model training</p>
+</li>
+<li><p>Sequences without measurable TE are excluded from the training set</p>
+</li>
+</ul>
 </li>
 </ul>
 <hr />

@@ -139,11 +139,14 @@ They don't just feed raw sequences into the model. They extract engineered featu
   - HEK293T cells
   - PC3 cells
   
-- **Filters applied**:
-  - Minimum RNA-seq RPKM ≥ 5
-  - Minimum Ribo-seq RPKM ≥ 0.1
+- **Critical filters applied**:
+  - Minimum RNA-seq RPKM ≥ 5 (ensures mRNA is detectably expressed)
+  - Minimum Ribo-seq RPKM ≥ 0.1 (ensures ribosome binding is measurable)
+  - **Only sequences with both measurements passing these thresholds are used for training**
   
-- **Size**: Thousands of endogenous 5'UTR sequences with measured TE values
+- **Size**: ~6,700 endogenous 5'UTR sequences (out of ~57,000 total human genes)
+  - The `final_endogenous.txt` file contains many sequences, but only those with valid TE measurements (passing the RPKM filters) are actually used for model training
+  - Sequences without measurable TE are excluded from the training set
 
 ---
 
