@@ -4,6 +4,8 @@
 
 # Decoding Translation: The Massively Parallel 5' UTR Competition Assay
 
+**Link:** https://pmc.ncbi.nlm.nih.gov/articles/PMC5741052/
+
 ---
 
 ## 1. The Experimental Concept: The "Molecular Marathon"
