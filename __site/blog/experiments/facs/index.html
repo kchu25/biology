@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="/libs/katex/katex.min.css">
+     
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>FACS Explained: Computer Scientist Edition</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="facs_explained_computer_scientist_edition"><a href="#facs_explained_computer_scientist_edition" class="header-anchor">FACS Explained: Computer Scientist Edition</a></h1>
+<h2 id="quick_overview"><a href="#quick_overview" class="header-anchor">Quick Overview</a></h2>
+<p><strong>FACS &#61; Fluorescence-Activated Cell Sorting</strong>. Think of it as a &quot;smart filter&quot; that physically separates cells based on how brightly they glow under specific wavelengths of light.</p>
+<hr />
+<h2 id="general_concept"><a href="#general_concept" class="header-anchor">General Concept</a></h2>
+<h3 id="the_basic_idea"><a href="#the_basic_idea" class="header-anchor">The Basic Idea</a></h3>
+<p>Imagine you have millions of cells, and some express more GFP &#40;Green Fluorescent Protein&#41; than others. FACS lets you:</p>
+<ol>
+<li><p><strong>Measure</strong> how bright each cell glows &#40;fluorescence intensity&#41;</p>
+</li>
+<li><p><strong>Sort</strong> cells into different collection tubes based on brightness</p>
+</li>
+<li><p><strong>Collect</strong> specific populations for downstream analysis</p>
+</li>
+</ol>
+<h3 id="the_process"><a href="#the_process" class="header-anchor">The Process</a></h3>
+<pre><code class="language-julia">Cells in suspension → Laser excitation → Fluorescence detection → 
+Charge droplets → Deflect by electric field → Collect in bins</code></pre>
+<p><strong>Key analogy</strong>: It&#39;s like a coin sorter that separates pennies, nickels, and dimes—except instead of size/weight, it uses fluorescence as the sorting criterion.</p>
+<hr />
+<h2 id="in_this_papers_context"><a href="#in_this_papers_context" class="header-anchor">In This Paper&#39;s Context</a></h2>
+<h3 id="what_they_did"><a href="#what_they_did" class="header-anchor">What They Did</a></h3>
+<p>The researchers had cells with different 5&#39; UTRs driving GFP expression. They wanted to identify which 5&#39; UTRs made cells produce <strong>more</strong> GFP protein.</p>
+<p><strong>Their sorting strategy:</strong></p>
+<ul>
+<li><p><strong>Bin 1</strong>: Top 2.5&#37; &#40;brightest cells&#41;</p>
+</li>
+<li><p><strong>Bin 2</strong>: 2.5-5&#37; &#40;very bright&#41;  </p>
+</li>
+<li><p><strong>Bin 3</strong>: 5-10&#37; &#40;bright&#41;</p>
+</li>
+<li><p><strong>Bin 4</strong>: 0-100&#37; &#40;unsorted control&#41;</p>
+</li>
+</ul>
+<h3 id="about_that_notation"><a href="#about_that_notation" class="header-anchor">About That Notation</a></h3>
+<p>You spotted something interesting&#33; Looking at the paper, they describe:</p>
+<ul>
+<li><p>&quot;top 2.5&#37;, 2.5–5&#37;, 5–10&#37;, and 0–100&#37; &#40;unsorted&#41;&quot;</p>
+</li>
+</ul>
+<p><strong>This is NOT a typo.</strong> Here&#39;s what it means:</p>
+<table><tr><th align="right">Bin</th><th align="right">Percentile Range</th><th align="right">Meaning</th><th align="right">Example &#40;out of 1000 cells&#41;</th></tr><tr><td align="right">1</td><td align="right">Top 2.5&#37;</td><td align="right">The absolute brightest 2.5&#37; of cells</td><td align="right">25 brightest cells</td></tr><tr><td align="right">2</td><td align="right">2.5-5&#37;</td><td align="right">The next tier &#40;cells ranked 2.5-5&#37; from the top&#41;</td><td align="right">Cells ranked 26-50</td></tr><tr><td align="right">3</td><td align="right">5-10&#37;</td><td align="right">Third tier &#40;cells ranked 5-10&#37; from the top&#41;</td><td align="right">Cells ranked 51-100</td></tr><tr><td align="right">4</td><td align="right">0-100&#37;</td><td align="right">Everything &#40;unsorted control&#41;</td><td align="right">All 1000 cells</td></tr></table>
+<h3 id="visual_breakdown"><a href="#visual_breakdown" class="header-anchor">Visual Breakdown</a></h3>
+<p>Imagine ranking all cells by GFP brightness from brightest to dimmest:</p>
+<pre><code class="language-julia">&#91;Bin 1: Top 2.5&#37;&#93;━━━━┓
+&#91;Bin 2: 2.5-5&#37;&#93;━━━━━┫ Collected separately
+&#91;Bin 3: 5-10&#37;&#93;━━━━━━┛
+&#91;...90&#37; dimmer cells...&#93;
+└─ All cells together &#61; Bin 4 &#40;0-100&#37;, unsorted&#41;</code></pre>
+<p><strong>Key insight</strong>: Bins 1-3 are <strong>physically separated</strong> during sorting. Each goes into its own collection tube. Bin 4 is just a sample taken <strong>before sorting</strong> to serve as the baseline.</p>
+<h3 id="the_percentile_notation_explained"><a href="#the_percentile_notation_explained" class="header-anchor">The Percentile Notation Explained</a></h3>
+<p>When they say &quot;top 2.5&#37;&quot;, they mean:</p>
+<ul>
+<li><p>Rank ALL cells by fluorescence intensity &#40;bright → dim&#41;</p>
+</li>
+<li><p>Take the top 2.5&#37; &#40;if you have 100,000 cells, that&#39;s 2,500 cells&#41;</p>
+</li>
+<li><p>That&#39;s Bin 1</p>
+</li>
+</ul>
+<p>Then &quot;2.5-5&#37;&quot; means:</p>
+<ul>
+<li><p>The cells ranked from position 2.5&#37; to position 5&#37;</p>
+</li>
+<li><p>These are bright, but not AS bright as Bin 1</p>
+</li>
+<li><p>If you have 100,000 cells, this is cells #2,501 through #5,000</p>
+</li>
+<li><p>That&#39;s Bin 2</p>
+</li>
+</ul>
+<p><strong>Yes, these are mutually exclusive</strong> &#40;except for bin 4, which contains everything and serves as a reference&#41;.</p>
+<p>The &quot;0-100&#37;&quot; bin isn&#39;t really a sorted &quot;bin&quot;—it&#39;s the <strong>pre-sort population</strong> used as a baseline. They compare the enrichment of specific 5&#39; UTR sequences in the top bins versus this unsorted control.</p>
+<hr />
+<h2 id="why_this_design"><a href="#why_this_design" class="header-anchor">Why This Design?</a></h2>
+<h3 id="multiple_bins_strategy"><a href="#multiple_bins_strategy" class="header-anchor">Multiple Bins Strategy</a></h3>
+<p>They used 3 separate bins instead of just one &quot;top 10&#37;&quot; bin because:</p>
+<ol>
+<li><p><strong>Reduces false positives</strong>: A 5&#39; UTR must be enriched in ALL three top bins to be considered a hit</p>
+</li>
+<li><p><strong>Better resolution</strong>: Can distinguish between &quot;really good&quot; and &quot;pretty good&quot; 5&#39; UTRs</p>
+</li>
+<li><p><strong>Statistical power</strong>: More data points for validation</p>
+</li>
+</ol>
+<h3 id="the_math_behind_it"><a href="#the_math_behind_it" class="header-anchor">The Math Behind It</a></h3>
+<p>For each 5&#39; UTR sequence, they calculated:</p>
+\[\text{Enrichment} = \log_2\left(\frac{\text{Count in top bin}}{\text{Count in unsorted}}\right)\]
+<p>A good 5&#39; UTR should have high enrichment in <strong>all three</strong> top bins.</p>
+<hr />
+<h2 id="key_technical_points"><a href="#key_technical_points" class="header-anchor">Key Technical Points</a></h2>
+<h3 id="why_gfp"><a href="#why_gfp" class="header-anchor">Why GFP?</a></h3>
+<ul>
+<li><p><strong>Easy to measure</strong>: Just shine blue light, detect green fluorescence</p>
+</li>
+<li><p><strong>Non-toxic</strong>: Doesn&#39;t kill cells</p>
+</li>
+<li><p><strong>Quantitative</strong>: Brightness ∝ amount of protein produced</p>
+</li>
+<li><p><strong>High-throughput</strong>: Can process millions of cells</p>
+</li>
+</ul>
+<h3 id="the_sorting_mechanism"><a href="#the_sorting_mechanism" class="header-anchor">The Sorting Mechanism</a></h3>
+<ol>
+<li><p>Cells flow single-file through a tiny nozzle</p>
+</li>
+<li><p>Laser hits each cell and measures fluorescence</p>
+</li>
+<li><p>Computer decides which bin the cell belongs to</p>
+</li>
+<li><p>Droplet containing that cell gets electrically charged</p>
+</li>
+<li><p>Charged droplet deflects toward the correct collection tube</p>
+</li>
+</ol>
+<p><strong>Throughput</strong>: ~10,000-50,000 cells/second</p>
+<hr />
+<h2 id="why_this_matters_for_the_paper"><a href="#why_this_matters_for_the_paper" class="header-anchor">Why This Matters for the Paper</a></h2>
+<h3 id="the_goal"><a href="#the_goal" class="header-anchor">The Goal</a></h3>
+<p>Find 5&#39; UTR sequences that boost protein expression.</p>
+<h3 id="the_challenge"><a href="#the_challenge" class="header-anchor">The Challenge</a></h3>
+<p>They had ~12,000 different 5&#39; UTRs to test. Can&#39;t test them one-by-one&#33;</p>
+<h3 id="the_clever_solution_pooled_screening"><a href="#the_clever_solution_pooled_screening" class="header-anchor">The Clever Solution: Pooled Screening</a></h3>
+<blockquote>
+<p><strong>Wait, doesn&#39;t FACS sort individual cells? How do you test 12,000 variants at once?</strong></p>
+<p>Great question&#33; You&#39;re right that FACS sorts one cell at a time—but here&#39;s the trick:</p>
+<p><strong>They DON&#39;T need to test each 5&#39; UTR separately.</strong> Instead:</p>
+<ol>
+<li><p><strong>Create a pooled library</strong>: Mix all 12,000 different 5&#39; UTR variants together</p>
+</li>
+<li><p><strong>Each cell gets ONE random variant</strong>: When they transfect cells, each cell receives just one of the 12,000 5&#39; UTR constructs &#40;driving GFP&#41;</p>
+</li>
+<li><p><strong>Sort by brightness</strong>: FACS separates bright cells from dim cells &#40;doesn&#39;t know or care which 5&#39; UTR is inside&#41;</p>
+</li>
+<li><p><strong>Sequence to identify winners</strong>: After sorting, extract DNA from each bin and sequence it</p>
+<ul>
+<li><p>If you find 5&#39; UTR #4523 is <strong>super common</strong> in the &quot;bright&quot; bin → that UTR is good&#33;</p>
+</li>
+<li><p>If 5&#39; UTR #891 is <strong>barely present</strong> in the &quot;bright&quot; bin → that UTR is weak</p>
+</li>
+</ul>
+</li>
+</ol>
+<p><strong>Key insight</strong>: You&#39;re not sorting 12,000 times. You&#39;re sorting <strong>millions of cells</strong> &#40;each carrying one of 12,000 variants&#41;, then using DNA sequencing afterward to figure out which variants ended up in which bins.</p>
+<p><strong>Throughput numbers:</strong></p>
+<ul>
+<li><p>FACS can process: ~10,000-50,000 cells/second</p>
+</li>
+<li><p>They need: &gt;300,000 cells total &#40;&gt;25× coverage of 12,000 variants&#41;</p>
+</li>
+<li><p>Time to sort: Just a few minutes&#33;</p>
+</li>
+<li><p>Bottleneck: NOT the FACS, but the DNA sequencing afterward</p>
+</li>
+</ul>
+</blockquote>
+<h3 id="the_math"><a href="#the_math" class="header-anchor">The Math</a></h3>
+<p>With 12,000 variants and 25× coverage:</p>
+<ul>
+<li><p>Need at least 300,000 cells sorted</p>
+</li>
+<li><p>At 20,000 cells/second → takes ~15 seconds of sort time</p>
+</li>
+<li><p>FACS is actually <strong>perfect</strong> for this throughput&#33;</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>But wait—what about imbalanced representation?</strong></p>
+<p>Sharp question&#33; This is a real concern. Here&#39;s the issue and solution:</p>
+<p><strong>The Problem:</strong></p>
+<ul>
+<li><p>When you randomly distribute 12,000 variants across 300,000 cells &#40;25× coverage&#41;</p>
+</li>
+<li><p>Some variants might end up in 30 cells &#40;good representation&#41;</p>
+</li>
+<li><p>Others might end up in only 15 cells &#40;undersampled&#41;</p>
+</li>
+<li><p>If a variant is rare in your starting population, you might miss it in the final count</p>
+</li>
+</ul>
+<p><strong>Their Solution:</strong> They maintained <strong>&gt;25-fold coverage</strong> throughout. This means:</p>
+<ul>
+<li><p>Start with way more than 25 cells per variant &#40;probably 50-100×&#41;</p>
+</li>
+<li><p>Even after sorting only the top 10&#37;, you still have enough cells per variant to count accurately</p>
+</li>
+<li><p>Statistical methods &#40;like DESeq2, which they used&#41; are designed to handle count variability</p>
+</li>
+</ul>
+<p><strong>The key calculation:</strong></p>
+<ul>
+<li><p>Top 10&#37; bin from 300,000 cells &#61; 30,000 cells collected</p>
+</li>
+<li><p>30,000 cells ÷ 12,000 variants &#61; ~2.5 cells per variant in the top bin</p>
+</li>
+<li><p>That&#39;s barely enough&#33; So they likely started with many more cells &#40;the paper says &quot;&gt;25-fold more cells than library size&quot;&#41;</p>
+</li>
+<li><p>Probably started with 1-3 million cells → top 10&#37; &#61; 100,000-300,000 cells → ~8-25 cells per variant per bin</p>
+</li>
+</ul>
+<p><strong>Why ratios help but don&#39;t fully solve it:</strong></p>
+<ul>
+<li><p>Using enrichment ratios &#40;Bin 1 count / Control count&#41; normalizes for starting abundance</p>
+</li>
+<li><p>If variant X had 100 cells initially and 25 in top bin &#61; 25&#37; enrichment</p>
+</li>
+<li><p>If variant Y had 50 cells initially and 12 in top bin &#61; 24&#37; enrichment &#40;similar&#33;&#41;</p>
+</li>
+<li><p>BUT if variant Z only had 5 cells initially and 2 in top bin &#61; 40&#37; &#40;noise&#33;&#41;</p>
+</li>
+</ul>
+<p><strong>Their safeguards:</strong></p>
+<ol>
+<li><p>High coverage &#40;&gt;25×, likely much higher&#41;</p>
+</li>
+<li><p>Biological replicates &#40;two different cell lines&#41;</p>
+</li>
+<li><p>Multiple bins &#40;must be enriched in ALL three top bins&#41;</p>
+</li>
+<li><p>Statistical testing &#40;DESeq2 accounts for count variability&#41;</p>
+</li>
+<li><p>Experimental validation afterward &#40;only tested the top hits&#41;</p>
+</li>
+</ol>
+</blockquote>
+<p><strong>The real power</strong>: Combining FACS &#40;physical separation&#41; &#43; Next-Gen Sequencing &#40;identification&#41; lets you test thousands of variants in a single experiment.</p>
+<blockquote>
+<p><strong>Do they use UMIs &#40;Unique Molecular Identifiers&#41;?</strong></p>
+<p><strong>No, they don&#39;t use UMIs in this paper.</strong> Here&#39;s what they actually do and why:</p>
+<p><strong>Their sequencing approach:</strong></p>
+<ol>
+<li><p><strong>Extract genomic DNA</strong> from cells in each bin</p>
+</li>
+<li><p><strong>PCR amplify</strong> the 5&#39; UTR region &#40;with barcodes to label which bin it came from&#41;</p>
+</li>
+<li><p><strong>Sequence</strong> the amplicons on Illumina NextSeq</p>
+</li>
+<li><p><strong>Count</strong> how many times each 5&#39; UTR sequence appears</p>
+</li>
+</ol>
+<p><strong>Why no UMIs here:</strong></p>
+<ul>
+<li><p>UMIs are typically used to distinguish <strong>PCR duplicates from true biological duplicates</strong></p>
+</li>
+<li><p>In single-cell RNA-seq, UMIs tell you if you sequenced the same original RNA molecule twice &#40;bad&#41; vs two different RNA molecules &#40;good&#41;</p>
+</li>
+<li><p><strong>In this experiment:</strong> Each cell has exactly ONE copy of the 5&#39; UTR integrated into its genome</p>
+</li>
+<li><p>PCR bias is less critical because they&#39;re counting <strong>cells</strong> &#40;not transcripts&#41;</p>
+</li>
+<li><p>The question is: &quot;How many cells with 5&#39; UTR #4523 ended up in the bright bin?&quot; not &quot;How many transcripts were made?&quot;</p>
+</li>
+</ul>
+<p><strong>What mitigates PCR bias:</strong></p>
+<ul>
+<li><p>They optimized PCR conditions for &quot;unbiased amplification&quot; &#40;mentioned in methods&#41;</p>
+</li>
+<li><p>They normalize counts across bins using DESeq2 &#40;handles sequencing depth differences&#41;</p>
+</li>
+<li><p>Each 5&#39; UTR sequence itself acts as a natural &quot;barcode&quot;—you&#39;re just counting unique sequences</p>
+</li>
+</ul>
+<p><strong>When you WOULD want UMIs in this type of experiment:</strong></p>
+<ul>
+<li><p>If measuring RNA levels &#40;not DNA&#41; → UMIs distinguish molecules</p>
+</li>
+<li><p>If worried about severe PCR bias → UMIs let you collapse PCR duplicates</p>
+</li>
+<li><p>Some newer FACS screening methods do use UMIs for extra precision</p>
+</li>
+</ul>
+<p><strong>The crucial insight: Ratios save you&#33;</strong> You&#39;re absolutely right—<strong>using ratios is the key reason they don&#39;t need UMIs.</strong></p>
+<p><strong>Wait, do you measure before AND after PCR?</strong></p>
+<p>Ah, I see the confusion&#33; <strong>No, they don&#39;t measure pre-PCR vs post-PCR.</strong> Here&#39;s what actually happens:</p>
+<p><strong>The actual workflow:</strong></p>
+<ol>
+<li><p>Extract genomic DNA from each bin &#40;bright bin, control bin, etc.&#41;</p>
+</li>
+<li><p>PCR amplify ALL bins &#40;same number of cycles, same conditions&#41;</p>
+</li>
+<li><p>Sequence the PCR products</p>
+</li>
+<li><p>Count reads for each variant in each bin</p>
+</li>
+<li><p><strong>Compare ratios ACROSS bins</strong> &#40;not before/after PCR&#41;</p>
+</li>
+</ol>
+<p><strong>The ratio that matters:</strong></p>
+<ul>
+<li><p><strong>Bright bin count / Control bin count</strong> ← This is what they calculate</p>
+</li>
+<li><p>NOT: &quot;after PCR / before PCR&quot;</p>
+</li>
+</ul>
+<p><strong>Why PCR bias cancels in CROSS-BIN ratios:</strong></p>
+<ul>
+<li><p>Both bins go through the SAME PCR process</p>
+</li>
+<li><p>If variant X has 2× PCR bias:</p>
+<ul>
+<li><p>Control bin: starts with 100 DNA molecules → after PCR → 200 reads</p>
+</li>
+<li><p>Bright bin: starts with 50 DNA molecules → after PCR → 100 reads  </p>
+</li>
+<li><p>Ratio: 100/200 &#61; 0.5 ✓ &#40;correct&#33; Because both had the same 2× bias&#41;</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>What you might be thinking of:</strong></p>
+<ul>
+<li><p>Some protocols DO measure DNA concentration before/after PCR to normalize</p>
+</li>
+<li><p>Or use &quot;spike-in&quot; controls to calibrate PCR efficiency</p>
+</li>
+<li><p>But this paper just relies on consistent PCR conditions across all bins</p>
+</li>
+</ul>
+<p><strong>The key assumption:</strong> PCR bias for any given sequence is <strong>the same</strong> whether you&#39;re amplifying DNA from the bright bin or control bin. Since all bins are processed identically &#40;same primers, same cycles, same conditions&#41;, this holds true.</p>
+<p><strong>Bottom line:</strong> They&#39;re taking ratios <strong>between bins</strong> &#40;both after PCR&#41;, not measuring before/after PCR. The bias cancels because it affects each bin equally&#33;</p>
+</blockquote>
+<hr />
+<h2 id="interpreting_facs_scatter_plots"><a href="#interpreting_facs_scatter_plots" class="header-anchor">Interpreting FACS Scatter Plots</a></h2>
+<blockquote>
+<p><strong>What&#39;s the PURPOSE of these scatter plots?</strong></p>
+<p><strong>Short answer: Quality control and deciding where to draw the lines.</strong></p>
+<p>The scatter plots let you:</p>
+<ol>
+<li><p><strong>Check your cells are healthy</strong> &#40;exclude dead cells, debris, clumps&#41;</p>
+</li>
+<li><p><strong>Visualize the distribution</strong> &#40;see how bright/dim your cells are&#41;</p>
+</li>
+<li><p><strong>Set your sorting gates</strong> &#40;decide where &quot;top 2.5&#37;&quot; actually starts&#41;</p>
+</li>
+<li><p><strong>Verify the sort worked</strong> &#40;confirm you actually separated populations&#41;</p>
+</li>
+</ol>
+<p><strong>Think of it like:</strong> Before sorting mail by weight, you&#39;d want to see a histogram of all package weights to decide &quot;heavy packages &#61; &gt;10 lbs&quot; and check you&#39;re not accidentally sorting rocks instead of packages.</p>
+</blockquote>
+<blockquote>
+<p><strong>What are those scatter plots showing?</strong></p>
+<p>FACS machines measure multiple properties of each cell simultaneously. The classic scatter plot shows:</p>
+<p><strong>The typical 2D plot you see:</strong></p>
+<ul>
+<li><p><strong>X-axis</strong>: Often &quot;Forward Scatter&quot; &#40;FSC&#41; &#61; cell size</p>
+</li>
+<li><p><strong>Y-axis</strong>: Often &quot;Side Scatter&quot; &#40;SSC&#41; &#61; cell granularity/complexity</p>
+</li>
+<li><p><strong>Each dot</strong> &#61; one cell</p>
+</li>
+</ul>
+<p><strong>What the axes mean:</strong></p>
+<ul>
+<li><p><strong>Forward Scatter &#40;FSC&#41;</strong>: Light that goes straight through → bigger cells scatter more light → larger FSC value</p>
+</li>
+<li><p><strong>Side Scatter &#40;SSC&#41;</strong>: Light that bounces sideways → granular/complex cells &#40;lots of internal structures&#41; scatter more → higher SSC value</p>
+</li>
+<li><p><strong>Fluorescence channels</strong>: Instead of FSC/SSC, you might see GFP intensity, RFP intensity, etc.</p>
+</li>
+</ul>
+<p><strong>Common plot types:</strong></p>
+<ol>
+<li><p><strong>FSC vs SSC &#40;the &quot;gating&quot; plot&#41;</strong></p>
+<ul>
+<li><p>Used to select healthy cells and exclude debris/dead cells</p>
+</li>
+<li><p>Debris &#61; low FSC &#43; low SSC &#40;small, simple&#41;</p>
+</li>
+<li><p>Healthy cells &#61; cluster in the middle</p>
+</li>
+<li><p>Doublets &#40;two cells stuck together&#41; &#61; high FSC</p>
+</li>
+</ul>
+</li>
+<li><p><strong>GFP vs Cell Count &#40;histogram&#41;</strong></p>
+<ul>
+<li><p>X-axis: GFP brightness</p>
+</li>
+<li><p>Y-axis: Number of cells</p>
+</li>
+<li><p>Shows the distribution of fluorescence</p>
+</li>
+<li><p>You can draw &quot;gates&quot; to define bins: &quot;top 2.5&#37;&quot; &#61; rightmost peak</p>
+</li>
+</ul>
+</li>
+<li><p><strong>GFP vs RFP &#40;dual fluorescence&#41;</strong></p>
+<ul>
+<li><p>Each axis is a different color channel</p>
+</li>
+<li><p>Quadrants show: GFP&#43;/RFP&#43;, GFP&#43;/RFP-, GFP-/RFP&#43;, GFP-/RFP-</p>
+</li>
+<li><p>Useful for co-expression analysis</p>
+</li>
+</ul>
+</li>
+</ol>
+<p><strong>Reading the scatter:</strong></p>
+<ul>
+<li><p><strong>Tight cluster</strong> &#61; homogeneous population &#40;all cells similar&#41;</p>
+</li>
+<li><p><strong>Spread out</strong> &#61; heterogeneous &#40;lots of variation&#41;</p>
+</li>
+<li><p><strong>Multiple clusters</strong> &#61; distinct cell populations</p>
+</li>
+<li><p><strong>Diagonal line</strong> &#61; correlated properties &#40;e.g., bigger cells express more protein&#41;</p>
+</li>
+</ul>
+<p><strong>In this paper&#39;s context:</strong></p>
+<ul>
+<li><p>They&#39;d show a histogram of GFP intensity</p>
+</li>
+<li><p>Draw vertical lines to mark the bins: top 2.5&#37;, 2.5-5&#37;, 5-10&#37;</p>
+</li>
+<li><p>Cells to the right of each line go into that bin</p>
+</li>
+</ul>
+<p><strong>Pro tip:</strong> The &quot;cloud&quot; of dots tells you about biological variation. A tight cloud &#61; consistent expression. A wide spread &#61; noisy system or genuine cell-to-cell differences.</p>
+</blockquote>
+<hr />
+<h2 id="bottom_line"><a href="#bottom_line" class="header-anchor">Bottom Line</a></h2>
+<p><strong>FACS</strong> &#61; High-throughput cell sorter based on fluorescence   <strong>In this paper</strong> &#61; Tool to identify which 5&#39; UTRs produce the most protein   <strong>The bins</strong> &#61; Mutually exclusive tiers of brightness &#40;except the control&#41;   <strong>No typo</strong> &#61; The 0-100&#37; is the pre-sort reference population</p>
+<p>Think of it as <code>GROUP BY</code> in SQL, but for living cells based on how bright they glow&#33; 🔬✨</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 13, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+        <script src="/libs/katex/katex.min.js"></script>
+<script src="/libs/katex/contrib/auto-render.min.js"></script>
+<script>renderMathInElement(document.body)</script>
+
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>
