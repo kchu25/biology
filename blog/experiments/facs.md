@@ -1,5 +1,5 @@
 @def title = "FACS Explained: Computer Scientist Edition"
-@def published = "12 January 2026"
+@def published = "13 January 2026"
 @def tags = ["experimental-biology"]
 
 # FACS Explained: Computer Scientist Edition
