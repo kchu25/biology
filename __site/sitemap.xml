@@ -2,79 +2,31 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
-    <loc>https://kchu25.github.io/blog/rna/rbp_domain1/index.html</loc>
-    <lastmod>2025-11-09</lastmod>
+    <loc>https://kchu25.github.io/blog/data_processing/te_code/index.html</loc>
+    <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
 <url>
-    <loc>https://kchu25.github.io/blog/start_ups/blockchain/index.html</loc>
-    <lastmod>2025-12-26</lastmod>
+    <loc>https://kchu25.github.io/blog/screenings/utr_degrad2/index.html</loc>
+    <lastmod>2026-01-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
 <url>
-    <loc>https://kchu25.github.io/blog/start_ups/mechanistic/index.html</loc>
-    <lastmod>2025-12-26</lastmod>
+    <loc>https://kchu25.github.io/blog/screenings/processing_te/index.html</loc>
+    <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
 <url>
-    <loc>https://kchu25.github.io/blog/screenings/te/index.html</loc>
+    <loc>https://kchu25.github.io/blog/rna/utr_degradations/index.html</loc>
     <lastmod>2026-01-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
 <url>
-    <loc>https://kchu25.github.io/blog/rna/rna_compete_2013_and_2025/index.html</loc>
-    <lastmod>2025-11-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-</url>
-<url>
-    <loc>https://kchu25.github.io/blog/cas13d/interpret_screen_regions/index.html</loc>
-    <lastmod>2025-11-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-</url>
-<url>
-    <loc>https://kchu25.github.io/blog/proteins/protein_gym/index.html</loc>
-    <lastmod>2025-11-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-</url>
-<url>
-    <loc>https://kchu25.github.io/blog/lacI/lacI_allo_test/index.html</loc>
-    <lastmod>2025-10-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-</url>
-<url>
-    <loc>https://kchu25.github.io/blog/start_ups/utr/index.html</loc>
-    <lastmod>2025-12-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-</url>
-<url>
-    <loc>https://kchu25.github.io/blog/lacI/deepReplacI/index.html</loc>
-    <lastmod>2025-10-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-</url>
-<url>
     <loc>https://kchu25.github.io/blog/screenings/utr_translation_assay/index.html</loc>
-    <lastmod>2025-12-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-</url>
-<url>
-    <loc>https://kchu25.github.io/blog/screenings/utr_yeast/index.html</loc>
-    <lastmod>2025-12-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-</url>
-<url>
-    <loc>https://kchu25.github.io/index.html</loc>
     <lastmod>2025-12-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -86,20 +38,92 @@
     <priority>0.5</priority>
 </url>
 <url>
-    <loc>https://kchu25.github.io/blog/cas13d/cas13d_screen/index.html</loc>
-    <lastmod>2025-10-14</lastmod>
+    <loc>https://kchu25.github.io/blog/rna/rna_compete_2013_and_2025/index.html</loc>
+    <lastmod>2025-12-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
 <url>
-    <loc>https://kchu25.github.io/blog/screenings/utr_human_data/index.html</loc>
-    <lastmod>2025-12-22</lastmod>
+    <loc>https://kchu25.github.io/blog/cas13d/interpret_screen_regions/index.html</loc>
+    <lastmod>2025-12-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/screenings/utr_yeast/index.html</loc>
+    <lastmod>2025-12-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/rna/rbp_domain1/index.html</loc>
+    <lastmod>2025-12-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/screenings/te/index.html</loc>
+    <lastmod>2026-01-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/start_ups/blockchain/index.html</loc>
+    <lastmod>2025-12-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/screenings/5p_utr_yeast/index.html</loc>
+    <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
 <url>
     <loc>https://kchu25.github.io/blog/proteins/pdb_format/index.html</loc>
-    <lastmod>2025-11-14</lastmod>
+    <lastmod>2025-12-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/lacI/deepReplacI/index.html</loc>
+    <lastmod>2025-12-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/cas13d/cas13d_screen/index.html</loc>
+    <lastmod>2025-12-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/index.html</loc>
+    <lastmod>2026-01-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/start_ups/mechanistic/index.html</loc>
+    <lastmod>2025-12-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/rna/utr/index.html</loc>
+    <lastmod>2025-12-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/proteins/protein_gym/index.html</loc>
+    <lastmod>2025-12-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/screenings/_utr5/index.html</loc>
+    <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
@@ -110,20 +134,38 @@
     <priority>0.5</priority>
 </url>
 <url>
-    <loc>https://kchu25.github.io/blog/rna/utr_degradations/index.html</loc>
-    <lastmod>2026-01-04</lastmod>
+    <loc>https://kchu25.github.io/blog/start_ups/utr/index.html</loc>
+    <lastmod>2025-12-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
 <url>
-    <loc>https://kchu25.github.io/blog/rna/utr/index.html</loc>
-    <lastmod>2025-12-23</lastmod>
+    <loc>https://kchu25.github.io/blog/lacI/lacI_allo_test/index.html</loc>
+    <lastmod>2025-12-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>
 <url>
-    <loc>https://kchu25.github.io/blog/index.html</loc>
-    <lastmod>2025-10-06</lastmod>
+    <loc>https://kchu25.github.io/blog/screenings/utr_human_data/index.html</loc>
+    <lastmod>2025-12-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/index.html</loc>
+    <lastmod>2026-01-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/data_processing/te/index.html</loc>
+    <lastmod>2026-01-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>https://kchu25.github.io/blog/screenings/seelig_both/index.html</loc>
+    <lastmod>2026-01-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
 </url>

@@ -225,19 +225,6 @@ def fetch_sequence_with_utr(refseq_id):
    - `record.seq`: The actual DNA/RNA sequence
    - `record.features`: List of annotated features (genes, CDS, exons, etc.)
 
-**What this does step-by-step:**
-
-1. **`Entrez.efetch()`**: Downloads GenBank record from NCBI
-   - `db="nucleotide"`: Query the nucleotide database
-   - `id=refseq_id`: The RefSeq accession (e.g., "NM_000356")
-   - `rettype="gb"`: Return GenBank format (includes annotations)
-   - `retmode="text"`: Plain text format
-
-2. **`SeqIO.read(handle, "genbank")`**: Parses GenBank record
-   - Extracts sequence and all feature annotations
-   - `record.seq`: The actual DNA/RNA sequence
-   - `record.features`: List of annotated features (genes, CDS, exons, etc.)
-
 3. **Strategy 1 - Look for explicit 5'UTR annotation** (preferred):
    ```python
    for feature in record.features:
@@ -248,6 +235,23 @@ def fetch_sequence_with_utr(refseq_id):
    - Searches for explicit `5'UTR` feature annotation
    - `feature.extract(record.seq)`: Extracts the exact subsequence
    - `break`: Stops after finding first 5'UTR
+
+4. **Strategy 2 - Infer from CDS start** (fallback):
+   ```python
+   if utr5_seq is None:
+       for feature in record.features:
+           if feature.type == "CDS":
+               cds_start = int(feature.location.start)
+               if cds_start > 0:
+                   utr5_seq = str(record.seq[:cds_start])
+               break
+   ```
+   - If no explicit 5'UTR found, look for CDS feature
+   - Extract sequence from start to CDS beginning
+   - `cds_start > 0`: Ensures there's actually a 5'UTR region
+
+---
+
 ## 10. Batch Fetch with Rate Limiting
 
 ```python
@@ -270,9 +274,8 @@ for i, (idx, row) in enumerate(sample_data.iterrows(), 1):
         })
     
     time.sleep(0.34)  # NCBI rate limit: ~3 requests/second
-```         'refseq_id': refseq_id,
-            'rpf_cds': row['rpf_cds'],
-            'rna_cds': row['rna_cds'],
+```
+
 **What this does:**
 
 1. **Loop through filtered transcripts**: `sample_data.iterrows()` iterates row by row
@@ -298,20 +301,11 @@ for i, (idx, row) in enumerate(sample_data.iterrows(), 1):
 5. **Rate limiting**: `time.sleep(0.34)`
    - NCBI limits: 3 requests/second without API key
    - 0.34 seconds ≈ 2.94 requests/second (safely under limit)
-   - Prevents IP bans from excessive requests`
-   - Only include transcripts where we successfully extracted a 5' UTR
-   - Some transcripts may have CDS starting at position 0 (no 5' UTR)
+   - Prevents IP bans from excessive requests
 
-4. **Create dataset entry**: Combines TE data with sequence
-   - `log2_TE`: Log₂ transformation of TE (useful for modeling)
-   - `utr5_length`: Length of 5' UTR in nucleotides
-**Final dataset columns:**
-- `gene`: Gene name
-- `refseq_id`: RefSeq accession
-- `rpf_cds`, `rna_cds`: Read counts
-- `TE`, `log2_TE`: Translation efficiency values
-- `utr5_seq`: 5' UTR sequence (feature)
-- `utr5_length`: Sequence length
+---
+
+## 11. Save the Dataset
 
 ```python
 sequences_df = pd.DataFrame(sequences)
@@ -330,13 +324,12 @@ sequences_df.to_csv('te_dataset.csv', index=False)
 - `TE`, `log2_TE`: Translation efficiency values
 - `utr5_seq`: 5' UTR sequence (feature)
 - `utr5_length`: Sequence length
-- `description`: Transcript description
 
 ---
 
 ## Key Concepts Summary
 
-### 2. Why use two-strategy approach for 5' UTR?
+### 1. Why use two-strategy approach for 5' UTR?
 
 **Strategy hierarchy:**
 1. **Prefer explicit annotations** when available (most accurate)
@@ -352,14 +345,7 @@ This two-strategy approach ensures:
 - Maximum accuracy when explicit annotations exist
 - Broad coverage when they don't (which is most of the time in this dataset)
 
-### 2. Why infer 5' UTR from CDS start?
-GenBank records don't always have explicit `5'UTR` annotations, but they always have `CDS` annotations. Since mRNA structure is:
-```
-[5' UTR] → [CDS] → [3' UTR]
-```
-We can infer: **5' UTR = sequence[0 : CDS_start]**
-
-### 3. Why log₂(TE)?
+### 2. Why log₂(TE)?
 - TE values have wide dynamic range (0.025 to 99.6)
 - Log transformation:
   - Compresses range to more manageable scale
@@ -368,7 +354,7 @@ We can infer: **5' UTR = sequence[0 : CDS_start]**
   - TE=2 → log₂(TE)=1 (2× more translated)
   - TE=0.5 → log₂(TE)=-1 (2× less translated)
 
-### 4. Rate Limiting
+### 3. Rate Limiting
 NCBI enforces limits to prevent server overload:
 - 3 requests/second without API key
 - 10 requests/second with API key

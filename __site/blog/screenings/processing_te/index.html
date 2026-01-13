@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="/libs/katex/katex.min.css">
+     
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>DProcessing Ribosome Profiling Data for Translation Efficiency</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="processing_ribosome_profiling_data_for_translation_efficiency"><a href="#processing_ribosome_profiling_data_for_translation_efficiency" class="header-anchor">Processing Ribosome Profiling Data for Translation Efficiency</a></h1>
+<h2 id="what_youre_working_with"><a href="#what_youre_working_with" class="header-anchor">What You&#39;re Working With</a></h2>
+<p>You have <strong>ribosome profiling &#40;Ribo-seq&#41;</strong> and <strong>RNA-seq</strong> data. The key insight:</p>
+<ul>
+<li><p><strong>Ribo-seq</strong> &#61; how much is being translated &#40;ribosomes on mRNA&#41;</p>
+</li>
+<li><p><strong>RNA-seq</strong> &#61; how much mRNA is present</p>
+</li>
+<li><p><strong>Translation Efficiency &#40;TE&#41;</strong> &#61; Ribo-seq / RNA-seq</p>
+</li>
+</ul>
+<h2 id="the_data_structure"><a href="#the_data_structure" class="header-anchor">The Data Structure</a></h2>
+<p>Each sample file has counts mapped to different transcript regions:</p>
+<ul>
+<li><p>5&#39; leader &#40;5&#39; UTR&#41;</p>
+</li>
+<li><p>CDS &#40;coding sequence&#41;</p>
+</li>
+<li><p>3&#39; UTR</p>
+</li>
+</ul>
+<p>For example, TCOF1 with transcript NM_000356 has:</p>
+<ul>
+<li><p>0 reads in 5&#39; UTR</p>
+</li>
+<li><p>369 reads in CDS</p>
+</li>
+<li><p>1 read in 3&#39; UTR</p>
+</li>
+</ul>
+<h2 id="step-by-step_processing"><a href="#step-by-step_processing" class="header-anchor">Step-by-Step Processing</a></h2>
+<h3 id="calculate_translation_efficiency"><a href="#calculate_translation_efficiency" class="header-anchor"><ol>
+<li><p><strong>Calculate Translation Efficiency</strong></p>
+</li>
+</ol>
+</a></h3>
+<p>For each gene/transcript, compute:</p>
+\[\text{TE} = \frac{\text{Ribo-seq reads (CDS)}}{\text{mRNA-seq reads (CDS)}}\]
+<p><strong>Why CDS?</strong> That&#39;s where active translation happens. The 5&#39; UTR influences translation but isn&#39;t translated itself.</p>
+<p><strong>Practical steps:</strong></p>
+<ul>
+<li><p>Match control riboseq replicate 1 with control mRNAseq replicate 1</p>
+</li>
+<li><p>For each RefSeq ID, divide riboseq CDS counts by mRNAseq CDS counts</p>
+</li>
+<li><p>Filter out low-count genes &#40;e.g., require ≥10 reads in both&#41;</p>
+</li>
+</ul>
+<h3 id="ol_start2_get_the_sequences"><a href="#ol_start2_get_the_sequences" class="header-anchor"><ol start="2">
+<li><p><strong>Get the Sequences</strong></p>
+</li>
+</ol>
+</a></h3>
+<p>You need the actual nucleotide sequences as features. Two key regions:</p>
+<p><strong>5&#39; UTR sequence</strong> → This is your primary feature for predicting TE</p>
+<ul>
+<li><p>Download from NCBI using the RefSeq accession &#40;e.g., NM_000356&#41;</p>
+</li>
+<li><p>Extract the 5&#39; UTR region specifically</p>
+</li>
+</ul>
+<p><strong>CDS start context</strong> → Often helpful too</p>
+<ul>
+<li><p>Include ~50-100 nt around the start codon</p>
+</li>
+</ul>
+<h3 id="ol_start3_obtain_sequences_from_ncbi"><a href="#ol_start3_obtain_sequences_from_ncbi" class="header-anchor"><ol start="3">
+<li><p><strong>Obtain Sequences from NCBI</strong></p>
+</li>
+</ol>
+</a></h3>
+<pre><code class="language-python">from Bio import Entrez
+Entrez.email &#61; &quot;your.email@example.com&quot;
+
+# For each RefSeq ID in your data
+handle &#61; Entrez.efetch&#40;db&#61;&quot;nucleotide&quot;, 
+                       id&#61;&quot;NM_000356&quot;, 
+                       rettype&#61;&quot;gb&quot;, 
+                       retmode&#61;&quot;text&quot;&#41;
+record &#61; SeqIO.read&#40;handle, &quot;genbank&quot;&#41;</code></pre>
+<p>Parse the GenBank features to extract 5&#39; UTR coordinates.</p>
+<h3 id="ol_start4_build_your_dataset"><a href="#ol_start4_build_your_dataset" class="header-anchor"><ol start="4">
+<li><p><strong>Build Your Dataset</strong></p>
+</li>
+</ol>
+</a></h3>
+<p>Each training example:</p>
+<ul>
+<li><p><strong>Input &#40;X&#41;</strong>: 5&#39; UTR sequence &#40;or 5&#39; UTR &#43; start codon context&#41;</p>
+</li>
+<li><p><strong>Label &#40;y&#41;</strong>: Translation efficiency &#40;TE value&#41;</p>
+</li>
+</ul>
+<p><strong>Encoding options:</strong></p>
+<ul>
+<li><p>One-hot encoding: A&#61;&#91;1,0,0,0&#93;, C&#61;&#91;0,1,0,0&#93;, etc.</p>
+</li>
+<li><p>k-mer embeddings</p>
+</li>
+<li><p>Learned embeddings &#40;like in NLP&#41;</p>
+</li>
+</ul>
+<h3 id="ol_start5_normalization_considerations"><a href="#ol_start5_normalization_considerations" class="header-anchor"><ol start="5">
+<li><p><strong>Normalization Considerations</strong></p>
+</li>
+</ol>
+</a></h3>
+<p>Raw TE values can be noisy. Common approaches:</p>
+\[\text{TE}_{\text{norm}} = \frac{\text{Ribo-seq}_{\text{gene}} / \text{Ribo-seq}_{\text{total}}}{\text{mRNA-seq}_{\text{gene}} / \text{mRNA-seq}_{\text{total}}}\]
+<p>Or use log₂&#40;TE&#41; to handle the wide dynamic range.</p>
+<h3 id="ol_start6_handle_replicates"><a href="#ol_start6_handle_replicates" class="header-anchor"><ol start="6">
+<li><p><strong>Handle Replicates</strong></p>
+</li>
+</ol>
+</a></h3>
+<p>You have 2 biological replicates. Options:</p>
+<ul>
+<li><p><strong>Average</strong> the TE across replicates &#40;more stable labels&#41;</p>
+</li>
+<li><p><strong>Keep separate</strong> &#40;more training data, but correlated&#41;</p>
+</li>
+<li><p>Use one for training, one for validation</p>
+</li>
+</ul>
+<h3 id="ol_start7_filter_your_data"><a href="#ol_start7_filter_your_data" class="header-anchor"><ol start="7">
+<li><p><strong>Filter Your Data</strong></p>
+</li>
+</ol>
+</a></h3>
+<p>Important quality controls:</p>
+<ul>
+<li><p>Remove genes with 0 mRNA-seq reads &#40;undefined TE&#41;</p>
+</li>
+<li><p>Filter low-count genes &#40;&lt; 10 reads&#41; → noisy estimates</p>
+</li>
+<li><p>Remove outliers &#40;TE &gt; 100 or &lt; 0.01 are suspicious&#41;</p>
+</li>
+<li><p>Consider only protein-coding transcripts initially</p>
+</li>
+</ul>
+<h2 id="quick_workflow_summary"><a href="#quick_workflow_summary" class="header-anchor">Quick Workflow Summary</a></h2>
+<ol>
+<li><p><strong>Download all 8 sample files</strong> from GEO</p>
+</li>
+<li><p><strong>Pair up</strong> riboseq and mRNAseq samples &#40;control rep1 &#43; control rep1, etc.&#41;</p>
+</li>
+<li><p><strong>Calculate TE</strong> for each RefSeq transcript</p>
+</li>
+<li><p><strong>Fetch sequences</strong> from NCBI for each RefSeq ID</p>
+</li>
+<li><p><strong>Extract 5&#39; UTRs</strong> from GenBank annotations</p>
+</li>
+<li><p><strong>Create dataset</strong>: &#40;sequence → TE value&#41; pairs</p>
+</li>
+<li><p><strong>Split</strong> into train/validation/test sets</p>
+</li>
+</ol>
+<h2 id="why_this_matters"><a href="#why_this_matters" class="header-anchor">Why This Matters</a></h2>
+<p>The 5&#39; UTR contains regulatory elements that control translation:</p>
+<ul>
+<li><p><strong>Kozak sequence</strong> around start codon</p>
+</li>
+<li><p><strong>Secondary structures</strong> that block ribosomes</p>
+</li>
+<li><p><strong>uORFs</strong> &#40;upstream open reading frames&#41;</p>
+</li>
+<li><p><strong>IRES</strong> elements</p>
+</li>
+</ul>
+<p>Your model will learn which sequence features predict high/low translation efficiency&#33;</p>
+<h2 id="arsenal_vs_control_note"><a href="#arsenal_vs_control_note" class="header-anchor">Arsenal vs Control Note</a></h2>
+<p>You have both control and arsenite-treated samples. Start with <strong>control samples only</strong> for cleaner biology. Arsenite induces stress granules and affects translation globally—you can explore this later for stress-response prediction.</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 13, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+        <script src="/libs/katex/katex.min.js"></script>
+<script src="/libs/katex/contrib/auto-render.min.js"></script>
+<script>renderMathInElement(document.body)</script>
+
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>

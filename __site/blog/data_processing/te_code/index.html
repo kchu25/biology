@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Translation Efficiency Processing: Code Explanation</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="translation_efficiency_processing_code_explanation"><a href="#translation_efficiency_processing_code_explanation" class="header-anchor">Translation Efficiency Processing: Code Explanation</a></h1>
+<p>This document provides detailed explanations of the essential code components used to process ribosome profiling data and create a sequence-to-label dataset.</p>
+<hr />
+<h2 id="import_libraries_and_setup"><a href="#import_libraries_and_setup" class="header-anchor"><ol>
+<li><p>Import Libraries and Setup</p>
+</li>
+</ol>
+</a></h2>
+<pre><code class="language-python">import pandas as pd
+import numpy as np
+from Bio import Entrez, SeqIO
+import time
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Set your email for NCBI &#40;REQUIRED by NCBI API&#41;
+Entrez.email &#61; &quot;your.email@example.com&quot;</code></pre>
+<p><strong>What this does:</strong></p>
+<ul>
+<li><p><code>pandas</code>: Data manipulation and analysis &#40;loading CSV files, merging datasets&#41;</p>
+</li>
+<li><p><code>numpy</code>: Numerical operations &#40;log transformations&#41;</p>
+</li>
+<li><p><code>Bio.Entrez</code>: Interface to NCBI&#39;s Entrez databases &#40;fetches sequences&#41;</p>
+</li>
+<li><p><code>Bio.SeqIO</code>: Parse GenBank records</p>
+</li>
+<li><p><code>time</code>: Rate limiting for NCBI API</p>
+</li>
+<li><p><code>matplotlib/seaborn</code>: Data visualization</p>
+</li>
+</ul>
+<p><strong>Why Entrez.email is required:</strong> NCBI tracks API usage by email. If you make excessive requests, they&#39;ll contact you instead of blocking all users.</p>
+<hr />
+<h2 id="ol_start2_load_data_files"><a href="#ol_start2_load_data_files" class="header-anchor"><ol start="2">
+<li><p>Load Data Files</p>
+</li>
+</ol>
+</a></h2>
+<pre><code class="language-python">rpf_file &#61; &#39;GSM1331342_A1_control_rpf_rep_1.csv&#39;
+rna_file &#61; &#39;GSM1331343_A3_control_rna_rep_1.csv&#39;
+
+rpf_data &#61; pd.read_csv&#40;rpf_file, sep&#61;&#39;\t&#39;&#41;
+rna_data &#61; pd.read_csv&#40;rna_file, sep&#61;&#39;\t&#39;&#41;</code></pre>
+<p><strong>What this does:</strong></p>
+<ul>
+<li><p>Loads tab-separated CSV files into pandas DataFrames</p>
+</li>
+<li><p><code>rpf_data</code>: Ribosome profiling &#40;Ribo-seq&#41; read counts</p>
+</li>
+<li><p><code>rna_data</code>: RNA sequencing &#40;RNA-seq&#41; read counts</p>
+</li>
+</ul>
+<p><strong>Key columns:</strong></p>
+<ul>
+<li><p><code>Gene</code>: Gene symbol</p>
+</li>
+<li><p><code>RefSeq accession identifier</code>: Unique transcript ID &#40;e.g., NM_000356&#41;</p>
+</li>
+<li><p><code>annotation type</code>: Type of transcript &#40;coding, transcript, pseudo&#41;</p>
+</li>
+<li><p><code>raw mapped reads, CDS</code>: Number of sequencing reads mapped to the coding sequence</p>
+</li>
+</ul>
+<hr />
+<h2 id="ol_start3_filter_for_coding_transcripts"><a href="#ol_start3_filter_for_coding_transcripts" class="header-anchor"><ol start="3">
+<li><p>Filter for Coding Transcripts</p>
+</li>
+</ol>
+</a></h2>
+<pre><code class="language-python">rpf_coding &#61; rpf_data&#91;rpf_data&#91;&#39;annotation type&#39;&#93; &#61;&#61; &#39;coding&#39;&#93;.copy&#40;&#41;
+rna_coding &#61; rna_data&#91;rna_data&#91;&#39;annotation type&#39;&#93; &#61;&#61; &#39;coding&#39;&#93;.copy&#40;&#41;</code></pre>
+<p><strong>What this does:</strong></p>
+<ul>
+<li><p>Filters out non-coding transcripts &#40;pseudogenes, non-coding RNAs&#41;</p>
+</li>
+<li><p><code>.copy&#40;&#41;</code> creates independent DataFrames to avoid modifying the original data</p>
+</li>
+</ul>
+<p><strong>Why coding only?</strong> </p>
+<ul>
+<li><p>Translation efficiency is only meaningful for protein-coding genes</p>
+</li>
+<li><p>Non-coding RNAs don&#39;t have ribosomes actively translating them</p>
+</li>
+</ul>
+<hr />
+<h2 id="ol_start4_merge_paired_datasets"><a href="#ol_start4_merge_paired_datasets" class="header-anchor"><ol start="4">
+<li><p>Merge Paired Datasets</p>
+</li>
+</ol>
+</a></h2>
+<pre><code class="language-python">merged &#61; pd.merge&#40;
+    rpf_coding&#91;&#91;&#39;Gene&#39;, &#39;RefSeq accession identifier&#39;, &#39;raw mapped reads, CDS&#39;&#93;&#93;,
+    rna_coding&#91;&#91;&#39;RefSeq accession identifier&#39;, &#39;raw mapped reads, CDS&#39;&#93;&#93;,
+    on&#61;&#39;RefSeq accession identifier&#39;,
+    suffixes&#61;&#40;&#39;_rpf&#39;, &#39;_rna&#39;&#41;
+&#41;</code></pre>
+<p><strong>What this does:</strong></p>
+<ul>
+<li><p>Joins Ribo-seq and RNA-seq data by matching RefSeq IDs</p>
+</li>
+<li><p><code>suffixes&#61;&#40;&#39;_rpf&#39;, &#39;_rna&#39;&#41;</code>: Renames duplicate columns to distinguish sources</p>
+<ul>
+<li><p><code>raw mapped reads, CDS_rpf</code>: Ribo-seq CDS reads</p>
+</li>
+<li><p><code>raw mapped reads, CDS_rna</code>: RNA-seq CDS reads</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>Result:</strong> Each row contains both Ribo-seq and RNA-seq counts for the same transcript.</p>
+<hr />
+<h2 id="ol_start5_convert_to_numeric_and_handle_missing_values"><a href="#ol_start5_convert_to_numeric_and_handle_missing_values" class="header-anchor"><ol start="5">
+<li><p>Convert to Numeric and Handle Missing Values</p>
+</li>
+</ol>
+</a></h2>
+<pre><code class="language-python">merged&#91;&#39;rpf_cds&#39;&#93; &#61; pd.to_numeric&#40;merged&#91;&#39;raw mapped reads, CDS_rpf&#39;&#93;, errors&#61;&#39;coerce&#39;&#41;.fillna&#40;0&#41;
+merged&#91;&#39;rna_cds&#39;&#93; &#61; pd.to_numeric&#40;merged&#91;&#39;raw mapped reads, CDS_rna&#39;&#93;, errors&#61;&#39;coerce&#39;&#41;.fillna&#40;0&#41;</code></pre>
+<p><strong>What this does:</strong></p>
+<ul>
+<li><p><code>pd.to_numeric&#40;..., errors&#61;&#39;coerce&#39;&#41;</code>: Converts strings to numbers; invalid values become NaN</p>
+</li>
+<li><p><code>.fillna&#40;0&#41;</code>: Replaces NaN with 0 &#40;transcripts with no reads&#41;</p>
+</li>
+</ul>
+<p><strong>Why needed?</strong> </p>
+<ul>
+<li><p>Some CSV entries may be empty strings or non-numeric</p>
+</li>
+<li><p>Ensures we can perform mathematical operations &#40;division for TE&#41;</p>
+</li>
+</ul>
+<hr />
+<h2 id="ol_start6_filter_by_read_count_threshold"><a href="#ol_start6_filter_by_read_count_threshold" class="header-anchor"><ol start="6">
+<li><p>Filter by Read Count Threshold</p>
+</li>
+</ol>
+</a></h2>
+<pre><code class="language-python">min_reads &#61; 10
+filtered &#61; merged&#91;
+    &#40;merged&#91;&#39;rpf_cds&#39;&#93; &gt;&#61; min_reads&#41; &amp; 
+    &#40;merged&#91;&#39;rna_cds&#39;&#93; &gt;&#61; min_reads&#41;
+&#93;.copy&#40;&#41;</code></pre>
+<p><strong>What this does:</strong></p>
+<ul>
+<li><p>Keeps only transcripts with ≥10 reads in <strong>both</strong> Ribo-seq and RNA-seq</p>
+</li>
+<li><p><code>&amp;</code> is the element-wise AND operator for pandas</p>
+</li>
+</ul>
+<p><strong>Why filter?</strong></p>
+<ul>
+<li><p>Low read counts produce noisy, unreliable TE estimates</p>
+</li>
+<li><p>Example: 1 read / 2 reads &#61; TE of 0.5, but this is statistically meaningless</p>
+</li>
+<li><p>Requiring ≥10 reads ensures more stable measurements</p>
+</li>
+</ul>
+<hr />
+<h2 id="ol_start7_calculate_translation_efficiency"><a href="#ol_start7_calculate_translation_efficiency" class="header-anchor"><ol start="7">
+<li><p>Calculate Translation Efficiency</p>
+</li>
+</ol>
+</a></h2>
+<pre><code class="language-python">filtered&#91;&#39;TE&#39;&#93; &#61; filtered&#91;&#39;rpf_cds&#39;&#93; / filtered&#91;&#39;rna_cds&#39;&#93;</code></pre>
+<p><strong>What this does:</strong></p>
+<ul>
+<li><p>Calculates TE as the ratio of Ribo-seq to RNA-seq reads</p>
+</li>
+<li><p>Element-wise division creates a new column</p>
+</li>
+</ul>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li><p>TE &#61; 1.0: Translation rate matches mRNA abundance &#40;typical&#41;</p>
+</li>
+<li><p>TE &gt; 1.0: More ribosomes than expected &#40;high translation&#41;</p>
+</li>
+<li><p>TE &lt; 1.0: Fewer ribosomes than expected &#40;low translation&#41;</p>
+</li>
+</ul>
+<hr />
+<h2 id="ol_start8_remove_outliers"><a href="#ol_start8_remove_outliers" class="header-anchor"><ol start="8">
+<li><p>Remove Outliers</p>
+</li>
+</ol>
+</a></h2>
+<pre><code class="language-python">filtered &#61; filtered&#91;
+    &#40;filtered&#91;&#39;TE&#39;&#93; &gt; 0.01&#41; &amp; 
+    &#40;filtered&#91;&#39;TE&#39;&#93; &lt; 100&#41;
+&#93;.copy&#40;&#41;</code></pre>
+<p><strong>What this does:</strong></p>
+<ul>
+<li><p>Removes extreme TE values that are likely errors</p>
+</li>
+<li><p>Keeps TE values between 0.01 and 100</p>
+</li>
+</ul>
+<p><strong>Why?</strong></p>
+<ul>
+<li><p>TE &lt; 0.01: Extremely low, possibly technical artifacts</p>
+</li>
+<li><p>TE &gt; 100: Suspiciously high, likely measurement errors or annotation issues</p>
+</li>
+<li><p>Biologically reasonable range helps model training</p>
+</li>
+</ul>
+<hr />
+<h2 id="ol_start9_fetch_sequences_from_ncbi"><a href="#ol_start9_fetch_sequences_from_ncbi" class="header-anchor"><ol start="9">
+<li><p>Fetch Sequences from NCBI</p>
+</li>
+</ol>
+</a></h2>
+<h3 id="core_function"><a href="#core_function" class="header-anchor">Core Function</a></h3>
+<pre><code class="language-python">def fetch_sequence_with_utr&#40;refseq_id&#41;:
+    &quot;&quot;&quot;
+    Fetch sequence and 5&#39; UTR from NCBI for a RefSeq ID.
+    
+    Strategy:
+    1. First, look for explicit 5&#39;UTR annotation
+    2. If not found, infer from CDS start position &#40;fallback&#41;
+    &quot;&quot;&quot;
+    handle &#61; Entrez.efetch&#40;
+        db&#61;&quot;nucleotide&quot;, 
+        id&#61;refseq_id, 
+        rettype&#61;&quot;gb&quot;, 
+        retmode&#61;&quot;text&quot;
+    &#41;
+    record &#61; SeqIO.read&#40;handle, &quot;genbank&quot;&#41;
+    handle.close&#40;&#41;
+    
+    utr5_seq &#61; None
+    
+    # First, try to find explicit 5&#39;UTR feature
+    for feature in record.features:
+        if feature.type &#61;&#61; &quot;5&#39;UTR&quot;:
+            utr5_seq &#61; str&#40;feature.extract&#40;record.seq&#41;&#41;
+            break
+    
+    # If not found, infer from CDS start &#40;fallback&#41;
+    if utr5_seq is None:
+        for feature in record.features:
+            if feature.type &#61;&#61; &quot;CDS&quot;:
+                cds_start &#61; int&#40;feature.location.start&#41;
+                if cds_start &gt; 0:
+                    utr5_seq &#61; str&#40;record.seq&#91;:cds_start&#93;&#41;
+                break
+    
+    return utr5_seq</code></pre>
+<p><strong>What this does step-by-step:</strong></p>
+<ol>
+<li><p><strong><code>Entrez.efetch&#40;&#41;</code></strong>: Downloads GenBank record from NCBI</p>
+<ul>
+<li><p><code>db&#61;&quot;nucleotide&quot;</code>: Query the nucleotide database</p>
+</li>
+<li><p><code>id&#61;refseq_id</code>: The RefSeq accession &#40;e.g., &quot;NM_000356&quot;&#41;</p>
+</li>
+<li><p><code>rettype&#61;&quot;gb&quot;</code>: Return GenBank format &#40;includes annotations&#41;</p>
+</li>
+<li><p><code>retmode&#61;&quot;text&quot;</code>: Plain text format</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>SeqIO.read&#40;handle, &quot;genbank&quot;&#41;</code></strong>: Parses GenBank record</p>
+<ul>
+<li><p>Extracts sequence and all feature annotations</p>
+</li>
+<li><p><code>record.seq</code>: The actual DNA/RNA sequence</p>
+</li>
+<li><p><code>record.features</code>: List of annotated features &#40;genes, CDS, exons, etc.&#41;</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Strategy 1 - Look for explicit 5&#39;UTR annotation</strong> &#40;preferred&#41;:</p>
+</li>
+</ol>
+<pre><code class="language-python">for feature in record.features:
+       if feature.type &#61;&#61; &quot;5&#39;UTR&quot;:
+           utr5_seq &#61; str&#40;feature.extract&#40;record.seq&#41;&#41;
+           break</code></pre>
+<ul>
+<li><p>Searches for explicit <code>5&#39;UTR</code> feature annotation</p>
+</li>
+<li><p><code>feature.extract&#40;record.seq&#41;</code>: Extracts the exact subsequence</p>
+</li>
+<li><p><code>break</code>: Stops after finding first 5&#39;UTR</p>
+</li>
+</ul>
+<ol start="4">
+<li><p><strong>Strategy 2 - Infer from CDS start</strong> &#40;fallback&#41;:</p>
+</li>
+</ol>
+<pre><code class="language-python">if utr5_seq is None:
+       for feature in record.features:
+           if feature.type &#61;&#61; &quot;CDS&quot;:
+               cds_start &#61; int&#40;feature.location.start&#41;
+               if cds_start &gt; 0:
+                   utr5_seq &#61; str&#40;record.seq&#91;:cds_start&#93;&#41;
+               break</code></pre>
+<ul>
+<li><p>If no explicit 5&#39;UTR found, look for CDS feature</p>
+</li>
+<li><p>Extract sequence from start to CDS beginning</p>
+</li>
+<li><p><code>cds_start &gt; 0</code>: Ensures there&#39;s actually a 5&#39;UTR region</p>
+</li>
+</ul>
+<hr />
+<h2 id="ol_start10_batch_fetch_with_rate_limiting"><a href="#ol_start10_batch_fetch_with_rate_limiting" class="header-anchor"><ol start="10">
+<li><p>Batch Fetch with Rate Limiting</p>
+</li>
+</ol>
+</a></h2>
+<pre><code class="language-python">sequences &#61; &#91;&#93;
+for i, &#40;idx, row&#41; in enumerate&#40;sample_data.iterrows&#40;&#41;, 1&#41;:
+    refseq_id &#61; row&#91;&#39;RefSeq accession identifier&#39;&#93;
+    
+    utr5_seq &#61; fetch_sequence_with_utr&#40;refseq_id&#41;
+    
+    if utr5_seq:
+        sequences.append&#40;&#123;
+            &#39;gene&#39;: row&#91;&#39;Gene&#39;&#93;,
+            &#39;refseq_id&#39;: refseq_id,
+            &#39;rpf_cds&#39;: row&#91;&#39;rpf_cds&#39;&#93;,
+            &#39;rna_cds&#39;: row&#91;&#39;rna_cds&#39;&#93;,
+            &#39;TE&#39;: row&#91;&#39;TE&#39;&#93;,
+            &#39;log2_TE&#39;: np.log2&#40;row&#91;&#39;TE&#39;&#93;&#41;,
+            &#39;utr5_seq&#39;: utr5_seq,
+            &#39;utr5_length&#39;: len&#40;utr5_seq&#41;
+        &#125;&#41;
+    
+    time.sleep&#40;0.34&#41;  # NCBI rate limit: ~3 requests/second</code></pre>
+<p><strong>What this does:</strong></p>
+<ol>
+<li><p><strong>Loop through filtered transcripts</strong>: <code>sample_data.iterrows&#40;&#41;</code> iterates row by row</p>
+</li>
+<li><p><strong>Fetch sequence</strong>: Calls <code>fetch_sequence_with_utr&#40;&#41;</code> for each RefSeq ID</p>
+<ul>
+<li><p>Returns 5&#39; UTR sequence string or None</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Validate 5&#39; UTR</strong>: <code>if utr5_seq:</code></p>
+<ul>
+<li><p>Only include transcripts where we successfully extracted a 5&#39; UTR</p>
+</li>
+<li><p>Excludes:</p>
+<ul>
+<li><p>Transcripts with CDS starting at position 0 &#40;no 5&#39; UTR&#41;</p>
+</li>
+<li><p>Failed fetches &#40;network errors, invalid IDs&#41;</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Create dataset entry</strong>: Combines TE data with sequence</p>
+<ul>
+<li><p><code>gene</code>: Gene symbol</p>
+</li>
+<li><p><code>refseq_id</code>: RefSeq accession</p>
+</li>
+<li><p><code>rpf_cds</code>, <code>rna_cds</code>: Read counts</p>
+</li>
+<li><p><code>TE</code>: Translation efficiency</p>
+</li>
+<li><p><code>log2_TE</code>: Log₂ transformation of TE &#40;useful for modeling, handles wide range&#41;</p>
+</li>
+<li><p><code>utr5_seq</code>: The 5&#39; UTR nucleotide sequence &#40;feature for ML&#41;</p>
+</li>
+<li><p><code>utr5_length</code>: Length of 5&#39; UTR in nucleotides</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Rate limiting</strong>: <code>time.sleep&#40;0.34&#41;</code></p>
+<ul>
+<li><p>NCBI limits: 3 requests/second without API key</p>
+</li>
+<li><p>0.34 seconds ≈ 2.94 requests/second &#40;safely under limit&#41;</p>
+</li>
+<li><p>Prevents IP bans from excessive requests</p>
+</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="ol_start11_save_the_dataset"><a href="#ol_start11_save_the_dataset" class="header-anchor"><ol start="11">
+<li><p>Save the Dataset</p>
+</li>
+</ol>
+</a></h2>
+<pre><code class="language-python">sequences_df &#61; pd.DataFrame&#40;sequences&#41;
+sequences_df.to_csv&#40;&#39;te_dataset.csv&#39;, index&#61;False&#41;</code></pre>
+<p><strong>What this does:</strong></p>
+<ul>
+<li><p>Converts list of dictionaries to pandas DataFrame</p>
+</li>
+<li><p>Saves as CSV file for later use</p>
+</li>
+<li><p><code>index&#61;False</code>: Don&#39;t save row numbers as a column</p>
+</li>
+</ul>
+<p><strong>Final dataset columns:</strong></p>
+<ul>
+<li><p><code>gene</code>: Gene name</p>
+</li>
+<li><p><code>refseq_id</code>: RefSeq accession</p>
+</li>
+<li><p><code>rpf_cds</code>, <code>rna_cds</code>: Read counts</p>
+</li>
+<li><p><code>TE</code>, <code>log2_TE</code>: Translation efficiency values</p>
+</li>
+<li><p><code>utr5_seq</code>: 5&#39; UTR sequence &#40;feature&#41;</p>
+</li>
+<li><p><code>utr5_length</code>: Sequence length</p>
+</li>
+</ul>
+<hr />
+<h2 id="key_concepts_summary"><a href="#key_concepts_summary" class="header-anchor">Key Concepts Summary</a></h2>
+<h3 id="why_use_two-strategy_approach_for_5_utr"><a href="#why_use_two-strategy_approach_for_5_utr" class="header-anchor"><ol>
+<li><p>Why use two-strategy approach for 5&#39; UTR?</p>
+</li>
+</ol>
+</a></h3>
+<p><strong>Strategy hierarchy:</strong></p>
+<ol>
+<li><p><strong>Prefer explicit annotations</strong> when available &#40;most accurate&#41;</p>
+</li>
+<li><p><strong>Infer from CDS start</strong> as fallback &#40;works for most cases&#41;</p>
+</li>
+</ol>
+<p>GenBank records don&#39;t always have explicit <code>5&#39;UTR</code> annotations, but they always have <code>CDS</code> annotations. Since mRNA structure is:</p>
+<pre><code class="language-julia">&#91;5&#39; UTR&#93; → &#91;CDS&#93; → &#91;3&#39; UTR&#93;</code></pre>
+<p>We can infer: <strong>5&#39; UTR &#61; sequence&#91;0 : CDS_start&#93;</strong></p>
+<p>This two-strategy approach ensures:</p>
+<ul>
+<li><p>Maximum accuracy when explicit annotations exist</p>
+</li>
+<li><p>Broad coverage when they don&#39;t &#40;which is most of the time in this dataset&#41;</p>
+</li>
+</ul>
+<h3 id="ol_start2_why_logte"><a href="#ol_start2_why_logte" class="header-anchor"><ol start="2">
+<li><p>Why log₂&#40;TE&#41;?</p>
+</li>
+</ol>
+</a></h3>
+<ul>
+<li><p>TE values have wide dynamic range &#40;0.025 to 99.6&#41;</p>
+</li>
+<li><p>Log transformation:</p>
+<ul>
+<li><p>Compresses range to more manageable scale</p>
+</li>
+<li><p>Makes distribution more symmetric &#40;better for modeling&#41;</p>
+</li>
+<li><p>TE&#61;1 → log₂&#40;TE&#41;&#61;0 &#40;baseline&#41;</p>
+</li>
+<li><p>TE&#61;2 → log₂&#40;TE&#41;&#61;1 &#40;2× more translated&#41;</p>
+</li>
+<li><p>TE&#61;0.5 → log₂&#40;TE&#41;&#61;-1 &#40;2× less translated&#41;</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="ol_start3_rate_limiting"><a href="#ol_start3_rate_limiting" class="header-anchor"><ol start="3">
+<li><p>Rate Limiting</p>
+</li>
+</ol>
+</a></h3>
+<p>NCBI enforces limits to prevent server overload:</p>
+<ul>
+<li><p>3 requests/second without API key</p>
+</li>
+<li><p>10 requests/second with API key</p>
+</li>
+<li><p>Exceeding limits → temporary IP ban</p>
+</li>
+<li><p>Solution: <code>time.sleep&#40;0.34&#41;</code> between requests</p>
+</li>
+</ul>
+<hr />
+<h2 id="next_steps_with_the_data"><a href="#next_steps_with_the_data" class="header-anchor">Next Steps with the Data</a></h2>
+<h3 id="machine_learning_approaches"><a href="#machine_learning_approaches" class="header-anchor">Machine Learning Approaches</a></h3>
+<ol>
+<li><p><strong>One-hot encoding</strong>:</p>
+</li>
+</ol>
+<pre><code class="language-python"># Convert DNA sequence to numerical matrix
+   # A&#61;&#91;1,0,0,0&#93;, C&#61;&#91;0,1,0,0&#93;, G&#61;&#91;0,0,1,0&#93;, T&#61;&#91;0,0,0,1&#93;</code></pre>
+<ol start="2">
+<li><p><strong>K-mer features</strong>:</p>
+</li>
+</ol>
+<pre><code class="language-python"># Extract all 3-mers, 4-mers, etc.
+   # &quot;ATCG&quot; → &#91;&quot;ATC&quot;, &quot;TCG&quot;&#93;</code></pre>
+<ol start="3">
+<li><p><strong>Convolutional Neural Networks &#40;CNNs&#41;</strong>:</p>
+<ul>
+<li><p>Good at detecting sequence motifs &#40;like Kozak sequence&#41;</p>
+</li>
+<li><p>Learns position-invariant features</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Transformer models</strong>:</p>
+<ul>
+<li><p>Can learn long-range dependencies</p>
+</li>
+<li><p>Similar to BERT for text, but for DNA sequences</p>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="example_model_structure"><a href="#example_model_structure" class="header-anchor">Example Model Structure</a></h3>
+<pre><code class="language-python"># Input: 5&#39; UTR sequence &#40;variable length&#41;
+# Output: Predicted TE &#40;continuous value&#41; or High/Low class
+
+# Possible architecture:
+# 1. Embedding layer &#40;convert nucleotides to vectors&#41;
+# 2. Convolutional layers &#40;detect motifs&#41;
+# 3. Pooling &#40;aggregate information&#41;
+# 4. Dense layers &#40;final prediction&#41;</code></pre>
+<p>This dataset provides ~16,000&#43; labeled examples for training such models&#33;</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 13, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>

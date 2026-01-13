@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Translation Efficiency (TE) Dataset Processing</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="translation_efficiency_te_dataset_processing"><a href="#translation_efficiency_te_dataset_processing" class="header-anchor">Translation Efficiency &#40;TE&#41; Dataset Processing</a></h1>
+<h2 id="overview"><a href="#overview" class="header-anchor">Overview</a></h2>
+<p>This document describes the process of creating a sequence-to-label dataset for predicting translation efficiency from ribosome profiling data.</p>
+<h2 id="data_source"><a href="#data_source" class="header-anchor">Data Source</a></h2>
+<ul>
+<li><p><strong>Ribo-seq data</strong>: <code>GSM1331342_A1_control_rpf_rep_1.csv</code> &#40;ribosome profiling&#41;</p>
+</li>
+<li><p><strong>RNA-seq data</strong>: <code>GSM1331343_A3_control_rna_rep_1.csv</code> &#40;mRNA sequencing&#41;</p>
+</li>
+<li><p>Both files contain 47,087 rows with read counts mapped to different transcript regions</p>
+</li>
+</ul>
+<h2 id="processing_workflow"><a href="#processing_workflow" class="header-anchor">Processing Workflow</a></h2>
+<h3 id="data_loading"><a href="#data_loading" class="header-anchor"><ol>
+<li><p>Data Loading</p>
+</li>
+</ol>
+</a></h3>
+<p>Loaded paired Ribo-seq and RNA-seq data files containing read counts for:</p>
+<ul>
+<li><p>5&#39; leader &#40;5&#39; UTR&#41;</p>
+</li>
+<li><p>CDS &#40;Coding Sequence&#41;</p>
+</li>
+<li><p>3&#39; UTR</p>
+</li>
+</ul>
+<h3 id="ol_start2_translation_efficiency_calculation"><a href="#ol_start2_translation_efficiency_calculation" class="header-anchor"><ol start="2">
+<li><p>Translation Efficiency Calculation</p>
+</li>
+</ol>
+</a></h3>
+<p><strong>Translation Efficiency &#40;TE&#41;</strong> &#61; Ribo-seq CDS reads / RNA-seq CDS reads</p>
+<p>This ratio indicates how efficiently each transcript is translated into protein.</p>
+<h4 id="filtering_steps"><a href="#filtering_steps" class="header-anchor">Filtering Steps:</a></h4>
+<ol>
+<li><p><strong>Coding transcripts only</strong>: Filtered for <code>annotation type &#61;&#61; &#39;coding&#39;</code></p>
+<ul>
+<li><p>Result: 35,851 coding transcripts in both datasets</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Merge datasets</strong>: Matched transcripts by RefSeq accession identifier</p>
+<ul>
+<li><p>Result: 35,851 merged transcripts</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Minimum read threshold</strong>: Required ≥10 reads in both Ribo-seq and RNA-seq CDS</p>
+<ul>
+<li><p>Result: 16,535 transcripts</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Outlier removal</strong>: Filtered TE values to reasonable range &#40;0.01 &lt; TE &lt; 100&#41;</p>
+<ul>
+<li><p>Result: 16,534 transcripts</p>
+</li>
+</ul>
+</li>
+</ol>
+<h4 id="te_statistics"><a href="#te_statistics" class="header-anchor">TE Statistics:</a></h4>
+<ul>
+<li><p>Min: 0.025</p>
+</li>
+<li><p>Max: 99.600</p>
+</li>
+<li><p>Mean: 0.688</p>
+</li>
+<li><p>Median: 0.571</p>
+</li>
+</ul>
+<h3 id="ol_start3_sequence_fetching_from_ncbi"><a href="#ol_start3_sequence_fetching_from_ncbi" class="header-anchor"><ol start="3">
+<li><p>Sequence Fetching from NCBI</p>
+</li>
+</ol>
+</a></h3>
+<p>Fetched sequences and 5&#39; UTR annotations from NCBI using the Entrez API.</p>
+<h4 id="key_challenge_no_explicit_5_utr_annotations"><a href="#key_challenge_no_explicit_5_utr_annotations" class="header-anchor">Key Challenge: No Explicit 5&#39; UTR Annotations</a></h4>
+<p>RefSeq records in this dataset <strong>do not have explicit <code>5&#39;UTR</code> feature annotations</strong>. They only contain:</p>
+<ul>
+<li><p><code>source</code> &#40;full sequence range&#41;</p>
+</li>
+<li><p><code>gene</code> </p>
+</li>
+<li><p><code>exon</code> features</p>
+</li>
+<li><p><code>CDS</code> &#40;coding sequence&#41; with start/end positions</p>
+</li>
+<li><p>Misc features &#40;regulatory elements, polyA sites, etc.&#41;</p>
+</li>
+</ul>
+<p><strong>Solution</strong>: Infer 5&#39; UTR from CDS start position</p>
+<ul>
+<li><p>The 5&#39; UTR is the sequence <strong>before</strong> the CDS starts</p>
+</li>
+<li><p>If CDS starts at position N, then 5&#39; UTR &#61; sequence&#91;0:N&#93;</p>
+</li>
+<li><p>Example: For a transcript where CDS starts at position 30, the 5&#39; UTR is nucleotides 0-29 &#40;30 nt total&#41;</p>
+</li>
+</ul>
+<h4 id="sequence_extraction_logic"><a href="#sequence_extraction_logic" class="header-anchor">Sequence Extraction Logic:</a></h4>
+<pre><code class="language-python"># Find the CDS start position
+cds_start &#61; None
+for feature in record.features:
+    if feature.type &#61;&#61; &quot;CDS&quot;:
+        cds_start &#61; int&#40;feature.location.start&#41;
+        break
+
+# Infer 5&#39; UTR as everything before CDS
+if cds_start is not None and cds_start &gt; 0:
+    utr5_seq &#61; str&#40;record.seq&#91;:cds_start&#93;&#41;</code></pre>
+<p><strong>Note</strong>: This approach works because mRNA transcripts follow the structure: 5&#39; UTR → CDS → 3&#39; UTR</p>
+<h4 id="api_considerations"><a href="#api_considerations" class="header-anchor">API Considerations:</a></h4>
+<ul>
+<li><p>NCBI rate limit: ~3 requests/second without API key</p>
+</li>
+<li><p>Added 0.34 second delay between requests</p>
+</li>
+<li><p>Implemented retry logic for failed requests</p>
+</li>
+<li><p>Expected time: 10-20 minutes for full dataset</p>
+</li>
+</ul>
+<h3 id="ol_start4_final_dataset_structure"><a href="#ol_start4_final_dataset_structure" class="header-anchor"><ol start="4">
+<li><p>Final Dataset Structure</p>
+</li>
+</ol>
+</a></h3>
+<p>Each sample in the dataset contains:</p>
+<ul>
+<li><p><strong>gene</strong>: Gene symbol</p>
+</li>
+<li><p><strong>refseq_id</strong>: RefSeq accession identifier &#40;e.g., NM_000356&#41;</p>
+</li>
+<li><p><strong>rpf_cds</strong>: Ribo-seq CDS read count</p>
+</li>
+<li><p><strong>rna_cds</strong>: RNA-seq CDS read count</p>
+</li>
+<li><p><strong>TE</strong>: Translation efficiency &#40;rpf<em>cds / rna</em>cds&#41;</p>
+</li>
+<li><p><strong>log2_TE</strong>: Log₂-transformed TE &#40;useful for modeling&#41;</p>
+</li>
+<li><p><strong>utr5_seq</strong>: 5&#39; UTR nucleotide sequence</p>
+</li>
+<li><p><strong>utr5_length</strong>: Length of 5&#39; UTR in nucleotides</p>
+</li>
+<li><p><strong>description</strong>: Transcript description</p>
+</li>
+</ul>
+<h3 id="ol_start5_output_files"><a href="#ol_start5_output_files" class="header-anchor"><ol start="5">
+<li><p>Output Files</p>
+</li>
+</ol>
+</a></h3>
+<ul>
+<li><p><strong><code>te_dataset.csv</code></strong>: Final dataset with sequences and TE values</p>
+</li>
+<li><p><strong><code>Untitled-1.ipynb</code></strong>: Interactive notebook with full processing pipeline</p>
+</li>
+</ul>
+<h2 id="biological_significance"><a href="#biological_significance" class="header-anchor">Biological Significance</a></h2>
+<h3 id="why_5_utr"><a href="#why_5_utr" class="header-anchor">Why 5&#39; UTR?</a></h3>
+<p>The 5&#39; UTR contains regulatory elements that control translation:</p>
+<ul>
+<li><p><strong>Kozak sequence</strong>: Around the start codon, affects translation initiation</p>
+</li>
+<li><p><strong>Secondary structures</strong>: Can block ribosome access</p>
+</li>
+<li><p><strong>uORFs</strong>: Upstream open reading frames that regulate translation</p>
+</li>
+<li><p><strong>IRES elements</strong>: Internal ribosome entry sites</p>
+</li>
+</ul>
+<h3 id="why_use_cds_for_te"><a href="#why_use_cds_for_te" class="header-anchor">Why Use CDS for TE?</a></h3>
+<p>The CDS &#40;Coding Sequence&#41; is where active translation occurs:</p>
+<ul>
+<li><p>Ribosomes bind to mRNA and translate the CDS into protein</p>
+</li>
+<li><p>Ribo-seq measures ribosome occupancy &#40;translation activity&#41;</p>
+</li>
+<li><p>RNA-seq measures mRNA abundance</p>
+</li>
+<li><p>Their ratio in the CDS region best reflects translation efficiency</p>
+</li>
+</ul>
+<h2 id="gene_structure_reference"><a href="#gene_structure_reference" class="header-anchor">Gene Structure Reference</a></h2>
+<pre><code class="language-julia">&#91;5&#39; UTR&#93; --- &#91;CDS: start codon → protein-coding → stop codon&#93; --- &#91;3&#39; UTR&#93;
+   ↑              ↑                                                    ↑
+Feature    Where translation              Regulatory region
+&#40;input&#41;      happens &#40;for TE&#41;             &#40;not translated&#41;</code></pre>
+<h2 id="next_steps"><a href="#next_steps" class="header-anchor">Next Steps</a></h2>
+<p>The dataset can be used for:</p>
+<ol>
+<li><p><strong>Regression models</strong>: Predict continuous TE values from 5&#39; UTR sequences</p>
+</li>
+<li><p><strong>Classification</strong>: Predict high/low translation efficiency categories</p>
+</li>
+<li><p><strong>Feature analysis</strong>: Identify sequence motifs associated with TE</p>
+</li>
+<li><p><strong>Deep learning</strong>: Train CNNs or Transformers on sequence data</p>
+</li>
+</ol>
+<h3 id="encoding_options"><a href="#encoding_options" class="header-anchor">Encoding Options:</a></h3>
+<ul>
+<li><p>One-hot encoding: A&#61;&#91;1,0,0,0&#93;, C&#61;&#91;0,1,0,0&#93;, G&#61;&#91;0,0,1,0&#93;, T&#61;&#91;0,0,0,1&#93;</p>
+</li>
+<li><p>k-mer embeddings</p>
+</li>
+<li><p>Learned embeddings &#40;similar to NLP word embeddings&#41;</p>
+</li>
+</ul>
+<h3 id="normalization"><a href="#normalization" class="header-anchor">Normalization:</a></h3>
+<p>Consider using log₂&#40;TE&#41; instead of raw TE values to handle the wide dynamic range.</p>
+<h2 id="references"><a href="#references" class="header-anchor">References</a></h2>
+<ul>
+<li><p>Processing guide: https://kchu25.github.io/biology/blog/screenings/processing_te/</p>
+</li>
+<li><p>Data source: GEO &#40;Gene Expression Omnibus&#41;</p>
+</li>
+<li><p>Tool: Biopython for NCBI Entrez API access</p>
+</li>
+</ul>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 13, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>

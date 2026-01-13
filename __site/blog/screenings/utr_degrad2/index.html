@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Understanding A+ vs A- Reporters in the UTR-Seq Study</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="understanding_a_vs_a-_reporters_in_the_utr-seq_study"><a href="#understanding_a_vs_a-_reporters_in_the_utr-seq_study" class="header-anchor">Understanding A&#43; vs A- Reporters in the UTR-Seq Study</a></h1>
+<p><strong>Paper:</strong> Massively parallel reporter assay of 3′UTR sequences identifies in vivo rules for mRNA degradation</p>
+<p><strong>Reference:</strong> Rabani et al., <em>Molecular Cell</em> &#40;2017&#41;, PMC5994907</p>
+<hr />
+<p>So you&#39;ve got two supplementary files - one labeled A&#43;, one labeled A-. Here&#39;s what they represent:</p>
+<h2 id="the_quick_answer"><a href="#the_quick_answer" class="header-anchor">The Quick Answer</a></h2>
+<p><strong>A&#43; &#61; mRNA reporters WITH poly&#40;A&#41; tails</strong> &#40;36 nucleotides long&#41;</p>
+<p><strong>A- &#61; mRNA reporters WITHOUT poly&#40;A&#41; tails</strong></p>
+<h2 id="why_two_versions"><a href="#why_two_versions" class="header-anchor">Why Two Versions?</a></h2>
+<p>The researchers wanted to understand how poly&#40;A&#41; tails affect mRNA stability. Think of the poly&#40;A&#41; tail as a protective cap on the end of mRNA - it matters for how long the mRNA sticks around in the cell.</p>
+<p>They took the same library of ~90,000 different 3′UTR sequences and made two versions:</p>
+<ul>
+<li><p>One with poly&#40;A&#41; tails attached &#40;A&#43;&#41;</p>
+</li>
+<li><p>One without them &#40;A-&#41;</p>
+</li>
+</ul>
+<p>Then they injected both into zebrafish embryos and tracked how quickly each version degraded over time.</p>
+<h2 id="what_they_found"><a href="#what_they_found" class="header-anchor">What They Found</a></h2>
+<p><strong>A&#43; mRNAs lasted longer</strong> - about 3.8 hours on average vs 2.4 hours for A- mRNAs.</p>
+<p>But here&#39;s the interesting part: different 3′UTR sequences responded differently to having a poly&#40;A&#41; tail. Some needed it for stability, others didn&#39;t care much. This helped them classify 3′UTRs into three groups based on how they interact with poly&#40;A&#41; tails.</p>
+<h2 id="so_are_they_replicates"><a href="#so_are_they_replicates" class="header-anchor">So Are They Replicates?</a></h2>
+<p><strong>No</strong> - A&#43; and A- are two different experimental conditions being compared, not replicates of the same thing.</p>
+<p>However, <em>within</em> each file, there are some replicate measurements at various timepoints &#40;5 replicates for A&#43;, 2 for A-&#41;.</p>
+<h2 id="about_the_data_values"><a href="#about_the_data_values" class="header-anchor">About the Data Values</a></h2>
+<p>You might notice the values in the supplementary files aren&#39;t integers - they look like: 2.519, -1.8448, -0.43334, etc.</p>
+<p>These are <strong>normalized, log2-transformed UMI counts</strong>, not raw counts. Here&#39;s the process:</p>
+<ol>
+<li><p><strong>Raw UMI counts</strong> - They counted unique molecular identifiers for each reporter</p>
+</li>
+<li><p><strong>Spike-in normalization</strong> - They added 5 control mRNAs at known amounts &#40;50fg down to 3.125fg in 2-fold steps&#41; to each sample</p>
+</li>
+<li><p><strong>Calibration</strong> - They fitted a regression model to the spike-ins to convert UMI counts to &quot;expected mRNA molecules&quot;</p>
+</li>
+<li><p><strong>Log transformation</strong> - Values are on a log2 scale &#40;which is why some are negative - these represent mRNAs with abundance &lt;1 on the original scale&#41;</p>
+</li>
+</ol>
+<p>From the methods: <em>&quot;UMI counts were adjusted to represent the expected number of mRNA molecules in the sample... We fitted a generalized binomial linear regression model to counts of five control mRNAs that were added to samples at known quantities... and normalized by internal mRNA spike-ins.&quot;</em></p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 06, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+  </body>
+</html>

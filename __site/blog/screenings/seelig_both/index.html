@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Comparing Two 5' UTR Deep Learning Studies</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="comparing_two_5_utr_deep_learning_studies"><a href="#comparing_two_5_utr_deep_learning_studies" class="header-anchor">Comparing Two 5&#39; UTR Deep Learning Studies</a></h1>
+<h2 id="references"><a href="#references" class="header-anchor">References</a></h2>
+<p><strong>Yeast Paper &#40;2017&#41;:</strong> Cuperus et al. &quot;Deep learning of the regulatory grammar of yeast 5′ untranslated regions from 500,000 random sequences&quot;   <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5741052/">https://pmc.ncbi.nlm.nih.gov/articles/PMC5741052/</a></p>
+<p><strong>Human Paper &#40;2019&#41;:</strong> Sample et al. &quot;Human 5′ UTR design and variant effect prediction from a massively parallel translation assay&quot;   <a href="https://www.nature.com/articles/s41587-019-0164-5">https://www.nature.com/articles/s41587-019-0164-5</a></p>
+<hr />
+<h2 id="the_big_picture"><a href="#the_big_picture" class="header-anchor">The Big Picture</a></h2>
+<p>Both papers tackle the same fundamental challenge: <strong>Can we predict how a DNA sequence controls protein expression?</strong> Think of the 5&#39; UTR &#40;untranslated region&#41; as a control knob that sits right before the actual protein-coding part of a gene—it dramatically affects how much protein gets made, but we&#39;ve never really understood the rules.</p>
+<blockquote>
+<p><strong>Important note on experimental design:</strong> Both papers used <strong>50-nucleotide random sequences positioned immediately upstream of the start codon &#40;AUG&#41;</strong>. This standardization was intentional—it lets you directly compare results and focus on 5&#39; UTR effects without confounding variables from different promoters or varying UTR lengths. Think of it as a controlled experiment: same length, same position, just different sequences.</p>
+</blockquote>
+<h3 id="yeast_paper_2017_-_the_foundation"><a href="#yeast_paper_2017_-_the_foundation" class="header-anchor">Yeast Paper &#40;2017&#41; - The Foundation</a></h3>
+<p>The earlier yeast study was like learning to read in a simpler language first. They created <strong>500,000 completely random 50-nucleotide sequences</strong> and measured how each one affected protein production in yeast cells. This was revolutionary because instead of just looking at natural sequences, they generated their own data at massive scale.</p>
+<p><strong>The cool part:</strong> They used a growth-based selection where yeast with better 5&#39; UTRs literally outcompeted others. No fancy fluorescence sorting—just survival of the fittest.</p>
+<h3 id="human_paper_2019_-_scaling_up"><a href="#human_paper_2019_-_scaling_up" class="header-anchor">Human Paper &#40;2019&#41; - Scaling Up</a></h3>
+<p>Two years later, the same lab applied their approach to human cells with <strong>280,000 random 5&#39; UTRs</strong>. But human biology is way more complex, so they had to get more sophisticated.</p>
+<p><strong>The clever twist:</strong> Instead of growth selection, they used polysome profiling—essentially catching ribosomes in the act of translating mRNA. This directly measures translation rather than inferring it from protein levels.</p>
+<hr />
+<h2 id="what_did_they_actually_find"><a href="#what_did_they_actually_find" class="header-anchor">What Did They Actually Find?</a></h2>
+<h3 id="sequence_features_that_matter"><a href="#sequence_features_that_matter" class="header-anchor">Sequence Features That Matter</a></h3>
+<p><strong>Both papers confirmed the classics:</strong></p>
+<ul>
+<li><p><strong>Kozak sequence</strong> &#40;the -3 to -1 positions before the start codon&#41; is crucial</p>
+</li>
+<li><p><strong>uORFs</strong> &#40;upstream open reading frames&#41; are protein expression killers</p>
+</li>
+<li><p><strong>Secondary structure</strong> generally inhibits translation</p>
+</li>
+</ul>
+<p><strong>But here&#39;s where it gets interesting...</strong></p>
+<p>The <strong>yeast paper discovered</strong> that the consensus Kozak sequence &#40;AAAAA&#41; isn&#39;t actually optimal&#33; They found 154 other variants that work better—something you&#39;d never find just looking at natural sequences.</p>
+<p>The <strong>human paper went further</strong> and showed they could:</p>
+<ul>
+<li><p>Design 5&#39; UTRs that hit specific expression targets</p>
+</li>
+<li><p>Work with chemically modified RNA &#40;huge for mRNA therapeutics&#41;</p>
+</li>
+<li><p>Predict the impact of disease-causing mutations</p>
+</li>
+</ul>
+<h3 id="the_models"><a href="#the_models" class="header-anchor">The Models</a></h3>
+<p><strong>Yeast:</strong> Convolutional neural network with 3 layers, 128 filters each</p>
+<ul>
+<li><p>Achieved R² &#61; 0.62 on random sequences</p>
+</li>
+<li><p>R² &#61; 0.60 on native yeast 5&#39; UTRs</p>
+</li>
+</ul>
+<p><strong>Human:</strong> Also a CNN, but trained on a more complex dataset</p>
+<ul>
+<li><p>Better at handling human-specific regulatory complexity</p>
+</li>
+<li><p>Could predict effects in chemically modified mRNA</p>
+</li>
+</ul>
+<hr />
+<h2 id="the_really_novel_stuff"><a href="#the_really_novel_stuff" class="header-anchor">The Really Novel Stuff</a></h2>
+<h3 id="from_the_human_paper"><a href="#from_the_human_paper" class="header-anchor">From the Human Paper</a></h3>
+<ol>
+<li><p><strong>Therapeutic Applications</strong></p>
+<ul>
+<li><p>They tested their model on modified RNA &#40;with pseudouridine&#41;—the same chemistry used in COVID vaccines</p>
+</li>
+<li><p>This means you could potentially optimize vaccine mRNAs computationally</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Disease Variant Analysis</strong></p>
+<ul>
+<li><p>Identified 45 disease-associated mutations that dramatically affect translation</p>
+</li>
+<li><p>This could explain why some genetic variants cause disease even when they don&#39;t change the protein sequence</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Rational Design</strong></p>
+<ul>
+<li><p>Used a genetic algorithm to evolve 5&#39; UTRs with desired properties</p>
+</li>
+<li><p>Successfully tuned expression levels to hit specific targets</p>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="what_makes_these_approaches_work"><a href="#what_makes_these_approaches_work" class="header-anchor">What Makes These Approaches Work</a></h3>
+<p>The secret sauce is the <strong>random library strategy</strong>. By testing hundreds of thousands of random sequences:</p>
+<ul>
+<li><p>You see rare motifs in many different contexts</p>
+</li>
+<li><p>The model learns general rules, not just memorized patterns</p>
+</li>
+<li><p>You get enough data to train deep learning models</p>
+</li>
+</ul>
+<p>Think of it like learning a language: Would you rather study 5,000 carefully chosen sentences, or 500,000 random ones? The random approach gives you way more coverage of the grammar.</p>
+<hr />
+<h2 id="bottom_line"><a href="#bottom_line" class="header-anchor">Bottom Line</a></h2>
+<p>The <strong>yeast paper</strong> proved the concept: massive random libraries &#43; deep learning &#61; predictive models of gene regulation.</p>
+<p>The <strong>human paper</strong> showed it scales: the same approach works in human cells, with modified RNA, and can guide therapeutic development.</p>
+<p><strong>Together, they&#39;re changing how we think about genetic engineering</strong>—from trial-and-error to rational design. Instead of testing sequences one by one in the lab, you can now computationally evolve them to do exactly what you want.</p>
+<p>The real breakthrough? We&#39;re moving from &quot;I wonder what this sequence does&quot; to &quot;I need this exact expression level—here&#39;s the sequence that will give it to me.&quot;</p>
+<hr />
+<h2 id="did_they_find_new_sequence_features"><a href="#did_they_find_new_sequence_features" class="header-anchor">Did They Find New Sequence Features?</a></h2>
+<blockquote>
+<p><strong>Short answer: Sort of—they found novel motifs, but we don&#39;t fully understand what they all do yet.</strong></p>
+<p><strong>Yeast paper:</strong> Their CNN learned to recognize G-quadruplex structures and identified several mystery motifs that don&#39;t match any known regulatory elements. One interesting finding: sequences matching the reverse complement of the Nrd1 transcription termination complex binding site were enriched. This might reduce antisense transcription, which would boost expression.</p>
+<h3>Quick aside: What&#39;s a G-quadruplex motif?</h3>
+<p><strong>The pattern:</strong> G-quadruplexes form from sequences with runs of guanines, typically something like <code>GGG-N-GGG-N-GGG-N-GGG</code> where N can be 1-7 nucleotides. The guanines stack into a stable four-stranded structure &#40;like a molecular square dance&#41;.</p>
+<p><strong>Why it matters here:</strong> These structures are super stable and act as roadblocks for ribosomes trying to scan along the mRNA. So if the CNN learned to recognize G-rich patterns, it&#39;s likely picking up on sequences that can form these inhibitory structures. It&#39;s less about a strict consensus sequence and more about &quot;enough guanines close together to make trouble.&quot;</p>
+<p>The yeast paper found filters that matched G-rich motifs—the model basically learned &quot;lots of Gs &#61; bad for translation&quot; without anyone explicitly teaching it about quadruplexes.</p>
+<p><strong>Human paper:</strong> They didn&#39;t dive as deep into motif discovery, but they did find something practical: multiple sequence features &#40;not just single motifs&#41; combine in complex ways. For instance, the position of structural elements matters a lot—structure near the 5&#39; cap or start codon is way more inhibitory than structure in the middle.</p>
+<p><strong>The bigger picture:</strong> Both papers found that the models learn features beyond what we traditionally look for. The CNNs pick up on things like:</p>
+<ul>
+<li><p>Nucleotide composition patterns &#40;A-rich regions, specific dinucleotide frequencies&#41;</p>
+</li>
+<li><p>Position-dependent effects that vary across the 5&#39; UTR</p>
+</li>
+<li><p>Interactions between features &#40;like how a uORF&#39;s impact depends on its frame and where stop codons appear&#41;</p>
+</li>
+</ul>
+<p>The catch? Many of the &quot;features&quot; exist only in the hidden layers of the neural network—they&#39;re mathematically real but biologically mysterious. Think of it like the model saying &quot;this pattern matters&quot; without being able to explain <em>why</em> in terms we already understand.</p>
+<p><strong>The most actionable discovery from the human paper:</strong> You can have multiple copies of beneficial 4-mers &#40;short sequence motifs&#41; and each additional copy incrementally boosts expression. It&#39;s not winner-take-all—it&#39;s cumulative. That&#39;s genuinely useful for design.</p>
+</blockquote>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 13, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+  </body>
+</html>

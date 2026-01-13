@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Decoding Translation: The Massively Parallel 5' UTR Competition Assay</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="decoding_translation_the_massively_parallel_5_utr_competition_assay"><a href="#decoding_translation_the_massively_parallel_5_utr_competition_assay" class="header-anchor">Decoding Translation: The Massively Parallel 5&#39; UTR Competition Assay</a></h1>
+<p><strong>Link:</strong> https://pmc.ncbi.nlm.nih.gov/articles/PMC5741052/</p>
+<hr />
+<h2 id="the_experimental_concept_the_molecular_marathon"><a href="#the_experimental_concept_the_molecular_marathon" class="header-anchor"><ol>
+<li><p>The Experimental Concept: The &quot;Molecular Marathon&quot;</p>
+</li>
+</ol>
+</a></h2>
+<p>Instead of testing sequences one by one, researchers created a <strong>Pooled Library</strong> to observe 500,000 variants competing in the same environment.</p>
+<ul>
+<li><p><strong>The Library:</strong> 500,000 unique, synthetic 50bp DNA strings.</p>
+</li>
+<li><p><strong>The Construction:</strong> Each string was placed in front of a <strong>HIS3 reporter gene</strong> inside yeast cells.</p>
+</li>
+<li><p><strong>The Selection:</strong> Yeast was grown in a medium where they <em>needed</em> His3 protein to survive.</p>
+</li>
+<li><p><strong>High-efficiency UTRs</strong>  Lots of His3  Rapid cell division.</p>
+</li>
+<li><p><strong>Low-efficiency UTRs</strong>  Little His3  Slow growth or death.</p>
+</li>
+</ul>
+<hr />
+<h2 id="ol_start2_the_molecular_census_counting_the_winners"><a href="#ol_start2_the_molecular_census_counting_the_winners" class="header-anchor"><ol start="2">
+<li><p>The Molecular &quot;Census&quot; &#40;Counting the Winners&#41;</p>
+</li>
+</ol>
+</a></h2>
+<p>To find out who won the race, the researchers had to turn physical yeast cells back into digital data.</p>
+<h3 id="step_a_lysis_and_extraction"><a href="#step_a_lysis_and_extraction" class="header-anchor">Step A: Lysis and Extraction</a></h3>
+<p>After growth, the yeast population is &quot;sacrificed.&quot; The cells are broken open &#40;lysed&#41;, and the total DNA is extracted. This &quot;soup&quot; contains the yeast genome and the engineered UTRs.</p>
+<h3 id="step_b_targeted_pcr_the_magnifying_glass"><a href="#step_b_targeted_pcr_the_magnifying_glass" class="header-anchor">Step B: Targeted PCR &#40;The Magnifying Glass&#41;</a></h3>
+<p>To avoid sequencing the 12-million-base-pair yeast genome, they used <strong>PCR</strong> with specific primers that only &quot;grab&quot; the 50bp UTR region.</p>
+<ul>
+<li><p><strong>Purpose:</strong> To amplify the signal of interest so the sequencer doesn&#39;t waste time on &quot;junk&quot; DNA.</p>
+</li>
+<li><p><strong>Outcome:</strong> A purified pool of billions of 50bp fragments.</p>
+</li>
+</ul>
+<h3 id="step_c_the_sequencer_digital_barcode_scanner"><a href="#step_c_the_sequencer_digital_barcode_scanner" class="header-anchor">Step C: The Sequencer &#40;Digital Barcode Scanner&#41;</a></h3>
+<p>An <strong>Illumina Sequencer</strong> &#40;Sequencing by Synthesis&#41; identifies the letters of every fragment.</p>
+<ul>
+<li><p>It takes &quot;photos&quot; of fluorescently tagged bases as they are added.</p>
+</li>
+<li><p>The output is a <strong>FASTQ file</strong>: millions of lines of text &#40;Reads&#41;.</p>
+</li>
+<li><p><strong>Crucial Note:</strong> Each &quot;Read&quot; is an observation of <strong>one single molecule</strong>. If a sequence is a &quot;winner,&quot; it will have thousands of <strong>duplicates</strong> in the data because that yeast strain produced more offspring.</p>
+</li>
+</ul>
+<hr />
+<h2 id="ol_start3_the_mathematics_of_the_ratio"><a href="#ol_start3_the_mathematics_of_the_ratio" class="header-anchor"><ol start="3">
+<li><p>The Mathematics of &quot;The Ratio&quot;</p>
+</li>
+</ol>
+</a></h2>
+<p>The core problem in this experiment is <strong>PCR Bias &#40;&#41;</strong>. PCR machines prefer some sequences over others, which can fake the results.</p>
+<h3 id="the_enrichment_equation"><a href="#the_enrichment_equation" class="header-anchor">The Enrichment Equation</a></h3>
+<p>To isolate <strong>Biological Growth &#40;&#41;</strong>, they sequence the library twice: at the Start &#40;&#41; and after selection &#40;&#41;.</p>
+<h3 id="why_bias_cancels_out"><a href="#why_bias_cancels_out" class="header-anchor">Why Bias Cancels Out</a></h3>
+<p>The PCR bias is an implicit physical property of the sequence letters. Mathematically:</p>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<p>When you divide them:</p>
+<p>The <strong>Bias &#40;&#41; cancels out</strong>, leaving the pure biological signal &#40;&#41;.</p>
+<hr />
+<h2 id="ol_start4_deep_learning_the_cnn_brain"><a href="#ol_start4_deep_learning_the_cnn_brain" class="header-anchor"><ol start="4">
+<li><p>Deep Learning: The CNN &quot;Brain&quot;</p>
+</li>
+</ol>
+</a></h2>
+<p>The model’s goal is to learn the &quot;grammar&quot; that leads to a high .</p>
+<ul>
+<li><p><strong>The Input:</strong> A  one-hot encoded matrix representing the A, C, G, and T sequence.</p>
+</li>
+<li><p><strong>The Architecture:</strong> A <strong>Convolutional Neural Network &#40;CNN&#41;</strong>. Filters slide across the sequence to detect motifs &#40;like &quot;ATG&quot; or &quot;Kozak&quot; sequences&#41;.</p>
+</li>
+<li><p><strong>The Hidden Logic:</strong> Higher layers of the CNN detect non-linear interactions &#40;e.g., &quot;An &#39;A&#39; at -3 is good, UNLESS there is a hairpin 10 bases away&quot;&#41;.</p>
+</li>
+<li><p><strong>The Prediction:</strong> The CNN outputs a predicted fitness score.</p>
+</li>
+</ul>
+<hr />
+<h2 id="ol_start5_sanity_checks_physical_realities"><a href="#ol_start5_sanity_checks_physical_realities" class="header-anchor"><ol start="5">
+<li><p>Sanity Checks &amp; Physical Realities</p>
+</li>
+</ol>
+</a></h2>
+<h3 id="flow_cytometry_the_gold_standard"><a href="#flow_cytometry_the_gold_standard" class="header-anchor">Flow Cytometry &#40;The Gold Standard&#41;</a></h3>
+<p>To prove the CNN wasn&#39;t just learning &quot;PCR physics,&quot; they tested ~100 sequences using <strong>Flow Cytometry</strong>.</p>
+<ul>
+<li><p><strong>How:</strong> Fused UTRs to Green Fluorescent Protein &#40;GFP&#41; and measured brightness with a laser.</p>
+</li>
+<li><p><strong>Result:</strong> A strong correlation &#40;&#41;, proving the &quot;High/Low&quot; labels from the sequencer were biologically real.</p>
+</li>
+</ul>
+<h3 id="home_feasibility"><a href="#home_feasibility" class="header-anchor">Home Feasibility</a></h3>
+<ul>
+<li><p><strong>Dry Lab &#40;AI&#41;:</strong> <strong>100&#37; Feasible.</strong> Anyone can download the raw counts and train a model.</p>
+</li>
+<li><p><strong>Wet Lab &#40;Biology&#41;:</strong> <strong>Difficult.</strong> DNA libraries and Illumina machines &#40;&#36;100k&#43;&#41; are too expensive.</p>
+</li>
+<li><p><strong>Nanopore &#40;The Alternative&#41;:</strong> The <strong>MinION &#40;&#36;1,000&#41;</strong> is a USB-powered sequencer that makes home-testing possible, though it has a higher error rate than Illumina.</p>
+</li>
+</ul>
+<hr />
+<h2 id="ol_start6_key_biological_findings"><a href="#ol_start6_key_biological_findings" class="header-anchor"><ol start="6">
+<li><p>Key Biological Findings</p>
+</li>
+</ol>
+</a></h2>
+<p>The CNN discovered rules that humans had missed:</p>
+<ol>
+<li><p><strong>uAUGs are Killers:</strong> Any start codon before the &quot;real&quot; one destroys efficiency.</p>
+</li>
+<li><p><strong>The -3 Position:</strong> An &#39;A&#39; is the &quot;master key&quot; for ribosome entry.</p>
+</li>
+<li><p><strong>Structure is Resistance:</strong> The AI-designed &quot;Perfect UTR&quot; was almost entirely <strong>A and C</strong>, specifically because these letters don&#39;t form &quot;hairpins&quot; that block the ribosome&#39;s path.</p>
+</li>
+</ol>
+<hr />
+<p><strong>Would you like me to help you set up a Python script to process the raw FASTQ &quot;ballots&quot; into the count table needed for the CNN?</strong></p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 13, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+  </body>
+</html>
