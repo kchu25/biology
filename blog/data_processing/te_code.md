@@ -1,7 +1,6 @@
-@def title = " Translation Efficiency Processing: Code Explanation"
+@def title = "Translation Efficiency Processing: Code Explanation"
 @def published = "12 January 2026"
 @def tags = ["data-processing"]
-
 
 # Translation Efficiency Processing: Code Explanation
 
@@ -176,54 +175,41 @@ filtered = filtered[
 ### Core Function
 
 ```python
-def fetch_sequence_with_utr(refseq_id, max_retries=3):
+def fetch_sequence_with_utr(refseq_id):
     """
     Fetch sequence and 5' UTR from NCBI for a RefSeq ID.
-    """
-    for attempt in range(max_retries):
-        try:
-            # Fetch GenBank record from NCBI
-            handle = Entrez.efetch(
-                db="nucleotide",
-                id=refseq_id,
-                rettype="gb",
-                retmode="text"
-            )
-            record = SeqIO.read(handle, "genbank")
-            handle.close()
-            
-            # Initialize variables
-            utr5_seq = None
-            cds_start = None
-            cds_end = None
-            
-            # Look for CDS feature to find where coding starts
-            for feature in record.features:
-                if feature.type == "CDS":
-                    cds_start = int(feature.location.start)
-                    cds_end = int(feature.location.end)
-            
-            # Infer 5' UTR as sequence before CDS
-            if cds_start is not None and cds_start > 0:
-                utr5_seq = str(record.seq[:cds_start])
-            
-            return {
-                'refseq_id': refseq_id,
-                'full_seq': str(record.seq),
-                'utr5_seq': utr5_seq,
-                'cds_start': cds_start,
-                'cds_end': cds_end,
-                'description': record.description
-            }
-            
-        except Exception as e:
-            if attempt < max_retries - 1:
-                time.sleep(2)  # Wait before retry
-            else:
-                print(f"Failed {refseq_id}: {str(e)}")
-                return None
     
-    return None
+    Strategy:
+    1. First, look for explicit 5'UTR annotation
+    2. If not found, infer from CDS start position (fallback)
+    """
+    handle = Entrez.efetch(
+        db="nucleotide", 
+        id=refseq_id, 
+        rettype="gb", 
+        retmode="text"
+    )
+    record = SeqIO.read(handle, "genbank")
+    handle.close()
+    
+    utr5_seq = None
+    
+    # First, try to find explicit 5'UTR feature
+    for feature in record.features:
+        if feature.type == "5'UTR":
+            utr5_seq = str(feature.extract(record.seq))
+            break
+    
+    # If not found, infer from CDS start (fallback)
+    if utr5_seq is None:
+        for feature in record.features:
+            if feature.type == "CDS":
+                cds_start = int(feature.location.start)
+                if cds_start > 0:
+                    utr5_seq = str(record.seq[:cds_start])
+                break
+    
+    return utr5_seq
 ```
 
 **What this does step-by-step:**
@@ -239,29 +225,29 @@ def fetch_sequence_with_utr(refseq_id, max_retries=3):
    - `record.seq`: The actual DNA/RNA sequence
    - `record.features`: List of annotated features (genes, CDS, exons, etc.)
 
-3. **Find CDS feature**: 
+**What this does step-by-step:**
+
+1. **`Entrez.efetch()`**: Downloads GenBank record from NCBI
+   - `db="nucleotide"`: Query the nucleotide database
+   - `id=refseq_id`: The RefSeq accession (e.g., "NM_000356")
+   - `rettype="gb"`: Return GenBank format (includes annotations)
+   - `retmode="text"`: Plain text format
+
+2. **`SeqIO.read(handle, "genbank")`**: Parses GenBank record
+   - Extracts sequence and all feature annotations
+   - `record.seq`: The actual DNA/RNA sequence
+   - `record.features`: List of annotated features (genes, CDS, exons, etc.)
+
+3. **Strategy 1 - Look for explicit 5'UTR annotation** (preferred):
    ```python
    for feature in record.features:
-       if feature.type == "CDS":
-           cds_start = int(feature.location.start)
+       if feature.type == "5'UTR":
+           utr5_seq = str(feature.extract(record.seq))
+           break
    ```
-   - Loops through all features looking for "CDS" (coding sequence)
-   - `feature.location.start`: Starting position of CDS (0-indexed)
-   - **Example**: If CDS starts at position 30, then positions 0-29 are the 5' UTR
-
-4. **Infer 5' UTR**:
-   ```python
-   if cds_start is not None and cds_start > 0:
-       utr5_seq = str(record.seq[:cds_start])
-   ```
-   - **Key insight**: 5' UTR = everything before CDS
-   - `record.seq[:cds_start]`: Python slice from beginning to CDS start
-   - Converts Bio.Seq object to string for storage
-
-5. **Retry logic**: If fetch fails (network issues, rate limits), retry up to 3 times with 2-second delays
-
----
-
+   - Searches for explicit `5'UTR` feature annotation
+   - `feature.extract(record.seq)`: Extracts the exact subsequence
+   - `break`: Stops after finding first 5'UTR
 ## 10. Batch Fetch with Rate Limiting
 
 ```python
@@ -269,9 +255,9 @@ sequences = []
 for i, (idx, row) in enumerate(sample_data.iterrows(), 1):
     refseq_id = row['RefSeq accession identifier']
     
-    seq_info = fetch_sequence_with_utr(refseq_id)
+    utr5_seq = fetch_sequence_with_utr(refseq_id)
     
-    if seq_info and seq_info['utr5_seq']:
+    if utr5_seq:
         sequences.append({
             'gene': row['Gene'],
             'refseq_id': refseq_id,
@@ -279,35 +265,53 @@ for i, (idx, row) in enumerate(sample_data.iterrows(), 1):
             'rna_cds': row['rna_cds'],
             'TE': row['TE'],
             'log2_TE': np.log2(row['TE']),
-            'utr5_seq': seq_info['utr5_seq'],
-            'utr5_length': len(seq_info['utr5_seq']),
-            'description': seq_info['description']
+            'utr5_seq': utr5_seq,
+            'utr5_length': len(utr5_seq)
         })
     
     time.sleep(0.34)  # NCBI rate limit: ~3 requests/second
-```
-
+```         'refseq_id': refseq_id,
+            'rpf_cds': row['rpf_cds'],
+            'rna_cds': row['rna_cds'],
 **What this does:**
 
 1. **Loop through filtered transcripts**: `sample_data.iterrows()` iterates row by row
 
 2. **Fetch sequence**: Calls `fetch_sequence_with_utr()` for each RefSeq ID
+   - Returns 5' UTR sequence string or None
 
-3. **Validate 5' UTR**: `if seq_info and seq_info['utr5_seq']`
+3. **Validate 5' UTR**: `if utr5_seq:`
+   - Only include transcripts where we successfully extracted a 5' UTR
+   - Excludes:
+     - Transcripts with CDS starting at position 0 (no 5' UTR)
+     - Failed fetches (network errors, invalid IDs)
+
+4. **Create dataset entry**: Combines TE data with sequence
+   - `gene`: Gene symbol
+   - `refseq_id`: RefSeq accession
+   - `rpf_cds`, `rna_cds`: Read counts
+   - `TE`: Translation efficiency
+   - `log2_TE`: Log₂ transformation of TE (useful for modeling, handles wide range)
+   - `utr5_seq`: The 5' UTR nucleotide sequence (feature for ML)
+   - `utr5_length`: Length of 5' UTR in nucleotides
+
+5. **Rate limiting**: `time.sleep(0.34)`
+   - NCBI limits: 3 requests/second without API key
+   - 0.34 seconds ≈ 2.94 requests/second (safely under limit)
+   - Prevents IP bans from excessive requests`
    - Only include transcripts where we successfully extracted a 5' UTR
    - Some transcripts may have CDS starting at position 0 (no 5' UTR)
 
 4. **Create dataset entry**: Combines TE data with sequence
    - `log2_TE`: Log₂ transformation of TE (useful for modeling)
    - `utr5_length`: Length of 5' UTR in nucleotides
-
-5. **Rate limiting**: `time.sleep(0.34)`
-   - NCBI limits: 3 requests/second without API key
-   - 0.34 seconds ≈ 2.94 requests/second (safely under limit)
-
----
-
-## 11. Save to CSV
+**Final dataset columns:**
+- `gene`: Gene name
+- `refseq_id`: RefSeq accession
+- `rpf_cds`, `rna_cds`: Read counts
+- `TE`, `log2_TE`: Translation efficiency values
+- `utr5_seq`: 5' UTR sequence (feature)
+- `utr5_length`: Sequence length
 
 ```python
 sequences_df = pd.DataFrame(sequences)
@@ -332,12 +336,21 @@ sequences_df.to_csv('te_dataset.csv', index=False)
 
 ## Key Concepts Summary
 
-### 1. Why CDS for TE calculation?
-The coding sequence (CDS) is where **active translation** happens:
-- Ribosomes bind to mRNA and translate CDS into protein
-- Ribo-seq measures ribosome positions (translation activity)
-- RNA-seq measures mRNA abundance
-- TE = Translation activity / mRNA abundance
+### 2. Why use two-strategy approach for 5' UTR?
+
+**Strategy hierarchy:**
+1. **Prefer explicit annotations** when available (most accurate)
+2. **Infer from CDS start** as fallback (works for most cases)
+
+GenBank records don't always have explicit `5'UTR` annotations, but they always have `CDS` annotations. Since mRNA structure is:
+```
+[5' UTR] → [CDS] → [3' UTR]
+```
+We can infer: **5' UTR = sequence[0 : CDS_start]**
+
+This two-strategy approach ensures:
+- Maximum accuracy when explicit annotations exist
+- Broad coverage when they don't (which is most of the time in this dataset)
 
 ### 2. Why infer 5' UTR from CDS start?
 GenBank records don't always have explicit `5'UTR` annotations, but they always have `CDS` annotations. Since mRNA structure is:
