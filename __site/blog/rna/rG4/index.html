@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="/libs/katex/katex.min.css">
+     
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>G4mer: Predicting RNA G-Quadruplexes and Their Role in Disease</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="g4mer_predicting_rna_g-quadruplexes_and_their_role_in_disease"><a href="#g4mer_predicting_rna_g-quadruplexes_and_their_role_in_disease" class="header-anchor">G4mer: Predicting RNA G-Quadruplexes and Their Role in Disease</a></h1>
+<h2 id="whats_this_about"><a href="#whats_this_about" class="header-anchor">What&#39;s This About?</a></h2>
+<p>This paper introduces <strong>G4mer</strong>, a transformer-based AI model that predicts where RNA G-quadruplexes &#40;rG4s&#41; form in our genes—and how genetic mutations might break them. Think of rG4s as molecular &quot;knots&quot; that genes can tie themselves into, which then control whether proteins get made.</p>
+<blockquote>
+<h3>Are There Labeled G-Quadruplex Data?</h3>
+<p>Yes&#33; The paper uses several sources of labeled rG4 data:</p>
+<p><strong>Primary Training Data: rG4-seeker dataset</strong></p>
+<ul>
+<li><p>Based on <strong>rG4-seq</strong> experimental protocol &#40;high-throughput sequencing&#41;</p>
+</li>
+<li><p>~5,000&#43; sequences from HeLa cells</p>
+</li>
+<li><p>Sequences labeled as rG4-positive &#40;experimentally detected&#41;</p>
+</li>
+<li><p>Includes <strong>subtype labels</strong>: canonical, long loop, bulges, two-quartet, etc.</p>
+</li>
+<li><p>Negative examples: G-rich sequences from transcripts with no rG4 detected</p>
+</li>
+</ul>
+<p><strong>Validation Data: G4RNA database</strong></p>
+<ul>
+<li><p>795 published sequences</p>
+</li>
+<li><p>Labeled through <strong>24 different experimental protocols</strong>:</p>
+<ul>
+<li><p>Circular dichroism &#40;CD&#41; spectroscopy</p>
+</li>
+<li><p>In-line probing, SHAPE/SHALiPE &#40;chemical probing&#41;</p>
+</li>
+<li><p>DMS probing, melting temperature &#40;Tm&#41; analysis</p>
+</li>
+<li><p>Reverse transcription termination</p>
+</li>
+<li><p>In cellulo luciferase assays, and more...</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>How rG4s Are Experimentally Detected:</strong></p>
+<ol>
+<li><p><strong>rG4-seq</strong> &#40;high-throughput&#41;: Uses K⁺ ions to stabilize G4s; reverse transcriptase stops at G4s creating sequence signatures</p>
+</li>
+<li><p><strong>Structural probing</strong> &#40;CD, NMR, X-ray&#41;: Direct structural evidence, lower throughput but gold standard</p>
+</li>
+<li><p><strong>Functional assays</strong> &#40;luciferase reporters&#41;: Tests regulatory function and biological activity</p>
+</li>
+</ol>
+<p><strong>The Data Challenge:</strong> Different experimental methods show biases:</p>
+<ul>
+<li><p>CD spectroscopy captures mostly <strong>short rG4s</strong> &#40;median: 20 nt, max: 28 nt&#41;</p>
+</li>
+<li><p>rG4-seq captures <strong>longer rG4s</strong> &#40;median: 24 nt&#41;</p>
+</li>
+<li><p>Actual genes have even <strong>longer rG4s</strong> &#40;median: 25 nt, up to 45 nt&#41;</p>
+</li>
+</ul>
+<p>This is why G4mer&#39;s ability to handle long sequences matters—previous models trained on short experimental data might miss functionally important long rG4s&#33;</p>
+<p><strong>Bottom line:</strong> Labeled data exists from multiple experimental sources, but it&#39;s biased toward shorter/more stable structures, limited by experimental sensitivity, and cell-type/condition specific. The transformer-based approach helps generalize beyond these experimental biases.</p>
+</blockquote>
+<h2 id="the_big_picture"><a href="#the_big_picture" class="header-anchor">The Big Picture</a></h2>
+<p><strong>RNA G-quadruplexes &#40;rG4s&#41;</strong> are special structures that form in RNA when guanine-rich regions fold into square-stacked shapes. They&#39;re particularly common in the &quot;bookend&quot; regions of genes &#40;UTRs&#41; where they act like molecular switches controlling gene expression.</p>
+<p>When mutations disrupt these structures, it can lead to diseases like cancer.</p>
+<blockquote>
+<h3>Why Are rG4s Worth Studying?</h3>
+<p><strong>They&#39;re Gene Expression Volume Knobs</strong></p>
+<p>Think of rG4s as speed bumps on the RNA highway. When they form in the right places, they can slow down or block the cellular machinery that makes proteins. This is actually <em>useful</em>—it&#39;s how cells fine-tune which proteins get made and how much.</p>
+<p><strong>The Disease Connection</strong></p>
+<p>Here&#39;s the problem: when genetic mutations break these structures, the volume knob gets stuck. For example:</p>
+<ul>
+<li><p>Cancer genes like NRAS have rG4s that normally keep them &quot;turned down&quot;</p>
+</li>
+<li><p>Break the rG4 → protein levels spike → hello, cancer</p>
+</li>
+<li><p>This paper found rG4-breaking variants linked to breast cancer and Lynch syndrome</p>
+</li>
+</ul>
+<p><strong>The Missing Heritability Mystery</strong></p>
+<p>Most disease-linked genetic variants sit in &quot;non-coding&quot; DNA—the parts that don&#39;t directly make proteins. For decades, we&#39;ve scratched our heads wondering: <em>what do these variants actually do?</em></p>
+<p>rG4s provide an answer. Many of these mysterious variants might cause disease by breaking RNA structures rather than changing proteins. The paper shows these structure-breaking variants are being actively removed by evolution—a smoking gun that they&#39;re functionally important.</p>
+<p><strong>Why This Paper Matters</strong></p>
+<p>Before G4mer, we couldn&#39;t easily:</p>
+<ul>
+<li><p>Predict which variants break rG4s across the whole genome</p>
+</li>
+<li><p>Spot the longer rG4s that previous methods missed</p>
+</li>
+<li><p>Connect non-coding variants to actual diseases</p>
+</li>
+</ul>
+<p>Now we can scan anyone&#39;s genome and flag: &quot;Hey, this mutation might break an important RNA structure and cause disease.&quot; That&#39;s a game-changer for understanding genetic diseases where the cause is currently unknown.</p>
+<p><strong>The Therapeutic Angle</strong></p>
+<p>If rG4s are molecular switches, we could potentially design drugs to flip them on or off—targeting diseases without changing DNA. It&#39;s already being explored for cancer and viral infections like COVID-19.</p>
+</blockquote>
+<h2 id="whats_new_here"><a href="#whats_new_here" class="header-anchor">What&#39;s New Here?</a></h2>
+<h3 id="the_g4mer_model"><a href="#the_g4mer_model" class="header-anchor">The G4mer Model</a></h3>
+<p>The researchers built G4mer using a <strong>transformer architecture</strong> &#40;similar to ChatGPT, but for RNA&#41;. Here&#39;s what makes it special:</p>
+<ul>
+<li><p><strong>Pre-trained on the entire human transcriptome</strong> using mRNAbert</p>
+</li>
+<li><p><strong>Fine-tuned</strong> on experimental rG4 detection data</p>
+</li>
+<li><p><strong>Outperforms existing methods</strong> significantly:</p>
+<ul>
+<li><p>G4mer accuracy: 0.94 vs CNN-based rG4detector: 0.91</p>
+</li>
+<li><p>Works better on long sequences &#40;100&#43; nucleotides&#41;</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="rg4_subtypes_matter"><a href="#rg4_subtypes_matter" class="header-anchor">rG4 Subtypes Matter</a></h3>
+<p>The model can distinguish between different flavors of rG4s:</p>
+<ul>
+<li><p><strong>Canonical</strong> - the standard four-stack structure: \((G_{3+}N_{1-7})_3G_{3+}\)</p>
+</li>
+<li><p><strong>Long loop</strong> - longer connecting sequences</p>
+</li>
+<li><p><strong>Bulges</strong> - imperfect G-runs</p>
+</li>
+<li><p><strong>Two-quartet</strong> - shorter G-runs &#40;only 2 consecutive Gs&#41;</p>
+</li>
+</ul>
+<p>Each subtype has different stability and responds differently to mutations.</p>
+<h2 id="key_findings"><a href="#key_findings" class="header-anchor">Key Findings</a></h2>
+<h3 id="longer_rg4s_are_underappreciated"><a href="#longer_rg4s_are_underappreciated" class="header-anchor"><ol>
+<li><p>Longer rG4s Are Underappreciated</p>
+</li>
+</ol>
+</a></h3>
+<p>Most experimental work focuses on short rG4s &#40;≤22 nt&#41;, but the researchers found:</p>
+<ul>
+<li><p><strong>Long rG4s &#40;≥28 nt&#41;</strong> are more common in actual genes</p>
+</li>
+<li><p>Mutations breaking long rG4s show <strong>stronger negative selection</strong></p>
+</li>
+<li><p>Suggests they&#39;re functionally important but understudied</p>
+</li>
+</ul>
+<h3 id="ol_start2_mutations_breaking_rg4s_are_under_negative_selection"><a href="#ol_start2_mutations_breaking_rg4s_are_under_negative_selection" class="header-anchor"><ol start="2">
+<li><p>Mutations Breaking rG4s Are Under Negative Selection</p>
+</li>
+</ol>
+</a></h3>
+<p>Using gnomAD population data, they showed:</p>
+<ul>
+<li><p>rG4-breaking variants have <strong>significantly lower allele frequencies</strong></p>
+</li>
+<li><p>More disruptive mutations correlate with higher CADD scores &#40;predicted deleteriousness&#41;</p>
+</li>
+<li><p>This suggests evolution is actively removing these variants</p>
+</li>
+</ul>
+<h3 id="ol_start3_flanking_sequences_matter"><a href="#ol_start3_flanking_sequences_matter" class="header-anchor"><ol start="3">
+<li><p>Flanking Sequences Matter</p>
+</li>
+</ol>
+</a></h3>
+<p>Using interpretability analysis, they discovered:</p>
+<ul>
+<li><p><strong>Guanine and uracil</strong> in flanking regions stabilize rG4s</p>
+</li>
+<li><p><strong>Cytosine</strong> tends to disrupt them &#40;competes with G-bonding&#41;</p>
+</li>
+<li><p>These regions are enriched for <strong>RNA-binding protein motifs</strong> &#40;hnRNP F/H, ELAVL1&#41;</p>
+</li>
+</ul>
+<h3 id="ol_start4_clinical_validation_breast_cancer_links"><a href="#ol_start4_clinical_validation_breast_cancer_links" class="header-anchor"><ol start="4">
+<li><p>Clinical Validation: Breast Cancer Links</p>
+</li>
+</ol>
+</a></h3>
+<p>They found and validated disease-associated variants:</p>
+<p><strong>EPN3 gene</strong> &#40;5&#39; UTR&#41;:</p>
+<ul>
+<li><p>Variant breaks an rG4 structure</p>
+</li>
+<li><p>Associated with breast cancer &#40;<em>p</em> &#61; 7.4×10⁻⁷&#41;</p>
+</li>
+<li><p>Reduces protein expression in lab tests</p>
+</li>
+</ul>
+<p><strong>MSH6 gene</strong> &#40;5&#39; UTR&#41;:</p>
+<ul>
+<li><p>Variant <em>creates</em> a new rG4</p>
+</li>
+<li><p>Lynch syndrome gene</p>
+</li>
+<li><p>Also reduces protein expression</p>
+</li>
+</ul>
+<p>Both were confirmed using:</p>
+<ul>
+<li><p><strong>Circular dichroism spectroscopy</strong> &#40;validated structural changes&#41;</p>
+</li>
+<li><p><strong>Dual-luciferase assays</strong> &#40;validated expression changes in 3 cell lines&#41;</p>
+</li>
+</ul>
+<h2 id="the_technical_details"><a href="#the_technical_details" class="header-anchor">The Technical Details</a></h2>
+<h3 id="model_architecture"><a href="#model_architecture" class="header-anchor">Model Architecture</a></h3>
+<pre><code class="language-julia">mRNAbert &#40;pre-training&#41;
+    ↓
+Human transcriptome masked language modeling
+    ↓
+G4mer &#40;fine-tuning&#41;
+    ↓
+rG4-seq experimental data &#43; negatives</code></pre>
+<h3 id="performance_metrics"><a href="#performance_metrics" class="header-anchor">Performance Metrics</a></h3>
+<table><tr><th align="right">Method</th><th align="right">Accuracy</th><th align="right">ROC-AUC</th><th align="right">PR-AUC</th></tr><tr><td align="right">G4mer</td><td align="right">0.94</td><td align="right">0.98</td><td align="right">0.98</td></tr><tr><td align="right">rG4detector</td><td align="right">0.91</td><td align="right">0.96</td><td align="right">0.96</td></tr></table>
+<p>For subtype classification:</p>
+<ul>
+<li><p>G4mer: 74&#37; accuracy</p>
+</li>
+<li><p>rG4detector: 54&#37; accuracy</p>
+</li>
+</ul>
+<h3 id="population_genetics_analysis"><a href="#population_genetics_analysis" class="header-anchor">Population Genetics Analysis</a></h3>
+<p>From gnomAD variants:</p>
+<ul>
+<li><p>8,785 5&#39; UTR rG4-breaking variants</p>
+</li>
+<li><p>17,181 3&#39; UTR rG4-breaking variants</p>
+</li>
+<li><p>Mean allele frequency significantly lower than non-breaking controls</p>
+</li>
+</ul>
+<blockquote>
+<h3>Can rG4s Appear in Both 5&#39; and 3&#39; UTRs?</h3>
+<p><strong>Yes&#33;</strong> And they do different jobs in each location:</p>
+<p><strong>5&#39; UTR &#40;the &quot;front porch&quot; of the gene&#41;:</strong></p>
+<ul>
+<li><p>This is where the ribosome &#40;protein-making machine&#41; first lands on the RNA</p>
+</li>
+<li><p>rG4s here act like <strong>physical roadblocks</strong> that slow down or stop protein production</p>
+</li>
+<li><p>Think of it like a speed bump right at the entrance—controls how many ribosomes get through</p>
+</li>
+<li><p>More direct impact on translation</p>
+</li>
+</ul>
+<p><strong>3&#39; UTR &#40;the &quot;back porch&quot;&#41;:</strong></p>
+<ul>
+<li><p>This region controls RNA stability and where the RNA goes in the cell</p>
+</li>
+<li><p>rG4s here are more like <strong>regulatory tags</strong> that attract specific proteins</p>
+</li>
+<li><p>These proteins can either protect the RNA &#40;make it last longer&#41; or mark it for destruction</p>
+</li>
+<li><p>Can also affect where in the cell the RNA ends up</p>
+</li>
+</ul>
+<p><strong>The Numbers Tell a Story:</strong> The paper found nearly <strong>2× more rG4-breaking variants in 3&#39; UTRs</strong> &#40;17,181 vs 8,785&#41;. Why? </p>
+<ul>
+<li><p>3&#39; UTRs are typically much longer than 5&#39; UTRs—more &quot;real estate&quot; for rG4s to form</p>
+</li>
+<li><p>Both regions show negative selection &#40;evolution removing harmful variants&#41;, confirming rG4s matter in both spots</p>
+</li>
+</ul>
+<p><strong>Different Rules, Same Importance:</strong> Interestingly, the regulatory mechanisms differ:</p>
+<ul>
+<li><p>5&#39; UTR: hnRNP F/H and SRSF proteins bind near rG4s &#40;help with structure stability&#41;</p>
+</li>
+<li><p>3&#39; UTR: ELAVL1/3 proteins bind near rG4s &#40;these are &quot;keeper&quot; proteins that stabilize the RNA&#41;</p>
+</li>
+</ul>
+<p>Both locations are crucial—breaking rG4s in either spot can cause disease. The paper validated variants in both 5&#39; UTR &#40;<em>EPN3</em>, <em>MSH6</em>&#41; that affected protein levels when disrupted.</p>
+</blockquote>
+<h2 id="what_this_means"><a href="#what_this_means" class="header-anchor">What This Means</a></h2>
+<ol>
+<li><p><strong>For researchers</strong>: G4mer provides a powerful tool for predicting which genetic variants might cause disease by disrupting rG4 structures</p>
+</li>
+<li><p><strong>For medicine</strong>: Many genetic variants in non-coding regions &#40;previously dismissed as &quot;junk DNA&quot;&#41; might cause disease through rG4 disruption</p>
+</li>
+<li><p><strong>For evolution</strong>: rG4s are under functional constraint, especially long ones that current methods often miss</p>
+</li>
+</ol>
+<h2 id="limitations"><a href="#limitations" class="header-anchor">Limitations</a></h2>
+<ul>
+<li><p>Training data &#40;rG4-seq&#41; might miss transient or cell-type-specific rG4s</p>
+</li>
+<li><p>CD spectroscopy can&#39;t distinguish intramolecular vs intermolecular rG4 formation</p>
+</li>
+<li><p>Limited functional validation &#40;2 genes tested experimentally&#41;</p>
+</li>
+<li><p>Need more high-throughput validation approaches</p>
+</li>
+</ul>
+<h2 id="the_bottom_line"><a href="#the_bottom_line" class="header-anchor">The Bottom Line</a></h2>
+<p>G4mer reveals that RNA G-quadruplexes—especially the longer, overlooked ones—play crucial regulatory roles. Mutations that break these structures are under negative selection and can contribute to disease. This opens new avenues for understanding genetic variants in non-coding regions and their role in cancer and other diseases.</p>
+<p><strong>Access</strong>: Available as both a web tool and downloadable model for the research community.</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 15, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+        <script src="/libs/katex/katex.min.js"></script>
+<script src="/libs/katex/contrib/auto-render.min.js"></script>
+<script>renderMathInElement(document.body)</script>
+
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>

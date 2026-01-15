@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>UTR-Seq: Decoding mRNA Degradation Rules in Zebrafish</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="utr-seq_decoding_mrna_degradation_rules_in_zebrafish"><a href="#utr-seq_decoding_mrna_degradation_rules_in_zebrafish" class="header-anchor">UTR-Seq: Decoding mRNA Degradation Rules in Zebrafish</a></h1>
+<p><strong>Paper</strong>: Massively parallel reporter assay of 3′UTR sequences identifies in vivo rules for mRNA degradation   <strong>Authors</strong>: Michal Rabani, Lindsey Pieper, Guo-Liang Chew, Alexander F Schier   <strong>Published</strong>: Molecular Cell, December 2017   <strong>Link</strong>: https://pmc.ncbi.nlm.nih.gov/articles/PMC5994907/</p>
+<hr />
+<h2 id="what_theyre_measuring"><a href="#what_theyre_measuring" class="header-anchor">What They&#39;re Measuring</a></h2>
+<p>The researchers are tracking <strong>mRNA degradation rates</strong> - basically how fast different messenger RNAs break down in zebrafish embryos. They&#39;re measuring this for ~90,000 different mRNA variants, each with a unique 3&#39;UTR sequence.</p>
+<h2 id="two_experimental_conditions"><a href="#two_experimental_conditions" class="header-anchor">Two Experimental Conditions</a></h2>
+<p>The study compares:</p>
+<ul>
+<li><p><strong>A&#43; samples</strong>: mRNA with poly&#40;A&#41; tails &#40;polyadenylated&#41; - these are the &quot;healthy&quot; actively translated mRNAs</p>
+</li>
+<li><p><strong>A− samples</strong>: Total mRNA regardless of poly&#40;A&#41; tail status - captures ALL mRNAs including those losing their tails</p>
+</li>
+</ul>
+<p>Both exist naturally in the cell simultaneously. A− is everything, while A&#43; is a subset filtered for mRNAs with intact tails. </p>
+<p>By comparing them, they can see which mRNAs lose their poly&#40;A&#41; tails first &#40;disappear from A&#43; but remain in A−&#41; versus which get degraded entirely &#40;disappear from both&#41;. This reveals whether degradation happens through deadenylation or other pathways.</p>
+<h2 id="the_units"><a href="#the_units" class="header-anchor">The Units</a></h2>
+<p>The key measurement is <strong>mRNA half-life</strong> - how long it takes for half of an mRNA to degrade. They measure this in <strong>hours</strong> during the first 10 hours of embryo development.</p>
+<p><strong>How they calculate it:</strong> </p>
+<ol>
+<li><p>Inject mRNA reporters &#43; spike-in controls into embryos</p>
+</li>
+<li><p>Collect samples at 9 time points &#40;0-10 hours&#41;</p>
+</li>
+<li><p>Sequence everything, normalize to spike-ins to get absolute counts</p>
+</li>
+<li><p>Calculate fold changes as: <strong>ratio &#61; &#40;mRNA count at time t&#41; / &#40;mRNA count at time 0&#41;</strong></p>
+</li>
+<li><p>Take log₂ of this ratio: <strong>log₂&#40;count<em>t / count</em>0&#41;</strong></p>
+</li>
+<li><p>Fit regression models using these values across all time points to estimate degradation rate &#40;β&#41;</p>
+</li>
+</ol>
+<p>Here&#39;s how to read it:</p>
+<ul>
+<li><p><strong>Positive log₂ fold change</strong> &#61; mRNA levels went UP over time &#61; <strong>stabilized</strong> &#40;less degradation, or new transcription&#41;</p>
+</li>
+<li><p><strong>Negative log₂ fold change</strong> &#61; mRNA levels went DOWN over time &#61; <strong>destabilized</strong> &#40;more degradation&#41;</p>
+</li>
+</ul>
+<p>For example, if an mRNA has a log₂ fold change of -2 between hour 0 and hour 6, that means it dropped to 1/4 of its original level &#40;2² &#61; 4-fold decrease&#41;. If it&#39;s &#43;1, it doubled in abundance.</p>
+<h2 id="time_points_matter_a_lot"><a href="#time_points_matter_a_lot" class="header-anchor">Time Points Matter A LOT</a></h2>
+<p>Yes&#33; The timing is crucial because they discovered <strong>two distinct degradation programs</strong>:</p>
+<p><strong>Early Program &#40;0-3 hours&#41;</strong></p>
+<ul>
+<li><p>This is when maternal mRNAs &#40;from the egg&#41; dominate</p>
+</li>
+<li><p>Key signals: poly-U stabilizes, GC-rich destabilizes</p>
+</li>
+<li><p>The embryo is basically clearing out mom&#39;s old instructions</p>
+</li>
+</ul>
+<p><strong>Late Program &#40;3-10 hours&#41;</strong> </p>
+<ul>
+<li><p>Kicks in when the embryo&#39;s own genes activate &#40;called &quot;zygotic genome activation&quot;&#41;</p>
+</li>
+<li><p>New signals take over: miR-430, AU-rich elements, Pumilio sites all speed up degradation</p>
+</li>
+<li><p>The embryo is now using its own genetic program</p>
+</li>
+</ul>
+<h2 id="the_results"><a href="#the_results" class="header-anchor">The Results</a></h2>
+<p>Their regression models can predict ~70&#37; of the variation in mRNA stability just from sequence alone. They identified specific sequence motifs that act like &quot;destroy by&quot; labels or &quot;preserve&quot; stamps:</p>
+<p><strong>Stabilizing signals:</strong> UUAG motifs, poly-U stretches</p>
+<p><strong>Destabilizing signals:</strong> </p>
+<ul>
+<li><p>GC-rich regions &#40;early&#41;</p>
+</li>
+<li><p><strong>miR-430 sites &#40;late&#41;</strong>: Short sequences &#40;called &quot;seed matches&quot;&#41; that the microRNA miR-430 recognizes and binds to. The seed is typically a 6-8 nucleotide match, often something like &quot;GCACUU&quot;. When miR-430 binds, it recruits degradation machinery. This microRNA is massively expressed when the embryo&#39;s genome activates.</p>
+</li>
+<li><p><strong>ARE elements &#40;late&#41;</strong>: AU-rich elements - sequences rich in adenine &#40;A&#41; and uracil &#40;U&#41;, often with patterns like &quot;AUUUA&quot; repeated or clustered together. These are classic destabilization signals found in many short-lived mRNAs across species. They recruit proteins that promote decay.</p>
+</li>
+<li><p><strong>Pumilio sites &#40;late&#41;</strong>: Binding sites for Pumilio proteins</p>
+</li>
+</ul>
+<p>All the destabilizing signals act like molecular &quot;eat me&quot; tags that tell the cell to degrade the mRNA faster.</p>
+<p>The cool part? They validated this by designing synthetic mRNAs with custom decay rates - and the predictions held up&#33; This means you can now engineer mRNAs with predictable lifespans by tweaking their 3&#39;UTR sequences.</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 15, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+  </body>
+</html>

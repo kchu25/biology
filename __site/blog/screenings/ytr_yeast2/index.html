@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="/libs/katex/katex.min.css">
+     
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>5' UTR to Protein Expression: How They Measured It</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="5_utr_to_protein_expression_how_they_measured_it"><a href="#5_utr_to_protein_expression_how_they_measured_it" class="header-anchor">5&#39; UTR to Protein Expression: How They Measured It</a></h1>
+<h2 id="the_big_picture"><a href="#the_big_picture" class="header-anchor">The Big Picture</a></h2>
+<p>This is indeed a <strong>sequence-to-expression task</strong>&#33; They&#39;re mapping:</p>
+<ul>
+<li><p><strong>Input</strong>: 50-nucleotide DNA sequences &#40;5&#39; UTRs&#41;</p>
+</li>
+<li><p><strong>Output</strong>: Protein expression levels</p>
+</li>
+</ul>
+<p>Think of it as: <em>Does this random sequence make lots of protein or barely any?</em></p>
+<hr />
+<h2 id="the_measurement_pipeline"><a href="#the_measurement_pipeline" class="header-anchor">The Measurement Pipeline</a></h2>
+<h3 id="the_setup"><a href="#the_setup" class="header-anchor"><ol>
+<li><p><strong>The Setup</strong></p>
+</li>
+</ol>
+</a></h3>
+<p>They created ~500,000 random 50-nt sequences, each placed right before the HIS3 gene:</p>
+<pre><code class="language-julia">&#91;random 50-nt UTR&#93; → ATG → HIS3 gene</code></pre>
+<h3 id="ol_start2_what_is_selection"><a href="#ol_start2_what_is_selection" class="header-anchor"><ol start="2">
+<li><p><strong>What is &quot;Selection&quot;?</strong></p>
+</li>
+</ol>
+</a></h3>
+<blockquote>
+<p><strong>What does &quot;selection&quot; mean in biology?</strong></p>
+<p>Think of it like a race where the track is rigged to favor certain traits:</p>
+<ul>
+<li><p><strong>Natural selection in evolution</strong>: Organisms with beneficial traits survive and reproduce more</p>
+</li>
+<li><p><strong>Artificial selection in the lab</strong>: Scientists create conditions where only cells with desired traits thrive</p>
+</li>
+</ul>
+<p><strong>In this experiment:</strong></p>
+<ul>
+<li><p>The &quot;desired trait&quot; &#61; making lots of His3 protein</p>
+</li>
+<li><p>The &quot;rigged track&quot; &#61; media lacking histidine &#43; 3-AT inhibitor</p>
+</li>
+<li><p>Cells with good UTRs → make His3 → survive → multiply</p>
+</li>
+<li><p>Cells with bad UTRs → can&#39;t make enough His3 → starve → die or grow slowly</p>
+</li>
+</ul>
+<p>After 20 hours, the population has been &quot;selected&quot; - it&#39;s now enriched with the winners&#33;</p>
+</blockquote>
+<p><strong>Selection &#61; Competitive growth in harsh conditions</strong></p>
+<p>Think of it like a race where only cells making enough His3 protein can survive and multiply:</p>
+<ul>
+<li><p><strong>The challenge</strong>: Growth medium with:</p>
+<ul>
+<li><p>❌ No histidine &#40;essential amino acid&#41;</p>
+</li>
+<li><p>☠️ 3-AT added &#40;inhibits the His3 enzyme&#41;</p>
+</li>
+</ul>
+</li>
+<li><p><strong>The race</strong>: </p>
+<ul>
+<li><p>Good 5&#39; UTR → lots of His3 protein → cell thrives → divides fast</p>
+</li>
+<li><p>Bad 5&#39; UTR → little His3 protein → cell starves → divides slowly or dies</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Duration</strong>: ~6.2 cell doublings &#40;roughly 20 hours&#41;</p>
+</li>
+</ul>
+<p>After selection, the population is enriched with cells carrying &quot;good&quot; UTRs&#33;</p>
+<h3 id="ol_start3_the_key_measurement_enrichment_score"><a href="#ol_start3_the_key_measurement_enrichment_score" class="header-anchor"><ol start="3">
+<li><p><strong>The Key Measurement: Enrichment Score</strong></p>
+</li>
+</ol>
+</a></h3>
+<blockquote>
+<p><strong>Quick Yeast Biology 101</strong></p>
+<ul>
+<li><p>Yeast cells have their own genome &#40;chromosomes&#41; &#43; can carry extra circular DNA called <strong>plasmids</strong></p>
+</li>
+<li><p>The plasmid they used is <strong>CEN-based</strong> &#40;centromeric&#41; &#61; &quot;low copy number&quot;</p>
+</li>
+<li><p>CEN plasmids behave like mini-chromosomes: typically <strong>1-2 copies per cell</strong>, maintained stably</p>
+</li>
+<li><p>During cell division, each daughter cell gets ~1 copy &#40;like chromosomes segregating&#41;</p>
+</li>
+<li><p>This is different from &quot;high copy&quot; plasmids &#40;2μ-based&#41; which can have 10-40 copies per cell</p>
+</li>
+</ul>
+<p><strong>Why 36 hours matters:</strong></p>
+<ul>
+<li><p>During transformation, a cell might initially pick up multiple different plasmid variants</p>
+</li>
+<li><p>But CEN plasmids segregate 1:1 during division &#40;each daughter gets one copy&#41;</p>
+</li>
+<li><p>After many cell divisions &#40;~36 hours of growth&#41;, <strong>random segregation</strong> ensures most cells end up with just one plasmid type</p>
+</li>
+<li><p>It&#39;s like shuffling cards repeatedly - eventually each deck becomes homogeneous</p>
+</li>
+</ul>
+<p><strong>What about cells with NO plasmid?</strong></p>
+<ul>
+<li><p>Yes, some cells lose their plasmid during division &#40;random segregation isn&#39;t perfect&#41;</p>
+</li>
+<li><p><strong>Solution</strong>: The plasmid has a <strong>LEU2</strong> marker &#40;leucine biosynthesis gene&#41;</p>
+</li>
+<li><p>All growth happens in media <strong>lacking leucine</strong> &#40;SD-Leu&#41;</p>
+</li>
+<li><p>Cells without plasmid → can&#39;t make leucine → die&#33;</p>
+</li>
+<li><p>This ensures only plasmid-carrying cells survive and are counted</p>
+</li>
+</ul>
+<p><strong>The clean mapping:</strong></p>
+<ul>
+<li><p>After 36 hours: 1 cell ↔ 1 plasmid variant ↔ 1 UTR sequence ↔ 1 expression phenotype</p>
+</li>
+<li><p>Before 36 hours: cells might be &quot;mixed&quot; with multiple variants &#40;messy&#33;&#41;</p>
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>How Do They Actually Sequence the Plasmids?</strong></p>
+<p><strong>The Basic Workflow:</strong></p>
+<ol>
+<li><p><strong>Harvest cells</strong>: Scoop up millions of yeast cells from the culture</p>
+</li>
+<li><p><strong>Extract plasmids</strong>: Break open the cells and isolate just the plasmid DNA &#40;there are commercial kits for this - like a DNA purification filter&#41;</p>
+</li>
+<li><p><strong>PCR amplification</strong>: The UTR region is tiny compared to the whole plasmid. Use PCR to make millions of copies of just the UTR part &#40;like a molecular copy machine&#41;</p>
+</li>
+<li><p><strong>Add sequencing adapters</strong>: Attach special DNA &quot;handles&quot; to the PCR products so the sequencer can grab them</p>
+</li>
+<li><p><strong>Massively parallel sequencing</strong>: Load onto Illumina NextSeq machine</p>
+</li>
+</ol>
+<p><strong>What the sequencer does:</strong></p>
+<ul>
+<li><p>Sequences millions of DNA fragments simultaneously</p>
+</li>
+<li><p>Each fragment &#61; one UTR variant</p>
+</li>
+<li><p>Output: A giant list of sequences with counts &#40;e.g., &quot;ACGTACGT... appeared 1,247 times&quot;&#41;</p>
+</li>
+</ul>
+<p><strong>Key insight</strong>: They do this TWICE:</p>
+<ul>
+<li><p><strong>Before selection</strong> &#40;after 36h purification&#41; → input counts</p>
+</li>
+<li><p><strong>After selection</strong> &#40;after 20h competition&#41; → output counts</p>
+</li>
+</ul>
+<p>Then compare: which sequences became more common? Which disappeared?</p>
+</blockquote>
+<p><strong>What are they actually counting?</strong></p>
+<p>They&#39;re counting <strong>plasmids</strong>, not mRNA&#33; Here&#39;s the flow:</p>
+<ol>
+<li><p>Each yeast cell carries ~1 plasmid with one 5&#39; UTR variant</p>
+</li>
+<li><p>They extract all plasmids from millions of cells</p>
+</li>
+<li><p>They PCR-amplify and sequence the UTR region</p>
+</li>
+<li><p>Count how many times each UTR variant appears</p>
+</li>
+</ol>
+<p><strong>Before selection &#40;Input&#41;</strong>:</p>
+<ul>
+<li><p>Transform yeast with plasmid library</p>
+</li>
+<li><p><strong>Wait ~36 hours</strong> to let cells &quot;purify&quot; &#40;see biology note above&#41;</p>
+</li>
+<li><p>Sample the library → sequence → count each variant</p>
+</li>
+<li><p>&quot;How common is variant \(s\) in our starting population?&quot;</p>
+</li>
+</ul>
+<p><strong>After selection &#40;Output&#41;</strong>:  </p>
+<ul>
+<li><p>Let cells compete for ~20 hours in <strong>harsh media</strong> &#40;SD-Leu-His &#43; 1.5 mM 3-AT&#41;</p>
+<ul>
+<li><p><strong>SD-Leu</strong>: Still no leucine &#40;maintains plasmid&#41;</p>
+</li>
+<li><p><strong>-His</strong>: Now also no histidine &#40;the selection pressure&#33;&#41;</p>
+</li>
+<li><p><strong>&#43; 3-AT</strong>: Competitive inhibitor of His3 enzyme &#40;makes it even harder&#41;</p>
+</li>
+</ul>
+</li>
+<li><p>Sample surviving cells → extract plasmids → sequence → count</p>
+</li>
+<li><p>&quot;How common is variant \(s\) now?&quot;</p>
+</li>
+</ul>
+<hr />
+<p>The enrichment score compares these two counts:</p>
+\[\text{Enrichment}(s) = \log_2\left(\frac{f_{\text{after}}(s)}{f_{\text{before}}(s)}\right)\]
+<p>Where:</p>
+<ul>
+<li><p>\(f_{\text{before}}(s)\) &#61; fraction of plasmids with sequence \(s\) in <strong>input library</strong></p>
+</li>
+<li><p>\(f_{\text{after}}(s)\) &#61; fraction of plasmids with sequence \(s\)<strong>after selection</strong></p>
+</li>
+</ul>
+<p><strong>Normalization step</strong> &#40;to account for library size&#41;:</p>
+\[f(s) = \frac{\text{count}(s) + 1}{\sum_{s'} (\text{count}(s') + 1)}\]
+<p>The &quot;&#43;1&quot; is a pseudocount to handle sequences with zero reads.</p>
+<p><strong>Why plasmids and not mRNA?</strong></p>
+<ul>
+<li><p>More stable and easier to sequence</p>
+</li>
+<li><p>Each cell has ~1 plasmid, so plasmid count ≈ cell count</p>
+</li>
+<li><p>If a UTR makes lots of protein → that cell thrives → more copies of that plasmid in the final population&#33;</p>
+</li>
+</ul>
+<h3 id="ol_start4_what_does_the_score_mean"><a href="#ol_start4_what_does_the_score_mean" class="header-anchor"><ol start="4">
+<li><p><strong>What Does the Score Mean?</strong></p>
+</li>
+</ol>
+</a></h3>
+<table><tr><th align="right">Enrichment Score</th><th align="right">Interpretation</th></tr><tr><td align="right">Positive &#40;e.g., &#43;2&#41;</td><td align="right">Sequence frequency <strong>increased</strong> → good expression</td></tr><tr><td align="right">Zero</td><td align="right">No change → neutral</td></tr><tr><td align="right">Negative &#40;e.g., -3&#41;</td><td align="right">Sequence frequency <strong>decreased</strong> → poor expression</td></tr></table>
+<p><strong>Intuition</strong>: If a sequence helps make lots of His3 protein, those cells grow faster and become more common in the population&#33;</p>
+<hr />
+<h2 id="supporting_measurements"><a href="#supporting_measurements" class="header-anchor">Supporting Measurements</a></h2>
+<h3 id="flow_cytometry_validation"><a href="#flow_cytometry_validation" class="header-anchor">Flow Cytometry Validation</a></h3>
+<p>For 12 sequences, they measured fluorescence with YFP reporter:</p>
+\[\text{Fluorescence} \propto \text{Protein expression}\]
+<p>Correlation with enrichment: \(R^2 = 0.61\) ✓</p>
+<h3 id="individual_growth_rates"><a href="#individual_growth_rates" class="header-anchor">Individual Growth Rates  </a></h3>
+<p>For 13 sequences, they measured:</p>
+\[\text{Max doubling rate} = \max\left(\frac{d(\log \text{OD}_{660})}{dt}\right)\]
+<p>Correlation with enrichment: \(R^2 = 0.84\) ✓</p>
+<hr />
+<h2 id="the_cnn_model_task"><a href="#the_cnn_model_task" class="header-anchor">The CNN Model Task</a></h2>
+<p><strong>Input</strong>: One-hot encoded sequence matrix</p>
+<ul>
+<li><p>Shape: \((4 \times 50)\) </p>
+</li>
+<li><p>Each column is a position, each row is a nucleotide &#40;A, C, G, T&#41;</p>
+</li>
+</ul>
+<p><strong>Output</strong>: Predicted enrichment score</p>
+<ul>
+<li><p>Single continuous value: \(\hat{y} \in \mathbb{R}\)</p>
+</li>
+</ul>
+<p><strong>Loss function</strong>: Mean squared error</p>
+\[\mathcal{L} = \frac{1}{N}\sum_{i=1}^{N}(y_i - \hat{y}_i)^2\]
+<p>Where:</p>
+<ul>
+<li><p>\(y_i\) &#61; observed enrichment score</p>
+</li>
+<li><p>\(\hat{y}_i\) &#61; predicted enrichment score</p>
+</li>
+<li><p>\(N\) &#61; number of sequences</p>
+</li>
+</ul>
+<p><strong>Model performance</strong>: \(R^2 = 0.62\) on held-out test set</p>
+<hr />
+<h2 id="key_insight"><a href="#key_insight" class="header-anchor">Key Insight</a></h2>
+<p>The enrichment score captures <strong>everything</strong> that affects protein accumulation:</p>
+<ul>
+<li><p>Transcription efficiency</p>
+</li>
+<li><p>mRNA stability  </p>
+</li>
+<li><p>Translation initiation &amp; rate</p>
+</li>
+<li><p>Protein stability</p>
+</li>
+</ul>
+<p>All rolled into one convenient number&#33; 🎯</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 15, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+        <script src="/libs/katex/katex.min.js"></script>
+<script src="/libs/katex/contrib/auto-render.min.js"></script>
+<script>renderMathInElement(document.body)</script>
+
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>
