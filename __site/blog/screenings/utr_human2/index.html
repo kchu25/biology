@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="/libs/katex/katex.min.css">
+     
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Human 5' UTR to Translation: How They Measured It</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="human_5_utr_to_translation_how_they_measured_it"><a href="#human_5_utr_to_translation_how_they_measured_it" class="header-anchor">Human 5&#39; UTR to Translation: How They Measured It</a></h1>
+<p><strong>Reference:</strong> Sample, P. J., Wang, B., Reid, D. W., Presnyak, V., McFadyen, I., Morris, D. R., &amp; Seelig, G. &#40;2019&#41;. Human 5′ UTR design and variant effect prediction from a massively parallel translation assay. <em>Nature Biotechnology</em>, <em>37</em>&#40;7&#41;, 803–809. https://doi.org/10.1038/s41587-019-0164-5</p>
+<hr />
+<h2 id="the_big_picture"><a href="#the_big_picture" class="header-anchor">The Big Picture</a></h2>
+<p>This is a <strong>sequence-to-translation task</strong> for human cells&#33; They&#39;re mapping:</p>
+<ul>
+<li><p><strong>Input</strong>: 50-nucleotide 5&#39; UTR sequences  </p>
+</li>
+<li><p><strong>Output</strong>: Ribosome loading &#40;translation activity&#41;</p>
+</li>
+</ul>
+<p>Think of it as: <em>How many ribosomes are actively translating this mRNA?</em></p>
+<hr />
+<h2 id="key_difference_from_the_yeast_study"><a href="#key_difference_from_the_yeast_study" class="header-anchor">Key Difference from the Yeast Study</a></h2>
+<blockquote>
+<p><strong>Why NOT use growth selection like in yeast?</strong></p>
+<p>The yeast study used growth selection because they could link UTR activity to cell survival. But for human cells, they wanted to:</p>
+<ul>
+<li><p>Separate <strong>transcription</strong> effects from <strong>translation</strong> effects</p>
+</li>
+<li><p>Test RNA directly without needing DNA in the nucleus</p>
+</li>
+<li><p>Measure translation of many different UTRs in a <strong>single cell</strong> simultaneously</p>
+</li>
+</ul>
+<p><strong>Solution</strong>: Polysome profiling&#33;</p>
+<ul>
+<li><p>Inject pre-made mRNA directly into cells &#40;bypasses transcription&#41;</p>
+</li>
+<li><p>Each cell gets a mix of ~hundreds of different mRNA variants</p>
+</li>
+<li><p>Measure how many ribosomes load onto each mRNA type</p>
+</li>
+</ul>
+</blockquote>
+<hr />
+<h2 id="the_measurement_pipeline"><a href="#the_measurement_pipeline" class="header-anchor">The Measurement Pipeline</a></h2>
+<h3 id="the_setup"><a href="#the_setup" class="header-anchor"><ol>
+<li><p><strong>The Setup</strong></p>
+</li>
+</ol>
+</a></h3>
+<p>They created ~280,000 random 50-nt sequences as 5&#39; UTRs for eGFP:</p>
+<pre><code class="language-julia">&#91;25 nt defined&#93; &#43; &#91;50 nt random&#93; → ATG → eGFP gene</code></pre>
+<p>The defined 25 nt at the start is just for PCR amplification later &#40;like a barcode handle&#41;.</p>
+<h3 id="ol_start2_what_is_polysome_profiling"><a href="#ol_start2_what_is_polysome_profiling" class="header-anchor"><ol start="2">
+<li><p><strong>What is Polysome Profiling?</strong></p>
+</li>
+</ol>
+</a></h3>
+<blockquote>
+<p><strong>Polysome Profiling 101</strong></p>
+<p>Imagine ribosomes as trains on a track &#40;the mRNA&#41;. A &quot;polysome&quot; is when multiple ribosomes are on the same mRNA simultaneously, like a train convoy.</p>
+<p><strong>The key idea:</strong></p>
+<ul>
+<li><p>More ribosomes on an mRNA &#61; more active translation</p>
+</li>
+<li><p>Polysomes are physically heavy &#40;lots of ribosome protein&#33;&#41;</p>
+</li>
+<li><p>You can separate them by weight using a density gradient</p>
+</li>
+</ul>
+<p><strong>How it works:</strong></p>
+<ol>
+<li><p>Freeze ribosomes in place &#40;add cycloheximide drug&#41;</p>
+</li>
+<li><p>Break open cells, extract all mRNA&#43;ribosome complexes</p>
+</li>
+<li><p>Layer the extract on top of a sucrose gradient &#40;like a density smoothie: 20&#37; → 55&#37; sucrose&#41;</p>
+</li>
+<li><p>Spin in ultracentrifuge for 3 hours at 151,000 × g</p>
+</li>
+<li><p>Heavy complexes &#40;many ribosomes&#41; sink far down</p>
+</li>
+<li><p>Light complexes &#40;few ribosomes&#41; stay near the top</p>
+</li>
+<li><p>Collect 14 fractions and sequence the mRNA in each</p>
+</li>
+</ol>
+</blockquote>
+<h3 id="ol_start3_the_experimental_workflow"><a href="#ol_start3_the_experimental_workflow" class="header-anchor"><ol start="3">
+<li><p><strong>The Experimental Workflow</strong></p>
+</li>
+</ol>
+</a></h3>
+<blockquote>
+<p><strong>How Do They Measure Translation?</strong></p>
+<p><strong>Day 1 - Make the RNA:</strong></p>
+<ol>
+<li><p>Take the plasmid library &#40;DNA&#41;</p>
+</li>
+<li><p>PCR amplify just the UTR &#43; eGFP region, adding T7 promoter</p>
+</li>
+<li><p>Use <em>in vitro</em> transcription &#40;IVT&#41; to make mRNA from this DNA template</p>
+</li>
+<li><p>Add a 5&#39; cap structure &#40;like cells do naturally&#41;</p>
+</li>
+<li><p>Add poly-A tail &#40;70 nt&#41;</p>
+</li>
+<li><p>Result: Library of ~280,000 different mRNA molecules&#33;</p>
+</li>
+</ol>
+<p><strong>Day 2 - Transfect human cells:</strong></p>
+<ol>
+<li><p>Take HEK293T cells &#40;human kidney cells&#41;</p>
+</li>
+<li><p>Use lipid nanoparticles &#40;Lipofectamine&#41; to deliver mRNA into cells</p>
+</li>
+<li><p>Wait 12 hours for translation to happen</p>
+</li>
+<li><p>Each cell receives a cocktail of many different mRNA variants&#33;</p>
+</li>
+</ol>
+<p><strong>Day 3 - Polysome profiling:</strong></p>
+<ol>
+<li><p>Add cycloheximide to freeze ribosomes on mRNA</p>
+</li>
+<li><p>Lyse cells and extract mRNA-ribosome complexes</p>
+</li>
+<li><p>Layer lysate on sucrose gradient</p>
+</li>
+<li><p>Ultracentrifuge for 3 hours</p>
+</li>
+<li><p>Collect 14 fractions from top &#40;light&#41; to bottom &#40;heavy&#41;</p>
+</li>
+<li><p>Extract RNA from each fraction</p>
+</li>
+<li><p>Reverse transcribe to cDNA</p>
+</li>
+<li><p>PCR amplify the UTR region</p>
+</li>
+<li><p>Deep sequence all fractions</p>
+</li>
+</ol>
+<p><strong>The counting:</strong></p>
+<ul>
+<li><p>Fraction 1 &#40;top&#41;: mRNA with 0-1 ribosomes</p>
+</li>
+<li><p>Fraction 7 &#40;middle&#41;: mRNA with ~4 ribosomes</p>
+</li>
+<li><p>Fraction 14 &#40;bottom&#41;: mRNA with 8&#43; ribosomes</p>
+</li>
+</ul>
+<p>Count how many copies of each UTR variant appear in each fraction&#33;</p>
+</blockquote>
+<h3 id="ol_start4_the_key_measurement_mean_ribosome_load_mrl"><a href="#ol_start4_the_key_measurement_mean_ribosome_load_mrl" class="header-anchor"><ol start="4">
+<li><p><strong>The Key Measurement: Mean Ribosome Load &#40;MRL&#41;</strong></p>
+</li>
+</ol>
+</a></h3>
+<blockquote>
+<p><strong>Critical Difference from Yeast Study:</strong></p>
+<p><strong>Yeast &#40;Cuperus et al.&#41;</strong>: Used log₂ enrichment comparing before/after selection</p>
+<ul>
+<li><p>Measured competitive fitness over time</p>
+</li>
+<li><p>Relative measurement &#40;need a baseline population&#41;</p>
+</li>
+</ul>
+<p><strong>Human &#40;Sample et al.&#41;</strong>: Uses Mean Ribosome Load &#40;MRL&#41; directly</p>
+<ul>
+<li><p>Measures absolute ribosome occupancy per mRNA</p>
+</li>
+<li><p>No &quot;before/after&quot; comparison needed&#33;</p>
+</li>
+<li><p>Each measurement is self-contained</p>
+</li>
+</ul>
+</blockquote>
+<p>For each 5&#39; UTR sequence \(s\), they calculate:</p>
+\(\text{MRL}(s) = \sum_{i=1}^{14} \left( f_i(s) \times r_i \right)\)
+<p>Where:</p>
+<ul>
+<li><p>\(f_i(s)\) &#61; <strong>fraction</strong> of sequence \(s\) found in fraction \(i\) &#40;normalized by total reads in that fraction&#41;</p>
+</li>
+<li><p>\(r_i\) &#61; number of ribosomes associated with fraction \(i\) &#40;0, 1, 2, ..., 8&#43;&#41;</p>
+</li>
+</ul>
+<p><strong>Normalization per fraction:</strong></p>
+\(f_i(s) = \frac{\text{count}_i(s)}{\sum_{s'} \text{count}_i(s')}\)
+<p>This tells us: &quot;Out of all the mRNA reads in fraction \(i\), what proportion is sequence \(s\)?&quot;</p>
+<p><strong>Then we weight by ribosome number:</strong></p>
+<ul>
+<li><p>Sequence mostly in fraction 1 &#40;no ribosomes&#41; → low MRL</p>
+</li>
+<li><p>Sequence mostly in fraction 14 &#40;many ribosomes&#41; → high MRL</p>
+</li>
+<li><p>The sum gives us the average ribosome count per mRNA&#33;</p>
+</li>
+</ul>
+<p><strong>What does MRL mean?</strong></p>
+<table><tr><th align="right">MRL Value</th><th align="right">Interpretation</th></tr><tr><td align="right">~2</td><td align="right">Barely any ribosomes &#40;poor translation&#41;</td></tr><tr><td align="right">~5</td><td align="right">Moderate ribosome loading</td></tr><tr><td align="right">~8&#43;</td><td align="right">Heavy ribosome loading &#40;strong translation&#41;</td></tr></table>
+<p><strong>Intuition</strong>: MRL is literally the <strong>average number of ribosomes</strong> sitting on an mRNA molecule of that sequence. If a UTR is good for translation, many ribosomes will pile onto that mRNA, creating heavy polysomes that sink to the bottom fractions&#33;</p>
+<hr />
+<h2 id="key_advantages_of_this_approach"><a href="#key_advantages_of_this_approach" class="header-anchor">Key Advantages of This Approach</a></h2>
+<h3 id="why_polysome_profiling_beats_growth_selection_for_human_cells"><a href="#why_polysome_profiling_beats_growth_selection_for_human_cells" class="header-anchor">Why polysome profiling beats growth selection for human cells:</a></h3>
+<ol>
+<li><p><strong>Separates transcription from translation</strong></p>
+<ul>
+<li><p>They inject pre-made mRNA → bypasses the nucleus entirely</p>
+</li>
+<li><p>Measures ONLY translation, not gene expression</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Higher throughput</strong></p>
+<ul>
+<li><p>Each cell translates hundreds of different mRNA variants</p>
+</li>
+<li><p>Don&#39;t need to transform cells with individual plasmids</p>
+</li>
+</ul>
+</li>
+<li><p><strong>More direct measurement</strong></p>
+<ul>
+<li><p>Literally counting ribosomes on each mRNA</p>
+</li>
+<li><p>Not relying on downstream phenotypes</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Works with modified RNA</strong></p>
+<ul>
+<li><p>They tested pseudouridine &#40;Ψ&#41; and N1-methylpseudouridine &#40;m1Ψ&#41;</p>
+</li>
+<li><p>Important for mRNA therapeutics &#40;like COVID vaccines&#33;&#41;</p>
+</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="supporting_validation"><a href="#supporting_validation" class="header-anchor">Supporting Validation</a></h2>
+<h3 id="flow_cytometry_with_egfp"><a href="#flow_cytometry_with_egfp" class="header-anchor">Flow Cytometry with eGFP</a></h3>
+<p>For 10 sequences, they measured actual eGFP fluorescence:</p>
+\[\text{Fluorescence} \propto \text{Protein expression}\]
+<p>Correlation with MRL: \(R^2 = 0.87\) ✓</p>
+<h3 id="comparison_with_published_data"><a href="#comparison_with_published_data" class="header-anchor">Comparison with Published Data</a></h3>
+<p>Tested 77 UTRs from another study &#40;Ferreira et al.&#41;:</p>
+<p>Correlation: \(R^2 = 0.73 - 0.85\) across 6 cell lines ✓</p>
+<hr />
+<h2 id="the_cnn_model_task"><a href="#the_cnn_model_task" class="header-anchor">The CNN Model Task</a></h2>
+<p><strong>Input</strong>: One-hot encoded sequence matrix</p>
+<ul>
+<li><p>Shape: \((4 \times 50)\) for 50-nt UTRs</p>
+</li>
+<li><p>Extended to \((4 \times 100)\) for variable-length model</p>
+</li>
+</ul>
+<p><strong>Output Options:</strong></p>
+<ol>
+<li><p><strong>MRL model</strong>: Single value predicting mean ribosome load</p>
+<ul>
+<li><p>\(\hat{y} \in \mathbb{R}\)</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Polysome profile model</strong>: 14 values predicting distribution across fractions</p>
+<ul>
+<li><p>\(\hat{y} = [\hat{f}_1, \hat{f}_2, ..., \hat{f}_{14}]\)</p>
+</li>
+</ul>
+</li>
+</ol>
+<p><strong>Loss function</strong>: Mean squared error</p>
+\[\mathcal{L} = \frac{1}{N}\sum_{i=1}^{N}(y_i - \hat{y}_i)^2\]
+<p><strong>Model performance:</strong></p>
+<ul>
+<li><p>MRL prediction: \(R^2 = 0.93\) on held-out random sequences</p>
+</li>
+<li><p>Polysome profile: \(R^2 = 0.83\) average across all fractions</p>
+</li>
+<li><p>Human native UTRs: \(R^2 = 0.81\) &#40;35,212 sequences&#33;&#41;</p>
+</li>
+</ul>
+<hr />
+<h2 id="applications"><a href="#applications" class="header-anchor">Applications</a></h2>
+<h3 id="engineering_new_utrs"><a href="#engineering_new_utrs" class="header-anchor"><ol>
+<li><p>Engineering New UTRs</p>
+</li>
+</ol>
+</a></h3>
+<p>Using genetic algorithm &#43; CNN:</p>
+<ul>
+<li><p>Design UTRs for targeted expression levels</p>
+</li>
+<li><p>Successfully created sequences hitting MRL targets of 3, 4, 5, 6, 7, 8, 9</p>
+</li>
+</ul>
+<h3 id="ol_start2_variant_effect_prediction"><a href="#ol_start2_variant_effect_prediction" class="header-anchor"><ol start="2">
+<li><p>Variant Effect Prediction</p>
+</li>
+</ol>
+</a></h3>
+<p>Tested 3,577 disease-associated SNVs from ClinVar:</p>
+<ul>
+<li><p>Model explains 55&#37; of variant effects overall</p>
+</li>
+<li><p><strong>76&#37; for high-impact variants</strong> &#40;log₂ change &gt; 0.5&#41;</p>
+</li>
+<li><p>Identified 45 SNVs that substantially alter translation</p>
+</li>
+<li><p>Example: rs867711777 in CPOX gene &#40;hereditary coproporphyria&#41;</p>
+</li>
+</ul>
+<h3 id="ol_start3_modified_rna_mrna_therapeutics"><a href="#ol_start3_modified_rna_mrna_therapeutics" class="header-anchor"><ol start="3">
+<li><p>Modified RNA &#40;mRNA therapeutics&#41;</p>
+</li>
+</ol>
+</a></h3>
+<p>Tested Ψ and m1Ψ modifications:</p>
+<ul>
+<li><p>Model trained on unmodified RNA: \(R^2 = 0.68 - 0.76\) on modified RNA</p>
+</li>
+<li><p>Retrained on modified RNA: improved significantly</p>
+</li>
+<li><p>Shows how RNA modifications affect structure and translation</p>
+</li>
+</ul>
+<hr />
+<h2 id="key_insight"><a href="#key_insight" class="header-anchor">Key Insight</a></h2>
+<p>MRL captures the <strong>translation initiation and elongation efficiency</strong>:</p>
+<ul>
+<li><p>How easily ribosomes find the start codon</p>
+</li>
+<li><p>How many ribosomes can load simultaneously</p>
+</li>
+<li><p>Impact of secondary structure</p>
+</li>
+<li><p>Effect of upstream AUGs &#40;uAUGs&#41; and upstream ORFs &#40;uORFs&#41;</p>
+</li>
+</ul>
+<p>Unlike growth selection &#40;yeast study&#41;, this <strong>isolates translation</strong> from:</p>
+<ul>
+<li><p>❌ Transcription rate</p>
+</li>
+<li><p>❌ mRNA stability &#40;partially&#41;</p>
+</li>
+<li><p>❌ Protein function</p>
+</li>
+<li><p>❌ Protein stability</p>
+</li>
+</ul>
+<p>It&#39;s a more direct measure of the 5&#39; UTR&#39;s role in translation&#33; 🧬</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 15, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+        <script src="/libs/katex/katex.min.js"></script>
+<script src="/libs/katex/contrib/auto-render.min.js"></script>
+<script>renderMathInElement(document.body)</script>
+
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>
