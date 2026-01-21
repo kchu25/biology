@@ -1,5 +1,5 @@
 @def title = "UTR-seq Study Overview (regulatory elements)"
-@def published = "12 January 2026"
+@def published = "21 January 2026"
 @def tags = ["rna", "screening"]
 
 # UTR-seq Study Overview
