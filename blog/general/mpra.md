@@ -37,7 +37,7 @@ Notice the pattern? **Almost everything is a log₂ ratio.** Why? Because gene e
 |-------|----------------|---------------------|------------------|------------------------|
 | **de Boer** | YFP fluorescence (AFU)<br>RFP fluorescence (AFU) | log₂(YFP/RFP) | **Dimensionless log₂ ratio**<br>Range: -3 to +15 | `5.2` = 2^5.2 ≈ 37× more YFP than RFP<br>`-2.0` = 2^-2 = 0.25× (weak promoter) |
 | **Johns** | RNA-seq read counts<br>DNA-seq read counts | log₂(RNA/DNA) - control_mean | **Dimensionless log₂ ratio**<br>Range: -3 to +6 | `2.35` = 2^2.35 ≈ 5× more RNA than DNA<br>`-2.14` = repressed (less RNA than expected) |
-| **Cuperus** | Sequencing reads before selection<br>Sequencing reads after selection | log₂(reads_after / reads_before) | **log₂ enrichment score**<br>Range: -5 to +5 | `3.5` = 2^3.5 ≈ 11× enrichment (good growth)<br>`-3.0` = 2^-3 = 0.125× (died off) |
+| **Cuperus** | **DNA sequencing reads** of the 50-nt UTR region<br>**Before**: Initial plasmid library (T₀)<br>**After**: Extracted from surviving yeast after 20 generations in -His medium | log₂(reads_after / reads_before) | **log₂ enrichment score**<br>Range: -5 to +5<br><br>**Common reporting formats:**<br>• "log₂ enrichment"<br>• "log₂ fold-change"<br>• "selection coefficient"<br>• In methods: "log₂(counts_selected / counts_input)" | `3.5` = 2^3.5 ≈ 11× enrichment (good growth)<br>`-3.0` = 2^-3 = 0.125× (died off)<br><br>**What's actually sequenced**: PCR-amplified DNA from the UTR region in the plasmid, NOT RNA or protein |
 | **Sample** | Sequencing reads in 14 fractions<br>(fraction 1 = 0 ribosomes, fraction 14 = 8+ ribosomes) | Σ(fraction_proportion × ribosome_count) | **Mean Ribosome Load (MRL)**<br>Range: 2 to 8+<br>**Units: number of ribosomes** | `2.5` = average of 2-3 ribosomes per mRNA (weak)<br>`7.8` = average of 7-8 ribosomes per mRNA (strong) |
 | **Cao (screening)** | NGS reads in top GFP bin<br>NGS reads in control bin | log₂(top_bin / control_bin) | **log₂ enrichment score**<br>Range: varies | `2.0` = 2^2 = 4× enriched in high expressors |
 | **Cao (validation)** | GFP fluorescence (MFI)<br>BFP fluorescence (MFI)<br>Compared to pVAX1 control | (GFP/BFP)_test / (GFP/BFP)_control × 100% | **Percentage of control**<br>Range: 0% to 500%+<br>**Units: %** | `158%` = 1.58× more protein than control<br>`250%` = 2.5× more protein |
@@ -73,6 +73,60 @@ Notice the pattern? **Almost everything is a log₂ ratio.** Why? Because gene e
 - **pg/mL values**: Physical concentration—real-world measurable quantity
 
 When training ML models, these different value types matter! Log-scaled data has different statistical properties than linear counts or percentages.
+
+## How to Report These Measurements
+
+Here's how each study actually reports their units in papers, and what you should write:
+
+| Study | Short Name for Figures | Methods Section Description | Example Figure Caption | Notes |
+|-------|------------------------|----------------------------|------------------------|-------|
+| **de Boer** | "Expression" or<br>"log₂(YFP/RFP)" | "Promoter activity was measured as the log₂ ratio of YFP to RFP fluorescence intensity per cell, normalized to the TEF2 reference promoter" | "Promoter expression levels (log₂(YFP/RFP)) for 100M random sequences" | The "log₂" is explicit. YFP/RFP makes it clear both colors are measured |
+| **Johns** | "Transcription" or<br>"log₂(RNA/DNA)" | "Transcriptional activity was quantified as log₂(RNA/DNA) ratios, where RNA and DNA read counts were obtained from RNA-seq and DNA-seq respectively, normalized by the mean activity of control sequences" | "Transcription levels (log₂(RNA/DNA)) across three bacterial species" | Explicitly state both RNA-seq AND DNA-seq were performed |
+| **Cuperus** | "log₂ enrichment" or<br>"Fitness" or<br>"Selection coefficient" | "Translation efficiency was measured as log₂ enrichment, calculated from the ratio of normalized sequencing read counts after 20 generations of selection in -His medium to initial library counts" | "Translation efficiency (log₂ enrichment) for 500K 5' UTR variants" | Don't say "reads after/before"—say "enrichment" or "fold-change" |
+| **Sample** | "MRL"<br>(Mean Ribosome Load) | "Translation was quantified by Mean Ribosome Load (MRL), calculated as the weighted average of ribosome occupancy across 14 polysome fractions, where MRL = Σᵢ (fᵢ × rᵢ), with fᵢ being the fraction of reads in fraction i and rᵢ the number of ribosomes" | "Ribosome loading (MRL) for 280K synthetic 5' UTRs" | This is NOT log-scaled! Report as "MRL = 5.2 ribosomes" not "log₂" |
+| **Cao (screening)** | "log₂ enrichment" | "Translation efficiency was screened using FACS-seq. Cells were sorted by GFP intensity, and enrichment scores were calculated as log₂(reads in top 2.5% bin / reads in unsorted pool)" | "Enrichment scores (log₂) for 12K synthetic 5' UTRs" | Specify which bins you're comparing (top vs. control) |
+| **Cao (validation)** | "Relative expression (%)" or<br>"% of control" | "Relative expression was measured as (GFP/BFP)test / (GFP/BFP)pVAX1 × 100%, where GFP and BFP fluorescence were measured by flow cytometry. For therapeutic proteins, expression was quantified by ELISA (pg/mL per 100,000 cells per 24h) and normalized to pVAX1 = 100%" | "Relative GFP expression (% of pVAX1 control) for top candidate UTRs" | Be explicit about what "100%" means (your control plasmid) |
+| **Rabani** | "log₂ fold-change" or<br>"mRNA decay" or<br>"log₂(normalized count)" | "mRNA stability was measured as log₂ fold-change relative to the fitted initial count (X₀) for each reporter, normalized using spike-in controls and calculated as log₂(UMI count / X₀)" | "mRNA decay profiles (log₂ fold-change from initial) across developmental time points" | Clarify that X₀ is fitted per-reporter, not a single global value |
+
+### General Principles for Reporting
+
+**In your figure axes:**
+- Always include "log₂" if the data is log-transformed
+- Use shorthand: "log₂(RNA/DNA)", "log₂ enrichment", "MRL"
+- Include units when they exist: "pg/mL", "% of control", "ribosomes"
+
+**In your methods section:**
+- Spell out EXACTLY what was measured (RNA-seq? DNA-seq? Fluorescence?)
+- Explain the normalization (control sequences? spike-ins? reference promoter?)
+- Give the formula: log₂(X/Y) where X = ... and Y = ...
+
+**In your results text:**
+- You can drop "log₂" if it's clear from context: "Variant X showed 3.5-fold enrichment"
+- For non-log values, be explicit: "MRL = 7.2 ribosomes" or "158% of control"
+
+**Common mistakes to avoid:**
+- ❌ Saying "fold-change" when you mean "log₂ fold-change" (3.5 vs. 2^3.5 = 11.3×)
+- ❌ Writing "log" without specifying base (always use log₂ or log₁₀)
+- ❌ Forgetting to mention normalization (what's your denominator?)
+- ❌ Mixing linear and log scales in the same figure without labels
+
+### Quick Reference Card
+
+When you're writing your paper:
+
+```
+Measurement Type          Write in Figure          Write in Methods
+─────────────────────────────────────────────────────────────────
+Promoter strength         log₂(YFP/RFP)            "log₂ ratio of test to reference fluorescence"
+Transcription             log₂(RNA/DNA)            "log₂ ratio of RNA-seq to DNA-seq reads"
+Translation (selection)   log₂ enrichment          "log₂(post-selection / pre-selection counts)"
+Translation (direct)      MRL (ribosomes)          "mean ribosome load from polysome profiling"
+Relative activity         % of control             "(test/control) × 100%"
+Absolute protein          pg/mL                    "protein concentration by ELISA"
+mRNA stability            log₂ fold-change         "log₂(count / initial count)"
+```
+
+The golden rule: **Be consistent, be explicit, and always define your denominator.**
 
 ## The Instrument Pipeline
 
