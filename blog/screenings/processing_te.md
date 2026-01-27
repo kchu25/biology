@@ -1,4 +1,4 @@
-@def title = "DProcessing Ribosome Profiling Data for Translation Efficiency"
+@def title = "Processing Ribosome Profiling Data for Translation Efficiency"
 @def published = "12 January 2026"
 @def tags = ["rna", "screening"]
 
