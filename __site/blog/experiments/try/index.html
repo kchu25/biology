@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="/libs/katex/katex.min.css">
+     
+  
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Experimental Validation of Predicted Motif Interactions</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="experimental_validation_of_predicted_motif_interactions"><a href="#experimental_validation_of_predicted_motif_interactions" class="header-anchor">Experimental Validation of Predicted Motif Interactions</a></h1>
+<h2 id="overview"><a href="#overview" class="header-anchor"><ol>
+<li><p>Overview</p>
+</li>
+</ol>
+</a></h2>
+<p>The paper predicts two classes of results that are experimentally testable:</p>
+<ol>
+<li><p><strong>Significant motifs</strong>: cis-regulatory elements with Banzhaf indices significantly different from random coalitions &#40;Section S1 of the supplementary&#41;.</p>
+</li>
+<li><p><strong>Motif interactions</strong>: pairs and triplets of motifs whose co-occurrence produces non-additive effects on gene expression, quantified by interaction coefficients \(\beta_{12}\) or \(\beta_{123}\) &#40;Section S2 of the supplementary&#41;.</p>
+</li>
+</ol>
+<p>Validating these predictions requires <strong>reporter assays</strong> that systematically perturb motif combinations and measure the resulting changes in gene expression or mRNA stability. The core experimental logic mirrors the statistical model from Equation &#40;2&#41; of the paper:</p>
+\[y = \beta_1 x_1 + \beta_2 x_2 + \beta_{12} x_1 x_2\]
+<p>where each construct corresponds to a specific \((x_1, x_2)\) configuration, and the measured reporter output serves as \(y\).</p>
+<hr />
+<h2 id="ol_start2_experimental_design"><a href="#ol_start2_experimental_design" class="header-anchor"><ol start="2">
+<li><p>Experimental Design</p>
+</li>
+</ol>
+</a></h2>
+<h3 id="21_the_fundamental_logic"><a href="#21_the_fundamental_logic" class="header-anchor">2.1 The Fundamental Logic</a></h3>
+<p>For each predicted interaction &#40;say, between motif \(m_1\) and motif \(m_2\)&#41;, we need <strong>four constructs</strong>:</p>
+<table><tr><th align="right">Construct</th><th align="right">\(x_1\)</th><th align="right">\(x_2\)</th><th align="right">What it tests</th></tr><tr><td align="right">Wild-type &#40;both motifs intact&#41;</td><td align="right">1</td><td align="right">1</td><td align="right">\(\beta_1 + \beta_2 + \beta_{12}\)</td></tr><tr><td align="right">\(m_1\) mutated</td><td align="right">0</td><td align="right">1</td><td align="right">\(\beta_2\) alone</td></tr><tr><td align="right">\(m_2\) mutated</td><td align="right">1</td><td align="right">0</td><td align="right">\(\beta_1\) alone</td></tr><tr><td align="right">Both mutated</td><td align="right">0</td><td align="right">0</td><td align="right">Baseline &#40;no motif contribution&#41;</td></tr></table>
+<p>The interaction coefficient is then:</p>
+\[\hat{\beta}_{12} = y_{11} - y_{10} - y_{01} + y_{00}\]
+<p>If \(\hat{\beta}_{12} > 0\): synergy &#40;matches a positive \(\beta_{12}\) prediction&#41;.   If \(\hat{\beta}_{12} < 0\): antagonism &#40;matches a negative \(\beta_{12}\) prediction&#41;.   If \(\hat{\beta}_{12} \approx 0\): additive &#40;no interaction&#41;.</p>
+<p>For <strong>triplet interactions</strong>, we need \(2^3 = 8\) constructs &#40;all combinations of three motifs present/absent&#41;.</p>
+<h3 id="22_selecting_candidates"><a href="#22_selecting_candidates" class="header-anchor">2.2 Selecting Candidates</a></h3>
+<p>From the paper&#39;s results, prioritize interactions that are:</p>
+<ul>
+<li><p><strong>Statistically strong</strong>: lowest adjusted \(p\)-values &#40;well below the \(\alpha = 10^{-10}\) threshold&#41;</p>
+</li>
+<li><p><strong>Biologically large</strong>: largest \(|\beta_{12}|\) or \(|\beta_{123}|\) values</p>
+</li>
+<li><p><strong>Organism-appropriate</strong>: E. coli interactions are easiest to validate; yeast is intermediate; human UTR requires mammalian cell culture</p>
+</li>
+</ul>
+<p>A reasonable starting point is <strong>3–5 pairwise interactions in E. coli</strong> with the largest effect sizes.</p>
+<hr />
+<h2 id="ol_start3_detailed_procedure_molecular_cloningbased_reporter_assay"><a href="#ol_start3_detailed_procedure_molecular_cloningbased_reporter_assay" class="header-anchor"><ol start="3">
+<li><p>Detailed Procedure: Molecular Cloning–Based Reporter Assay</p>
+</li>
+</ol>
+</a></h2>
+<p>The procedure below is conceptually similar to <a href="https://kchu25.github.io/biology/blog/general/cloning/">standard molecular cloning workflows</a>, but adapted for regulatory element testing. The key difference is that instead of cloning a gene of interest, we are cloning <strong>synthetic regulatory sequences</strong> upstream &#40;or in the UTR&#41; of a reporter gene.</p>
+<h3 id="31_step-by-step_protocol"><a href="#31_step-by-step_protocol" class="header-anchor">3.1 Step-by-Step Protocol</a></h3>
+<h4 id="step_1_design_synthetic_regulatory_sequences"><a href="#step_1_design_synthetic_regulatory_sequences" class="header-anchor">Step 1: Design Synthetic Regulatory Sequences</a></h4>
+<p>For each predicted interaction, design oligonucleotides &#40;~80–200 bp&#41; containing:</p>
+<ul>
+<li><p>The <strong>wild-type</strong> regulatory region with both motifs</p>
+</li>
+<li><p><strong>Mutant variants</strong> where each motif is disrupted by point mutations &#40;typically 3–5 bp changes in the core positions&#41;</p>
+</li>
+<li><p>Flanking sequences with restriction sites or homology arms for cloning</p>
+</li>
+</ul>
+<p><strong>Key design considerations:</strong></p>
+<ul>
+<li><p>Mutations should disrupt the motif&#39;s information content &#40;change high-information-content positions in the PWM&#41; without altering spacing between motifs</p>
+</li>
+<li><p>Include a <strong>scrambled control</strong> where the entire regulatory region is randomized</p>
+</li>
+<li><p>For UTR experiments, mutations should avoid introducing premature stop codons or strong secondary structures</p>
+</li>
+</ul>
+<p><strong>How to obtain the oligos:</strong></p>
+<ul>
+<li><p>Order as synthetic oligonucleotides from <strong>IDT</strong> &#40;Integrated DNA Technologies&#41;, <strong>Twist Bioscience</strong>, or <strong>Genewiz/Azenta</strong></p>
+</li>
+<li><p>For sequences &gt;200 bp, order as <strong>gene fragments</strong> &#40;gBlocks from IDT, ~&#36;0.07–0.10/bp&#41;</p>
+</li>
+<li><p>Typical cost: &#36;10–&#36;90 per construct</p>
+</li>
+</ul>
+<h4 id="step_2_choose_a_reporter_vector"><a href="#step_2_choose_a_reporter_vector" class="header-anchor">Step 2: Choose a Reporter Vector</a></h4>
+<p>The reporter vector is the backbone plasmid into which you insert the regulatory sequences. This is analogous to choosing the destination vector in a standard cloning workflow.</p>
+<table><tr><th align="right">Organism</th><th align="right">Recommended vector</th><th align="right">Reporter</th><th align="right">Selection</th></tr><tr><td align="right">E. coli &#40;promoter&#41;</td><td align="right">pUA66 &#40;from Zaslaver library&#41;</td><td align="right">GFPmut2</td><td align="right">Kanamycin</td></tr><tr><td align="right">E. coli &#40;promoter&#41;</td><td align="right">pSB1C3 &#40;BioBrick&#41;</td><td align="right">GFP or RFP</td><td align="right">Chloramphenicol</td></tr><tr><td align="right">Yeast &#40;promoter&#41;</td><td align="right">pRS416-CYC1</td><td align="right">yEGFP or LacZ</td><td align="right">URA3 &#40;auxotrophic&#41;</td></tr><tr><td align="right">Yeast &#40;UTR&#41;</td><td align="right">pYES2 derivative</td><td align="right">GFP/Luciferase</td><td align="right">URA3</td></tr><tr><td align="right">Human &#40;UTR&#41;</td><td align="right">psiCHECK-2 &#40;Promega&#41;</td><td align="right">Renilla &#43; Firefly luciferase</td><td align="right">Ampicillin &#40;bacterial&#41;</td></tr><tr><td align="right">Human &#40;UTR&#41;</td><td align="right">pmirGLO &#40;Promega&#41;</td><td align="right">Firefly &#43; Renilla luciferase</td><td align="right">Ampicillin</td></tr></table>
+<p><strong>Source:</strong> Order from <strong>Addgene</strong> &#40;~&#36;75/plasmid&#41; or request from collaborating labs.</p>
+<h4 id="step_3_cloning_inserting_regulatory_sequences_into_the_reporter_vector"><a href="#step_3_cloning_inserting_regulatory_sequences_into_the_reporter_vector" class="header-anchor">Step 3: Cloning — Inserting Regulatory Sequences into the Reporter Vector</a></h4>
+<p>This is the core molecular cloning step, directly analogous to the <a href="https://kchu25.github.io/biology/blog/general/cloning/">cloning workflow</a>. There are two main approaches:</p>
+<h5 id="option_a_restriction_enzyme_cloning_traditional"><a href="#option_a_restriction_enzyme_cloning_traditional" class="header-anchor">Option A: Restriction Enzyme Cloning &#40;Traditional&#41;</a></h5>
+<ol>
+<li><p><strong>Digest</strong> the reporter vector with two restriction enzymes that flank the insertion site &#40;e.g., EcoRI &#43; BamHI for pUA66&#41;</p>
+</li>
+<li><p><strong>Digest</strong> &#40;or design with matching overhangs&#41; the synthetic regulatory fragment with the same enzymes</p>
+</li>
+<li><p><strong>Ligate</strong> the fragment into the cut vector using T4 DNA ligase</p>
+</li>
+<li><p><strong>Transform</strong> into competent E. coli cells &#40;DH5α or TOP10&#41;</p>
+</li>
+<li><p><strong>Select</strong> on antibiotic plates &#40;e.g., kanamycin for pUA66&#41;</p>
+</li>
+<li><p><strong>Screen</strong> colonies by colony PCR or diagnostic restriction digest</p>
+</li>
+<li><p><strong>Verify</strong> by Sanger sequencing</p>
+</li>
+</ol>
+<p>This is the most accessible approach and works well with the ODIN home lab kit, with the caveat that you need to purchase restriction enzymes separately.</p>
+<h5 id="option_b_gibson_assembly_modern_recommended"><a href="#option_b_gibson_assembly_modern_recommended" class="header-anchor">Option B: Gibson Assembly &#40;Modern, Recommended&#41;</a></h5>
+<ol>
+<li><p>Design <strong>20–25 bp homology arms</strong> on each end of the synthetic fragment that overlap with the linearized vector</p>
+</li>
+<li><p><strong>Linearize</strong> the vector by PCR or restriction digest</p>
+</li>
+<li><p><strong>Mix</strong> fragment &#43; linearized vector with <strong>Gibson Assembly Master Mix</strong> &#40;NEB, ~&#36;180 for 10 reactions&#41;</p>
+</li>
+<li><p><strong>Incubate</strong> at 50°C for 15–60 minutes</p>
+</li>
+<li><p><strong>Transform</strong> into competent E. coli</p>
+</li>
+<li><p><strong>Select</strong> and <strong>verify</strong> as above</p>
+</li>
+</ol>
+<p>Gibson assembly is more reliable for multi-fragment assemblies and avoids restriction site constraints, but requires a thermocycler &#40;or water bath at 50°C&#41;.</p>
+<h5 id="option_c_golden_gate_assembly"><a href="#option_c_golden_gate_assembly" class="header-anchor">Option C: Golden Gate Assembly</a></h5>
+<ol>
+<li><p>Design the synthetic fragments with <strong>BsaI</strong> or <strong>BpiI</strong> Type IIS restriction sites that generate unique 4-bp overhangs</p>
+</li>
+<li><p>Mix all fragments &#43; destination vector &#43; BsaI &#43; T4 ligase in a single tube</p>
+</li>
+<li><p>Run a <strong>thermocycling protocol</strong> &#40;37°C digestion / 16°C ligation, ~30 cycles&#41;</p>
+</li>
+<li><p>Transform and select</p>
+</li>
+</ol>
+<p>This is ideal for combinatorial assembly &#40;building many motif variant constructs simultaneously&#41; and is highly efficient &#40;&gt;95&#37; correct clones&#41;.</p>
+<h4 id="step_4_transformation_into_the_target_organism"><a href="#step_4_transformation_into_the_target_organism" class="header-anchor">Step 4: Transformation into the Target Organism</a></h4>
+<h5 id="e_coli"><a href="#e_coli" class="header-anchor">E. coli</a></h5>
+<ul>
+<li><p>Use <strong>chemically competent cells</strong> &#40;CaCl₂ method or commercial cells like NEB 5-alpha&#41;</p>
+</li>
+<li><p>Heat shock: 42°C for 30–45 seconds</p>
+</li>
+<li><p>Recovery in SOC medium at 37°C for 1 hour</p>
+</li>
+<li><p>Plate on selective medium</p>
+</li>
+<li><p>This is straightforward and compatible with a home lab setup</p>
+</li>
+</ul>
+<h5 id="yeast_s_cerevisiae"><a href="#yeast_s_cerevisiae" class="header-anchor">Yeast &#40;S. cerevisiae&#41;</a></h5>
+<ul>
+<li><p>Use the <strong>lithium acetate / PEG / single-stranded carrier DNA</strong> method</p>
+</li>
+<li><p>Requires selective plates &#40;SC-URA for URA3-based vectors&#41;</p>
+</li>
+<li><p>Incubate at 30°C for 2–3 days</p>
+</li>
+<li><p>Requires additional reagents and yeast-specific media components</p>
+</li>
+</ul>
+<h5 id="human_cells"><a href="#human_cells" class="header-anchor">Human Cells</a></h5>
+<ul>
+<li><p>Use <strong>lipofection</strong> &#40;Lipofectamine 3000, ThermoFisher&#41; or <strong>electroporation</strong></p>
+</li>
+<li><p>Requires mammalian cell culture facility:</p>
+<ul>
+<li><p>CO₂ incubator &#40;37°C, 5&#37; CO₂&#41;</p>
+</li>
+<li><p>Biosafety cabinet &#40;BSL-2&#41;</p>
+</li>
+<li><p>Cell lines: HEK293T &#40;easy to transfect&#41;, HeLa, or K562</p>
+</li>
+<li><p>Complete growth medium &#40;DMEM &#43; 10&#37; FBS &#43; pen/strep&#41;</p>
+</li>
+</ul>
+</li>
+<li><p>Harvest cells 24–48 hours post-transfection</p>
+</li>
+</ul>
+<h4 id="step_5_measure_reporter_output"><a href="#step_5_measure_reporter_output" class="header-anchor">Step 5: Measure Reporter Output</a></h4>
+<p>This is the critical quantitative step. The measurement approach depends on the reporter:</p>
+<h5 id="gfp-based_reporters_e_coli_yeast"><a href="#gfp-based_reporters_e_coli_yeast" class="header-anchor">GFP-based reporters &#40;E. coli, Yeast&#41;</a></h5>
+<table><tr><th align="right">Method</th><th align="right">Equipment</th><th align="right">Quantitative?</th><th align="right">Cost</th></tr><tr><td align="right">UV transilluminator / blue light</td><td align="right">~&#36;50–100</td><td align="right">Semi-quantitative &#40;visual&#41;</td><td align="right">Low</td></tr><tr><td align="right">Plate reader &#40;fluorescence mode&#41;</td><td align="right">&#36;3,000–15,000 &#40;used&#41;</td><td align="right">Yes — measures fluorescence/OD₆₀₀</td><td align="right">Medium</td></tr><tr><td align="right">Flow cytometer</td><td align="right">&#36;15,000–50,000 &#40;used&#41;</td><td align="right">Yes — single-cell resolution</td><td align="right">High</td></tr><tr><td align="right">Microscopy &#40;fluorescence&#41;</td><td align="right">&#36;500–5,000</td><td align="right">Semi-quantitative &#40;imaging&#41;</td><td align="right">Medium</td></tr></table>
+<p><strong>Recommended for E. coli:</strong> Plate reader. Grow cultures in 96-well plates, measure GFP fluorescence normalized to OD₆₀₀ at multiple time points. Each construct should have <strong>≥6 biological replicates</strong> &#40;independent colonies&#41;.</p>
+<p><strong>Protocol for plate reader measurement:</strong></p>
+<ol>
+<li><p>Pick 6–12 colonies per construct into 200 µL LB &#43; antibiotic in a 96-well plate</p>
+</li>
+<li><p>Grow at 37°C with shaking for 4–6 hours &#40;mid-log phase, OD₆₀₀ ≈ 0.4–0.8&#41;</p>
+</li>
+<li><p>Read GFP fluorescence &#40;excitation 485 nm, emission 528 nm&#41; and OD₆₀₀</p>
+</li>
+<li><p>Compute <strong>normalized fluorescence</strong> &#61; GFP / OD₆₀₀ for each well</p>
+</li>
+<li><p>Compare across constructs</p>
+</li>
+</ol>
+<h5 id="luciferase-based_reporters_human_cells"><a href="#luciferase-based_reporters_human_cells" class="header-anchor">Luciferase-based reporters &#40;Human cells&#41;</a></h5>
+<ul>
+<li><p>Use <strong>Dual-Luciferase Reporter Assay System</strong> &#40;Promega, ~&#36;300&#41;</p>
+</li>
+<li><p>Requires a <strong>luminometer</strong> or plate reader with luminescence mode</p>
+</li>
+<li><p>Measure Firefly and Renilla luciferase activities</p>
+</li>
+<li><p>Compute ratio &#40;Firefly/Renilla or vice versa&#41; to control for transfection efficiency</p>
+</li>
+</ul>
+<h4 id="step_6_statistical_analysis"><a href="#step_6_statistical_analysis" class="header-anchor">Step 6: Statistical Analysis</a></h4>
+<p>For each predicted interaction with \(n\) replicates per construct:</p>
+<ol>
+<li><p>Compute mean normalized reporter values: \(\bar{y}_{00}, \bar{y}_{10}, \bar{y}_{01}, \bar{y}_{11}\)</p>
+</li>
+<li><p>Estimate the interaction: \(\hat{\beta}_{12} = \bar{y}_{11} - \bar{y}_{10} - \bar{y}_{01} + \bar{y}_{00}\)</p>
+</li>
+<li><p>Test significance using a <strong>two-way ANOVA</strong> with interaction term, or equivalently, fit the linear model:</p>
+</li>
+</ol>
+\[y_{ijk} = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,j} + \beta_{12} x_{1,i} x_{2,j} + \varepsilon_{ijk}\]
+<ol start="4">
+<li><p>Report the \(p\)-value for \(\beta_{12} = 0\)</p>
+</li>
+<li><p>Compare the <strong>sign</strong> of \(\hat{\beta}_{12}\) to the computational prediction</p>
+</li>
+</ol>
+<hr />
+<h2 id="ol_start4_feasibility_assessment_by_organism"><a href="#ol_start4_feasibility_assessment_by_organism" class="header-anchor"><ol start="4">
+<li><p>Feasibility Assessment by Organism</p>
+</li>
+</ol>
+</a></h2>
+<h3 id="41_e_coli_promoter_interactions"><a href="#41_e_coli_promoter_interactions" class="header-anchor">4.1 E. coli &#40;Promoter Interactions&#41;</a></h3>
+<p><strong>Feasibility: HIGH</strong> ✅</p>
+<p>E. coli is the most tractable system:</p>
+<ul>
+<li><p>Fast growth &#40;doubling time ~20 min&#41;</p>
+</li>
+<li><p>Efficient transformation &#40;10⁶–10⁸ CFU/µg&#41;</p>
+</li>
+<li><p>Well-characterized reporter systems</p>
+</li>
+<li><p>No specialized equipment beyond basic microbiology</p>
+</li>
+</ul>
+<p><strong>Timeline:</strong> 2–3 weeks per set of constructs &#40;1 week cloning &#43; verification, 1 week measurements, 1 week analysis and repeats&#41;</p>
+<p><strong>Estimated cost per interaction &#40;4 constructs&#41;:</strong></p>
+<table><tr><th align="right">Item</th><th align="right">Cost</th></tr><tr><td align="right">Synthetic oligos &#40;4 × gBlocks&#41;</td><td align="right">&#36;200–400</td></tr><tr><td align="right">Reporter vector &#40;Addgene&#41;</td><td align="right">&#36;75 &#40;one-time&#41;</td></tr><tr><td align="right">Restriction enzymes &#43; ligase</td><td align="right">&#36;200–400 &#40;one-time&#41;</td></tr><tr><td align="right">Competent cells</td><td align="right">&#36;100–200</td></tr><tr><td align="right">Sequencing verification &#40;4 samples&#41;</td><td align="right">&#36;20–40</td></tr><tr><td align="right">Media, plates, antibiotics</td><td align="right">&#36;50–100</td></tr><tr><td align="right"><strong>Total per interaction</strong></td><td align="right"><strong>~&#36;350–700</strong></td></tr><tr><td align="right"><strong>Total for 5 interactions</strong></td><td align="right"><strong>~&#36;1,500–3,000</strong></td></tr></table>
+<p><strong>Additional equipment needed beyond ODIN kit:</strong></p>
+<table><tr><th align="right">Item</th><th align="right">Est. Cost</th><th align="right">Necessity</th></tr><tr><td align="right">Plate reader &#40;used BioTek Synergy&#41;</td><td align="right">\(2,000–5,000 | Essential for quantitative data |
+| Thermocycler (for colony PCR / Gibson) | \)500–2,000 &#40;used&#41;</td><td align="right">Highly recommended</td></tr><tr><td align="right">Micropipettes &#40;P20, P200, P1000&#41;</td><td align="right">&#36;300–600</td><td align="right">Essential</td></tr><tr><td align="right">Vortex mixer</td><td align="right">&#36;100–200</td><td align="right">Useful</td></tr><tr><td align="right">Microcentrifuge</td><td align="right">&#36;200–500</td><td align="right">Essential</td></tr></table>
+<h3 id="42_yeast_utr_interactions"><a href="#42_yeast_utr_interactions" class="header-anchor">4.2 Yeast &#40;UTR Interactions&#41;</a></h3>
+<p><strong>Feasibility: MODERATE</strong> ⚠️</p>
+<p>Additional requirements beyond E. coli:</p>
+<ul>
+<li><p>Lithium acetate transformation protocol</p>
+</li>
+<li><p>Selective media &#40;synthetic complete dropout&#41;</p>
+</li>
+<li><p>Longer incubation &#40;2–3 days for colonies vs. overnight&#41;</p>
+</li>
+<li><p>30°C incubator &#40;vs. 37°C&#41;</p>
+</li>
+</ul>
+<p><strong>Additional cost:</strong> ~&#36;500–1,000 for yeast-specific reagents and media</p>
+<h3 id="43_human_utr_mrna_degradation"><a href="#43_human_utr_mrna_degradation" class="header-anchor">4.3 Human UTR / mRNA Degradation</a></h3>
+<p><strong>Feasibility: LOW</strong> ❌</p>
+<p>Requires:</p>
+<ul>
+<li><p>BSL-2 cell culture facility</p>
+</li>
+<li><p>CO₂ incubator &#40;~&#36;3,000–8,000 used&#41;</p>
+</li>
+<li><p>Biosafety cabinet &#40;~&#36;2,000–5,000 used&#41;</p>
+</li>
+<li><p>Cell lines, media, FBS, transfection reagents</p>
+</li>
+<li><p>Luminometer or plate reader with luminescence</p>
+</li>
+</ul>
+<p><strong>Additional cost:</strong> &#36;10,000–25,000 in equipment alone</p>
+<p><strong>Recommendation:</strong> Collaborate with an established mammalian cell biology lab.</p>
+<hr />
+<h2 id="ol_start5_comparison_standard_cloning_vs_this_experiment"><a href="#ol_start5_comparison_standard_cloning_vs_this_experiment" class="header-anchor"><ol start="5">
+<li><p>Comparison: Standard Cloning vs. This Experiment</p>
+</li>
+</ol>
+</a></h2>
+<p>The procedure is fundamentally the same as <a href="https://kchu25.github.io/biology/blog/general/cloning/">standard molecular cloning</a>. Here is a side-by-side comparison:</p>
+<table><tr><th align="right">Step</th><th align="right">Standard Cloning</th><th align="right">This Experiment</th></tr><tr><td align="right"><strong>Goal</strong></td><td align="right">Clone a gene of interest into an expression vector</td><td align="right">Clone a <em>regulatory sequence variant</em> into a reporter vector</td></tr><tr><td align="right"><strong>Insert source</strong></td><td align="right">PCR from genomic DNA or cDNA</td><td align="right">Synthetic oligos &#40;ordered from IDT/Twist&#41;</td></tr><tr><td align="right"><strong>Vector</strong></td><td align="right">Expression vector &#40;e.g., pET28a&#41;</td><td align="right">Reporter vector &#40;e.g., pUA66-GFP&#41;</td></tr><tr><td align="right"><strong>Assembly</strong></td><td align="right">Restriction/ligation or Gibson</td><td align="right">Same — restriction/ligation or Gibson</td></tr><tr><td align="right"><strong>Transformation</strong></td><td align="right">Into cloning strain &#40;DH5α&#41;, then expression strain &#40;BL21&#41;</td><td align="right">Into cloning strain, then directly measure</td></tr><tr><td align="right"><strong>Verification</strong></td><td align="right">Colony PCR &#43; sequencing</td><td align="right">Same</td></tr><tr><td align="right"><strong>Readout</strong></td><td align="right">Protein expression &#40;SDS-PAGE, Western blot&#41;</td><td align="right">Reporter fluorescence/luminescence &#40;plate reader&#41;</td></tr><tr><td align="right"><strong>Key difference</strong></td><td align="right">One construct</td><td align="right"><strong>Multiple constructs</strong> &#40;combinatorial motif variants&#41;</td></tr></table>
+<p>The main additional complexity is <strong>combinatorial</strong>: for each interaction, you need 4 constructs &#40;pairs&#41; or 8 constructs &#40;triplets&#41;, each requiring independent cloning and verification. This is why <strong>Golden Gate or Gibson assembly</strong> is preferred — they are more amenable to parallel, high-throughput construct generation.</p>
+<hr />
+<h2 id="ol_start6_advanced_mpra_massively_parallel_reporter_assay"><a href="#ol_start6_advanced_mpra_massively_parallel_reporter_assay" class="header-anchor"><ol start="6">
+<li><p>Advanced: MPRA &#40;Massively Parallel Reporter Assay&#41;</p>
+</li>
+</ol>
+</a></h2>
+<p>For validating <strong>many interactions simultaneously</strong> &#40;e.g., all significant pairs from the paper&#41;, the gold standard is an <strong>MPRA</strong>:</p>
+<ol>
+<li><p><strong>Synthesize</strong> a library of ~1,000–10,000 regulatory sequence variants on an oligonucleotide array &#40;Twist Bioscience, ~&#36;0.05–0.10/oligo&#41;</p>
+</li>
+<li><p><strong>Clone</strong> the entire library into a reporter vector in a single reaction</p>
+</li>
+<li><p><strong>Transform</strong> into cells &#40;E. coli, yeast, or mammalian&#41;</p>
+</li>
+<li><p><strong>Measure</strong> reporter output for all variants simultaneously using <strong>RNA-seq</strong> &#40;read barcodes associated with each variant&#41;</p>
+</li>
+<li><p><strong>Quantify</strong> expression for each variant and compute interaction coefficients</p>
+</li>
+</ol>
+<p><strong>Advantages:</strong></p>
+<ul>
+<li><p>Tests thousands of interactions in a single experiment</p>
+</li>
+<li><p>Controls for position effects, chromosomal context, etc.</p>
+</li>
+<li><p>Publication-quality, high-throughput data</p>
+</li>
+</ul>
+<p><strong>Disadvantages:</strong></p>
+<ul>
+<li><p>Requires access to next-generation sequencing &#40;~&#36;500–2,000 per run&#41;</p>
+</li>
+<li><p>More complex library preparation</p>
+</li>
+<li><p>Typically requires an established genomics lab</p>
+</li>
+</ul>
+<p><strong>Estimated cost for an MPRA experiment:</strong></p>
+<table><tr><th align="right">Item</th><th align="right">Cost</th></tr><tr><td align="right">Oligo library synthesis &#40;1,000 variants&#41;</td><td align="right">&#36;5,000–10,000</td></tr><tr><td align="right">Cloning reagents</td><td align="right">&#36;500–1,000</td></tr><tr><td align="right">Cell culture / transformation</td><td align="right">&#36;200–500</td></tr><tr><td align="right">RNA extraction &#43; library prep</td><td align="right">&#36;500–1,000</td></tr><tr><td align="right">Sequencing &#40;NextSeq / NovaSeq&#41;</td><td align="right">&#36;1,000–3,000</td></tr><tr><td align="right"><strong>Total</strong></td><td align="right"><strong>~&#36;7,000–15,000</strong></td></tr></table>
+<hr />
+<h2 id="ol_start7_the_odin_home_lab_kit_honest_assessment"><a href="#ol_start7_the_odin_home_lab_kit_honest_assessment" class="header-anchor"><ol start="7">
+<li><p>The ODIN Home Lab Kit: Honest Assessment</p>
+</li>
+</ol>
+</a></h2>
+<h3 id="what_the_kit_provides"><a href="#what_the_kit_provides" class="header-anchor">What the kit provides</a></h3>
+<ul>
+<li><p>Gel electrophoresis setup</p>
+</li>
+<li><p>Incubator &#40;37°C&#41;</p>
+</li>
+<li><p>Inoculation loops, plates, basic consumables</p>
+</li>
+<li><p>LB media components</p>
+</li>
+<li><p>Competent E. coli cells</p>
+</li>
+<li><p>Basic transformation protocol</p>
+</li>
+</ul>
+<h3 id="whats_missing_for_this_experiment"><a href="#whats_missing_for_this_experiment" class="header-anchor">What&#39;s missing for this experiment</a></h3>
+<table><tr><th align="right">Gap</th><th align="right">Why it matters</th><th align="right">Solution</th></tr><tr><td align="right"><strong>No plate reader</strong></td><td align="right">Cannot quantitatively measure GFP fluorescence</td><td align="right">Buy used &#40;&#36;2K–5K&#41; or use a collaborator&#39;s</td></tr><tr><td align="right"><strong>No thermocycler</strong></td><td align="right">Cannot do colony PCR or Gibson assembly</td><td align="right">Buy used &#40;&#36;500–2K&#41; or use water bath</td></tr><tr><td align="right"><strong>No micropipettes</strong></td><td align="right">Cannot accurately measure µL volumes</td><td align="right">Buy a set &#40;&#36;300–600&#41;</td></tr><tr><td align="right"><strong>No restriction enzymes</strong></td><td align="right">Cannot cut DNA for cloning</td><td align="right">Order from NEB &#40;~&#36;50–80 each&#41;</td></tr><tr><td align="right"><strong>No ligase</strong></td><td align="right">Cannot join DNA fragments</td><td align="right">Order T4 ligase from NEB &#40;~&#36;60&#41;</td></tr><tr><td align="right"><strong>No sequencing</strong></td><td align="right">Cannot verify constructs</td><td align="right">Send samples to Plasmidsaurus &#40;&#36;15/sample&#41; or Genewiz</td></tr><tr><td align="right"><strong>Limited sterile technique</strong></td><td align="right">Risk of contamination</td><td align="right">Use a candle jar or buy a small laminar flow hood</td></tr></table>
+<h3 id="bottom_line"><a href="#bottom_line" class="header-anchor">Bottom Line</a></h3>
+<p>The ODIN kit is a <strong>starting point for learning</strong>, not a research-grade setup. To produce publication-quality data for even the E. coli experiments, you would need an additional <strong>~&#36;3,000–7,000</strong> in equipment and reagents. The most cost-effective path is:</p>
+<ol>
+<li><p><strong>Minimal viable setup</strong> &#40;~&#36;3,500 additional&#41;: Used plate reader &#43; micropipettes &#43; enzymes &#43; sequencing service → sufficient for E. coli reporter assays</p>
+</li>
+<li><p><strong>Collaboration</strong> &#40;&#36;0 additional&#41;: Partner with a wet lab that has the infrastructure → can validate across all organisms</p>
+</li>
+<li><p><strong>Core facility access</strong>: Many universities offer plate reader and sequencing access for ~&#36;20–50/hour</p>
+</li>
+</ol>
+<hr />
+<h2 id="ol_start8_recommended_validation_plan"><a href="#ol_start8_recommended_validation_plan" class="header-anchor"><ol start="8">
+<li><p>Recommended Validation Plan</p>
+</li>
+</ol>
+</a></h2>
+<h3 id="phase_1_e_coli_proof-of-concept_home_lab_feasible_with_upgrades"><a href="#phase_1_e_coli_proof-of-concept_home_lab_feasible_with_upgrades" class="header-anchor">Phase 1: E. coli proof-of-concept &#40;Home lab feasible with upgrades&#41;</a></h3>
+<ul>
+<li><p>Select <strong>3 strongest pairwise interactions</strong> from E. coli results</p>
+</li>
+<li><p>Build 12 reporter constructs &#40;4 per interaction&#41;</p>
+</li>
+<li><p>Measure GFP/OD₆₀₀ with plate reader</p>
+</li>
+<li><p>Timeline: 4–6 weeks</p>
+</li>
+<li><p>Budget: ~&#36;1,500–2,500 &#40;excluding equipment&#41;</p>
+</li>
+</ul>
+<h3 id="phase_2_yeast_validation_requires_lab_access"><a href="#phase_2_yeast_validation_requires_lab_access" class="header-anchor">Phase 2: Yeast validation &#40;Requires lab access&#41;</a></h3>
+<ul>
+<li><p>Select <strong>3 strongest UTR interactions</strong> from yeast results</p>
+</li>
+<li><p>Use yEGFP reporter in pRS416</p>
+</li>
+<li><p>Measure by flow cytometry or plate reader</p>
+</li>
+<li><p>Timeline: 6–8 weeks</p>
+</li>
+<li><p>Budget: ~&#36;2,000–3,500</p>
+</li>
+</ul>
+<h3 id="phase_3_human_utr_mrna_degradation_requires_collaborator"><a href="#phase_3_human_utr_mrna_degradation_requires_collaborator" class="header-anchor">Phase 3: Human UTR / mRNA degradation &#40;Requires collaborator&#41;</a></h3>
+<ul>
+<li><p>Select <strong>5 strongest interactions</strong> across human UTR and mRNA degradation datasets</p>
+</li>
+<li><p>Use dual-luciferase reporters &#40;psiCHECK-2&#41;</p>
+</li>
+<li><p>Measure in HEK293T cells</p>
+</li>
+<li><p>Include time-course for mRNA degradation predictions &#40;1h, 4h, 10h&#41;</p>
+</li>
+<li><p>Timeline: 8–12 weeks</p>
+</li>
+<li><p>Budget: ~&#36;3,000–5,000 &#40;excluding equipment&#41;</p>
+</li>
+</ul>
+<h3 id="phase_4_mpra_if_results_are_promising"><a href="#phase_4_mpra_if_results_are_promising" class="header-anchor">Phase 4: MPRA &#40;If results are promising&#41;</a></h3>
+<ul>
+<li><p>Design library covering <strong>all significant interactions</strong> from the paper</p>
+</li>
+<li><p>Single experiment validates hundreds of predictions</p>
+</li>
+<li><p>Timeline: 3–4 months</p>
+</li>
+<li><p>Budget: ~&#36;10,000–15,000</p>
+</li>
+</ul>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: February 06, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+        <script src="/libs/katex/katex.min.js"></script>
+<script src="/libs/katex/contrib/auto-render.min.js"></script>
+<script>renderMathInElement(document.body)</script>
+
+    
+    
+  </body>
+</html>
