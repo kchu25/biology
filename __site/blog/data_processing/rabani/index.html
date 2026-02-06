@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Units in Rabani et al. (2017) Data</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="units_in_rabani_et_al_2017_data"><a href="#units_in_rabani_et_al_2017_data" class="header-anchor">Units in Rabani et al. &#40;2017&#41; Data</a></h1>
+<h2 id="units_log_normalized_reporter_mrna_count"><a href="#units_log_normalized_reporter_mrna_count" class="header-anchor"><strong>UNITS: Log₂ normalized reporter mRNA count</strong></a></h2>
+<p>The numbers in your data table are <strong>NOT raw counts</strong>. They are:</p>
+<p><strong>log₂&#40;normalized reporter mRNA count / initial fitted reporter mRNA count&#41;</strong></p>
+<ul>
+<li><p><strong>What&#39;s being measured</strong>: Each specific reporter mRNA &#40;e.g., S0<em>M</em>T11 is one reporter with a specific 3&#39;UTR sequence&#41;</p>
+</li>
+<li><p><strong>Scale</strong>: log₂ </p>
+</li>
+<li><p><strong>Reference point</strong>: 0 &#61; fitted initial count of that reporter &#40;X₀&#41;</p>
+</li>
+<li><p><strong>Original measurement</strong>: UMI counts &#40;unique molecular identifiers from RNA-seq&#41;</p>
+<ul>
+<li><p>Each UMI ≈ one copy of that reporter mRNA molecule</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Normalization</strong>: Spike-in controls &#40;known mRNA quantities: 50 fg down to 3.125 fg&#41;</p>
+<ul>
+<li><p>Converts UMI counts → estimated number of that reporter mRNA</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Transformation</strong>: log₂ applied after normalization</p>
+</li>
+</ul>
+<hr />
+<h2 id="what_this_means_practically"><a href="#what_this_means_practically" class="header-anchor">What This Means Practically</a></h2>
+<p><strong>The values tell you</strong>: How many copies of that specific reporter mRNA remain compared to the starting count, on a log₂ scale.</p>
+<p>Each row &#40;e.g., S0<em>M</em>T11&#41; is tracking <strong>one specific reporter sequence</strong> - a GFP mRNA with a particular 3&#39;UTR attached.</p>
+<h3 id="quick_reference"><a href="#quick_reference" class="header-anchor">Quick Reference</a></h3>
+<ul>
+<li><p><strong>0</strong> &#61; At initial level</p>
+</li>
+<li><p><strong>&#43;1</strong> &#61; 2× initial level &#40;twice as much&#41;</p>
+</li>
+<li><p><strong>-1</strong> &#61; 0.5× initial level &#40;half remains&#41;</p>
+</li>
+<li><p><strong>-2</strong> &#61; 0.25× initial level &#40;quarter remains&#41;</p>
+</li>
+<li><p><strong>-3</strong> &#61; 0.125× initial level &#40;1/8 remains&#41;</p>
+</li>
+<li><p><strong>-5</strong> &#61; 0.03× initial level &#40;~3&#37; remains - heavily degraded&#41;</p>
+</li>
+</ul>
+<h3 id="converting_to_fold-change_in_molecule_count"><a href="#converting_to_fold-change_in_molecule_count" class="header-anchor">Converting to Fold-Change in Molecule Count</a></h3>
+<p><strong>Fold-change from initial &#61; 2^&#40;value&#41;</strong></p>
+<p>So a value of -3.0 means: 2^&#40;-3&#41; &#61; 0.125 &#61; 12.5&#37; of original mRNA molecules remain.</p>
+<hr />
+<h2 id="examples_from_your_data"><a href="#examples_from_your_data" class="header-anchor">Examples from Your Data</a></h2>
+<p><strong>S0<em>M</em>T11</strong> &#40;late-onset degradation&#41;:</p>
+<pre><code class="language-julia">This specific reporter starts with ~2× its fitted baseline
+1h: 0.98    → 2× starting count of S0_M_T11 reporter
+4h: -0.23   → 0.85× &#40;slight decay of this reporter&#41;
+6h: -1.52   → 0.35× &#40;this reporter dropped to 35&#37;&#41;
+10h: -5.33  → 0.025× &#40;only 2.5&#37; of this reporter left&#41;</code></pre>
+<p><strong>S0<em>M</em>T100</strong> &#40;early-onset degradation&#41;:</p>
+<pre><code class="language-julia">This reporter starts high but degrades immediately
+1h: 2.55    → 5.8× starting count of S0_M_T100 reporter
+4h: -4.02   → 0.06× &#40;this reporter down to 6&#37;&#41;
+10h: -5.33  → 0.03× &#40;3&#37; of this reporter remains&#41;</code></pre>
+<hr />
+<h2 id="the_processing_pipeline"><a href="#the_processing_pipeline" class="header-anchor">The Processing Pipeline</a></h2>
+<ol>
+<li><p><strong>Raw data</strong>: UMI counts from sequencing &#40;each UMI ≈ 1 mRNA molecule&#41;</p>
+</li>
+<li><p><strong>Spike-in normalization</strong>: Calibrated to known mRNA molecule counts &#40;converted from femtograms&#41;</p>
+</li>
+<li><p><strong>Fitted initial count &#40;X₀&#41;</strong>: Each reporter gets its own baseline molecule count</p>
+</li>
+<li><p><strong>Log₂ transformation</strong>: log₂&#40;normalized count / X₀&#41;</p>
+</li>
+<li><p><strong>Result</strong>: The numbers you see in the table</p>
+</li>
+</ol>
+<hr />
+<h2 id="time_points"><a href="#time_points" class="header-anchor">Time Points</a></h2>
+<p>Column headers &#40;1h, 2h, etc.&#41; &#61; <strong>hours post fertilization &#40;hpf&#41;</strong></p>
+<ul>
+<li><p>1-2 hpf: Early development</p>
+</li>
+<li><p>3-5 hpf: Zygotic genome activation &#40;ZGA&#41;</p>
+</li>
+<li><p>6-10 hpf: Post-ZGA</p>
+</li>
+</ul>
+<p>Many reporters crash between 4-6h when zygotic degradation machinery activates.</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 21, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>

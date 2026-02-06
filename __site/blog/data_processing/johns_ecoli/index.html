@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="/libs/katex/katex.min.css">
+     
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Johns et al. (2018) E. coli Expression Units Explained</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="johns_et_al_2018_e_coli_expression_units_explained"><a href="#johns_et_al_2018_e_coli_expression_units_explained" class="header-anchor">Johns et al. &#40;2018&#41; E. coli Expression Units Explained</a></h1>
+<h2 id="yes_-_your_data_is_logrnadna"><a href="#yes_-_your_data_is_logrnadna" class="header-anchor">YES - Your Data is log₂&#40;RNA/DNA&#41;</a></h2>
+<p>Looking at your data format:</p>
+<pre><code class="language-julia">seq,expr
+TCCCACTATTTGTCGGCTAGCCAGATTGTTGTGGTCTGATTAAAGTTTCAATTTATACCTTACAATGATGTAAGGTACGTGTAAGAGAAATCGATGGGATATTTTTTTACAACAAGGTATTCTTAAAGTAAGAGTTATACGCTATGTGGAAAAGAGGTGTTTAAG,2.346474234</code></pre>
+<p>The <code>expr</code> column &#61; <strong>log₂&#40;RNA/DNA&#41;</strong>, a normalized transcription measurement.</p>
+<h2 id="the_measurement_unit"><a href="#the_measurement_unit" class="header-anchor">The Measurement Unit</a></h2>
+<p><strong>Unit:</strong> log₂&#40;RNA/DNA&#41; normalized by control sequences</p>
+<h3 id="what_this_means"><a href="#what_this_means" class="header-anchor">What This Means</a></h3>
+\(
+\text{Expression} = \log_2\left(\frac{\text{RNA reads}}{\text{DNA reads}}\right) - \text{control mean}
+\)
+<p><strong>Where:</strong></p>
+<ul>
+<li><p><strong>RNA reads</strong> &#61; mRNA molecule counts from RNA-seq of the pooled library</p>
+</li>
+<li><p><strong>DNA reads</strong> &#61; DNA barcode counts from DNA-seq of the same library</p>
+</li>
+<li><p><strong>Control mean</strong> &#61; average log₂&#40;RNA/DNA&#41; of control sequences &#40;for normalization&#41;</p>
+</li>
+</ul>
+<h3 id="why_rnadna"><a href="#why_rnadna" class="header-anchor">Why RNA/DNA?</a></h3>
+<p>The DNA sequencing tells you how many cells have each promoter construct:</p>
+<ul>
+<li><p>If promoter X appears 1,000 times in DNA-seq → 1,000 cells have it</p>
+</li>
+<li><p>If it appears 5,000 times in RNA-seq → high transcription</p>
+</li>
+<li><p>Ratio &#61; 5,000/1,000 &#61; 5 → log₂&#40;5&#41; &#61; 2.32</p>
+</li>
+</ul>
+<p>The ratio <strong>normalizes for</strong>:</p>
+<ul>
+<li><p>Different representation of promoters in the library</p>
+</li>
+<li><p>Sequencing depth variations</p>
+</li>
+<li><p>Number of cells with each construct</p>
+</li>
+</ul>
+<h2 id="your_data_values"><a href="#your_data_values" class="header-anchor">Your Data Values</a></h2>
+<p>Looking at your examples:</p>
+<ul>
+<li><p><code>2.346</code> &#61; moderate transcription &#40;2^2.35 ≈ 5× more RNA than DNA&#41;</p>
+</li>
+<li><p><code>5.566</code> &#61; high transcription &#40;2^5.57 ≈ 47× more RNA than DNA&#41;</p>
+</li>
+<li><p><code>-2.138</code> &#61; low/repressed &#40;2^-2.14 ≈ 0.23× RNA/DNA, less RNA than DNA&#41;</p>
+</li>
+</ul>
+<p>Negative values mean <strong>repression</strong> - less RNA was made than you&#39;d expect from the DNA counts.</p>
+<h2 id="where_in_the_paper_specific_references"><a href="#where_in_the_paper_specific_references" class="header-anchor">Where in the Paper &#40;Specific References&#41;</a></h2>
+<p><strong>Figure 2a caption:</strong></p>
+<blockquote>
+<p>&quot;Transcriptional activity of 11,319 RSs measured in B. subtilis, E. coli, and P. aeruginosa, shown as <strong>log2 &#40;RNA/DNA&#41; ratios normalized by the mean activity of control sequences</strong>&quot;</p>
+</blockquote>
+<p><strong>Supplementary Figure 7a caption:</strong></p>
+<blockquote>
+<p>&quot;Transcription levels are <strong>log2 &#40;RNA/DNA&#41; ratios normalized by the mean activity of control sequences</strong> &#40;see Methods&#41;&quot;</p>
+</blockquote>
+<p><strong>Methods section</strong> &#40;in supplementary materials&#41;:</p>
+<blockquote>
+<p>&quot;Transcription activity was quantified as log₂&#40;RNA/DNA&#41;&quot;</p>
+</blockquote>
+<p><strong>Figure 1 &#40;schematic&#41;:</strong></p>
+<blockquote>
+<p>Shows &quot;Targeted RNA-seq, DNA-seq, and FACS-seq enable accurate multiplexed measurement of transcription and translation levels&quot;</p>
+</blockquote>
+<h2 id="the_complete_pipeline"><a href="#the_complete_pipeline" class="header-anchor">The Complete Pipeline</a></h2>
+<pre><code class="language-julia">1. Pool of bacteria with different promoters
+       ↓
+2. Extract RNA → RNA-seq → count mRNA for each promoter
+       ↓
+3. Extract DNA → DNA-seq → count DNA barcode for each promoter  
+       ↓
+4. Calculate: log₂&#40;RNA count / DNA count&#41;
+       ↓
+5. Normalize by subtracting mean of control sequences
+       ↓
+6. Final value in your &quot;expr&quot; column</code></pre>
+<h2 id="translation_data_not_in_your_file"><a href="#translation_data_not_in_your_file" class="header-anchor">Translation Data &#40;NOT in your file&#41;</a></h2>
+<p>They ALSO measured translation using <strong>FACS-seq</strong> &#40;flow cytometry of GFP&#41;, but that&#39;s separate data. Your file only has the <strong>transcription</strong> measurements &#40;log₂&#40;RNA/DNA&#41;&#41;.</p>
+<h2 id="bottom_line"><a href="#bottom_line" class="header-anchor">Bottom Line</a></h2>
+<p><strong>Your <code>expr</code> column &#61; log₂&#40;RNA/DNA&#41; - control_mean</strong></p>
+<ul>
+<li><p><strong>Unit:</strong> dimensionless, log-scaled ratio</p>
+</li>
+<li><p><strong>Measures:</strong> transcriptional activity &#40;how much mRNA is produced&#41;</p>
+</li>
+<li><p><strong>NOT:</strong> protein level, absolute molecule counts, or GFP fluorescence</p>
+</li>
+<li><p><strong>Range:</strong> typically -3 to &#43;6 &#40;negative &#61; repressed, positive &#61; active&#41;</p>
+</li>
+</ul>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 21, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+        <script src="/libs/katex/katex.min.js"></script>
+<script src="/libs/katex/contrib/auto-render.min.js"></script>
+<script>renderMathInElement(document.body)</script>
+
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>

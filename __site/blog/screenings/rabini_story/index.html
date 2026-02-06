@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="/libs/katex/katex.min.css">
+     
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Systematic Rules for Maternal mRNA Clearance in Zebrafish (bio version)</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="systematic_rules_for_maternal_mrna_clearance_in_zebrafish"><a href="#systematic_rules_for_maternal_mrna_clearance_in_zebrafish" class="header-anchor">Systematic Rules for Maternal mRNA Clearance in Zebrafish</a></h1>
+<h2 id="technical_version_for_biology_specialists"><a href="#technical_version_for_biology_specialists" class="header-anchor">Technical Version &#40;for biology specialists&#41;</a></h2>
+<h2 id="the_biological_question"><a href="#the_biological_question" class="header-anchor">The Biological Question</a></h2>
+<p>During the maternal-to-zygotic transition &#40;MZT&#41;:</p>
+<ul>
+<li><p>Maternal mRNAs must be cleared on precise schedules</p>
+</li>
+<li><p>Zygotic genome activates at ~3-4 hpf</p>
+</li>
+<li><p>Each mRNA has a unique degradation profile</p>
+</li>
+</ul>
+<p><strong>The Question</strong>: What 3&#39;UTR sequence elements encode these dynamics?</p>
+<hr />
+<h2 id="two_temporal_degradation_programs"><a href="#two_temporal_degradation_programs" class="header-anchor">Two Temporal Degradation Programs</a></h2>
+<h3 id="early-onset_program_maternal_0-4_hpf"><a href="#early-onset_program_maternal_0-4_hpf" class="header-anchor">Early-Onset Program &#40;Maternal, 0-4 hpf&#41;</a></h3>
+<ul>
+<li><p>Active from fertilization</p>
+</li>
+<li><p>Operates via maternally deposited factors</p>
+</li>
+<li><p><strong>Cis-regulatory elements</strong>:</p>
+<ul>
+<li><p>Poly-U stretches → <strong>Stabilizing</strong></p>
+</li>
+<li><p>UUAG motifs → <strong>Stabilizing</strong></p>
+</li>
+<li><p>GC-rich sequences → <strong>Destabilizing</strong></p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="late-onset_program_zygotic_4-10_hpf"><a href="#late-onset_program_zygotic_4-10_hpf" class="header-anchor">Late-Onset Program &#40;Zygotic, 4-10 hpf&#41;</a></h3>
+<ul>
+<li><p>Initiates after zygotic genome activation &#40;ZGA&#41;</p>
+</li>
+<li><p>Requires zygotically transcribed factors</p>
+</li>
+<li><p><strong>Cis-regulatory elements</strong>:</p>
+<ul>
+<li><p>miR-430 seed &#40;GCACUU&#41; → <strong>Destabilizing</strong></p>
+</li>
+<li><p>AU-rich elements &#40;AUUUAU&#41; → <strong>Destabilizing</strong></p>
+</li>
+<li><p>Pumilio recognition elements &#40;UGUAHAUA&#41; → <strong>Destabilizing</strong></p>
+</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="a_comprehensive_sequence_grammar"><a href="#a_comprehensive_sequence_grammar" class="header-anchor">A Comprehensive Sequence Grammar</a></h2>
+<p><strong>Highly systematic discovery</strong>:</p>
+<ol>
+<li><p><strong>Massively parallel reporter assay &#40;MPRA&#41;</strong>: Tested ~35,000 3&#39;UTR sequences &#40;110nt each&#41; simultaneously</p>
+<ul>
+<li><p>Injected into 1-cell embryos</p>
+</li>
+<li><p>Measured mRNA levels hourly for 10 hours</p>
+</li>
+<li><p>Tracked both adenylated &#40;A&#43;&#41; and deadenylated &#40;A-&#41; reporters</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Six dominant regulatory motifs</strong> identified across all sequences</p>
+</li>
+<li><p><strong>Linear regression models</strong> decode sequence → degradation dynamics:</p>
+<ul>
+<li><p>Uses k-mer composition &#40;3-7nt motifs&#41;</p>
+</li>
+<li><p>Explains <strong>70&#37; of variance</strong> in mRNA stability</p>
+</li>
+<li><p>Motifs act <strong>additively</strong>: more sites → stronger effect</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Validated by synthesis</strong>: </p>
+<ul>
+<li><p>Designed artificial 3&#39;UTRs with predicted half-lives</p>
+</li>
+<li><p>Experimental measurements matched predictions &#40;r &#61; 0.68&#41;</p>
+</li>
+<li><p>Confirmed gain/loss-of-function effects of individual motifs</p>
+</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="regression_model_framework"><a href="#regression_model_framework" class="header-anchor">Regression Model Framework</a></h2>
+<p><strong>Approach</strong>: <em>k</em>-mer-based linear regression</p>
+\[\beta_g = w_0 + \sum_k N_{kg} \cdot w_k\]
+<p>Where:</p>
+<ul>
+<li><p>\(\beta_g\) &#61; degradation rate of reporter \(g\)</p>
+</li>
+<li><p>\(N_{kg}\) &#61; count of <em>k</em>-mer \(k\) in 3&#39;UTR of reporter \(g\)</p>
+</li>
+<li><p>\(w_k\) &#61; learned weight for <em>k</em>-mer \(k\)</p>
+</li>
+</ul>
+<p><strong>Two separate models</strong>:</p>
+<ul>
+<li><p><strong>Early-onset model</strong>: Trained on class I reporters &#40;constant degradation&#41;</p>
+<ul>
+<li><p>1,264 k-mers with non-zero weights</p>
+</li>
+<li><p>Explains 67&#37; variance &#40;A-&#41;, 38&#37; variance &#40;A&#43;&#41;</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Late-onset model</strong>: Trained on classes II &amp; III &#40;accelerated after ZGA&#41;</p>
+<ul>
+<li><p>718 k-mers with non-zero weights  </p>
+</li>
+<li><p>Explains 29&#37; variance &#40;A-&#41;, 38&#37; variance &#40;A&#43;&#41;</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>Combined performance</strong>: 70&#37; of total variance explained</p>
+<p><strong>Key insight</strong>: Short sequence elements &#40;3-7nt&#41; are sufficient to predict mRNA fate during MZT</p>
+<hr />
+<h2 id="summary_for_presentation"><a href="#summary_for_presentation" class="header-anchor">Summary for Presentation</a></h2>
+<p><strong>Core finding</strong>:   Six short sequence motifs in 3&#39;UTRs govern mRNA clearance through two temporally distinct degradation programs &#40;maternal and zygotic&#41;, creating predictable sequence-to-stability relationships.</p>
+<p><strong>Timeline</strong>:</p>
+<pre><code class="language-julia">hpf:      0────3────6────10
+         │ Early │  Late  │
+Program:  Maternal  Zygotic
+Signals:  U/UUAG   miR-430
+          GC-rich  ARE/PUM</code></pre>
+<p><strong>Why this matters</strong>:</p>
+<ul>
+<li><p>First <strong>systematic, quantitative</strong> map of cis-elements controlling maternal mRNA clearance</p>
+</li>
+<li><p><strong>Predictive models</strong> enable rational design of mRNA stability</p>
+</li>
+<li><p>Generalizable MPRA &#43; regression framework &#40;&quot;UTR-Seq&quot;&#41; for studying post-transcriptional regulation</p>
+</li>
+</ul>
+<p><strong>The power</strong>: Not just correlation—causation confirmed by synthetic biology. You can now <em>engineer</em> mRNA half-lives by rational 3&#39;UTR design.</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 27, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+        <script src="/libs/katex/katex.min.js"></script>
+<script src="/libs/katex/contrib/auto-render.min.js"></script>
+<script>renderMathInElement(document.body)</script>
+
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>

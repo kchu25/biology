@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="/libs/katex/katex.min.css">
+     
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Cao et al. (2021) 5' UTR Expression Units Explained</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="cao_et_al_2021_5_utr_expression_units_explained"><a href="#cao_et_al_2021_5_utr_expression_units_explained" class="header-anchor">Cao et al. &#40;2021&#41; 5&#39; UTR Expression Units Explained</a></h1>
+<h2 id="the_datasets_youre_asking_about"><a href="#the_datasets_youre_asking_about" class="header-anchor">The Datasets You&#39;re Asking About</a></h2>
+<p>Based on the blog post, &quot;jek&quot;, &quot;muscle&quot;, and &quot;PCB&quot; likely refer to the <strong>training datasets</strong> they used, which came from:</p>
+<ol>
+<li><p><strong>HEK</strong> &#40;not &quot;jek&quot;&#41; &#61; HEK 293T cells</p>
+</li>
+<li><p><strong>muscle</strong> &#61; Human muscle tissue  </p>
+</li>
+<li><p><strong>PC</strong> &#40;not &quot;PCB&quot;&#41; &#61; PC3 cells &#40;prostate cancer&#41;</p>
+</li>
+</ol>
+<p>These were <strong>NOT their experimental data</strong> - they&#39;re published datasets from other labs used to train their computational model.</p>
+<h2 id="units_in_the_original_training_datasets"><a href="#units_in_the_original_training_datasets" class="header-anchor">Units in the Original Training Datasets</a></h2>
+<h3 id="translation_efficiency_te_-_the_core_training_metric"><a href="#translation_efficiency_te_-_the_core_training_metric" class="header-anchor">Translation Efficiency &#40;TE&#41; - The Core Training Metric</a></h3>
+<p><strong>Formula:</strong></p>
+\[
+\text{TE} = \frac{\text{Ribo-seq RPKM}}{\text{RNA-seq RPKM}}
+\]
+<p><strong>What it measures:</strong></p>
+<ul>
+<li><p><strong>Ribo-seq RPKM</strong> &#61; ribosome footprint counts &#40;how much translation is happening&#41;</p>
+</li>
+<li><p><strong>RNA-seq RPKM</strong> &#61; mRNA transcript counts &#40;how much mRNA exists&#41;</p>
+</li>
+<li><p><strong>TE</strong> &#61; ratio of the two &#40;translation per mRNA molecule&#41;</p>
+</li>
+</ul>
+<p><strong>Units:</strong> Dimensionless ratio &#40;RPKM / RPKM&#41;</p>
+<p><strong>Interpretation:</strong> Higher TE &#61; more ribosomes per mRNA &#61; more protein output</p>
+<p><strong>Example:</strong> TE &#61; 2.0 means 2× more ribosomes per mRNA compared to TE &#61; 1.0</p>
+<h3 id="where_these_datasets_came_from"><a href="#where_these_datasets_came_from" class="header-anchor">Where These Datasets Came From</a></h3>
+<table><tr><th align="right">Dataset</th><th align="right">Source</th><th align="right">GEO Accession</th><th align="right">What They Measured</th></tr><tr><td align="right"><strong>HEK 293T</strong></td><td align="right">Andreev et al. &#40;2015&#41;</td><td align="right">GSE55195</td><td align="right">Translation during stress response</td></tr><tr><td align="right"><strong>PC3</strong> &#40;prostate cancer&#41;</td><td align="right">Hsieh et al. &#40;2012&#41;</td><td align="right">GSE35469</td><td align="right">mTOR signaling effects on translation</td></tr><tr><td align="right"><strong>Muscle</strong></td><td align="right">Wein et al. &#40;2014&#41;</td><td align="right">GSE56148</td><td align="right">Translation in muscle tissue</td></tr><tr><td align="right"><strong>Muscle &#40;GTEx&#41;</strong></td><td align="right">GTEx database</td><td align="right">-</td><td align="right">mRNA expression levels</td></tr></table>
+<p><strong>Key point:</strong> These are publicly available datasets - the authors mined existing high-quality data rather than generating their own training data.</p>
+<h2 id="units_in_their_screening_dataset"><a href="#units_in_their_screening_dataset" class="header-anchor">Units in Their Screening Dataset</a></h2>
+<h3 id="during_high-throughput_screening"><a href="#during_high-throughput_screening" class="header-anchor">During High-Throughput Screening</a></h3>
+<p><strong>1. FACS &#40;Flow Cytometry&#41; Input:</strong></p>
+<ul>
+<li><p><strong>What:</strong> GFP fluorescence intensity</p>
+</li>
+<li><p><strong>Unit:</strong> Arbitrary fluorescence units &#40;AFU&#41; - photon counts from detector</p>
+</li>
+<li><p><strong>How used:</strong> Cells sorted into bins &#40;top 2.5&#37;, 2.5-5&#37;, 5-10&#37;, 0-100&#37;&#41;</p>
+</li>
+</ul>
+<p><strong>2. Next-Generation Sequencing Output:</strong></p>
+<ul>
+<li><p><strong>What:</strong> DNA sequencing read counts for each 5&#39; UTR</p>
+</li>
+<li><p><strong>Unit:</strong> Raw read counts &#40;e.g., &quot;this UTR appeared 1,247 times&quot;&#41;</p>
+</li>
+<li><p><strong>Normalized:</strong> Counts per million reads</p>
+</li>
+</ul>
+<p><strong>3. Enrichment Score &#40;Final Metric&#41;:</strong></p>
+\[
+\text{Enrichment} = \log_2\left(\frac{\text{reads in top bin}}{\text{reads in control bin}}\right)
+\]
+<p><strong>Unit:</strong> log₂&#40;dimensionless ratio&#41;</p>
+<p><strong>Where in paper:</strong> Figure 3c shows these log₂ enrichment scores</p>
+<h3 id="during_validation"><a href="#during_validation" class="header-anchor">During Validation</a></h3>
+<p><strong>1. GFP Expression &#40;Fluorescent Reporters&#41;:</strong></p>
+<ul>
+<li><p><strong>Raw measurement:</strong> Mean fluorescence intensity &#40;MFI&#41; from flow cytometry</p>
+</li>
+<li><p><strong>How calculated:</strong> </p>
+</li>
+</ul>
+\[
+  \text{Relative Expression} = \frac{\text{GFP}_{\text{test UTR}} / \text{BFP}_{\text{test UTR}}}{\text{GFP}_{\text{pVAX1}} / \text{BFP}_{\text{pVAX1}}} \times 100\%
+  \]
+<ul>
+<li><p><strong>Unit:</strong> Percentage &#40;&#37;&#41; where pVAX1 &#61; 100&#37;</p>
+</li>
+<li><p><strong>Interpretation:</strong> 158&#37; means 1.58× more protein than pVAX1 control</p>
+</li>
+</ul>
+<p><strong>Where in paper:</strong> Figures 4c-d, Figure 5</p>
+<p><strong>2. Therapeutic Protein Expression &#40;VEGF, CCL21&#41;:</strong></p>
+<ul>
+<li><p><strong>Raw measurement:</strong> ELISA</p>
+</li>
+<li><p><strong>Unit:</strong> <strong>pg/mL</strong> &#40;picograms per milliliter&#41;</p>
+</li>
+<li><p><strong>Normalized to:</strong> per 100,000 cells, per 24 hours</p>
+</li>
+<li><p><strong>Reported as:</strong> Percentage relative to pVAX1</p>
+</li>
+</ul>
+<p><strong>Example from Figure 4f &#40;CCL21&#41;:</strong></p>
+<ul>
+<li><p>pVAX1 might produce 500 pg/mL</p>
+</li>
+<li><p>NeoUTR3 produces 2,760 pg/mL  </p>
+</li>
+<li><p>Reported as: 552&#37; &#40;5.52× increase&#41;</p>
+</li>
+</ul>
+<p><strong>Where in paper:</strong> Figures 4e-f</p>
+<h2 id="the_complete_measurement_pipeline"><a href="#the_complete_measurement_pipeline" class="header-anchor">The Complete Measurement Pipeline</a></h2>
+<h3 id="training_phase_before_experiments"><a href="#training_phase_before_experiments" class="header-anchor">Training Phase &#40;Before Experiments&#41;</a></h3>
+<pre><code class="language-julia">Public datasets &#40;Ribo-seq &#43; RNA-seq&#41;
+    ↓
+Calculate TE &#61; Ribo-seq RPKM / RNA-seq RPKM
+    ↓
+Extract 5&#39; UTR features &#40;k-mers, structure, etc.&#41;
+    ↓
+Train Random Forest model
+    ↓
+Use genetic algorithm to design synthetic 5&#39; UTRs</code></pre>
+<h3 id="screening_phase_their_experiments"><a href="#screening_phase_their_experiments" class="header-anchor">Screening Phase &#40;Their Experiments&#41;</a></h3>
+<pre><code class="language-julia">~12,000 5&#39; UTRs cloned into GFP reporter plasmids
+    ↓
+Recombinase-mediated integration &#40;1 copy per cell&#41;
+    ↓
+FACS: Sort by GFP fluorescence → bins
+    ↓
+DNA-seq: Count reads per UTR in each bin
+    ↓
+Calculate: log₂&#40;top bin reads / control reads&#41;
+    ↓
+Rank UTRs by enrichment score</code></pre>
+<h3 id="validation_phase"><a href="#validation_phase" class="header-anchor">Validation Phase</a></h3>
+<pre><code class="language-julia">Top candidate UTRs
+    ↓
+Test individually in cells
+    ↓
+Measure: GFP/BFP ratio by flow cytometry
+OR: Protein concentration by ELISA &#40;pg/mL&#41;
+    ↓
+Normalize to pVAX1 &#61; 100&#37;
+    ↓
+Report: &quot;NeoUTR3 gives 158&#37; expression&quot;</code></pre>
+<h2 id="summary_table"><a href="#summary_table" class="header-anchor">Summary Table</a></h2>
+<table><tr><th align="right">Measurement Type</th><th align="right">Raw Unit</th><th align="right">Normalized Unit</th><th align="right">Where Used</th></tr><tr><td align="right"><strong>Training data &#40;TE&#41;</strong></td><td align="right">Ribo-seq RPKM / RNA-seq RPKM</td><td align="right">Dimensionless ratio</td><td align="right">Model training</td></tr><tr><td align="right"><strong>Screening &#40;FACS&#41;</strong></td><td align="right">Arbitrary fluorescence units</td><td align="right">Binned by intensity</td><td align="right">Cell sorting</td></tr><tr><td align="right"><strong>Screening &#40;NGS&#41;</strong></td><td align="right">Read counts</td><td align="right">log₂&#40;enrichment ratio&#41;</td><td align="right">UTR ranking</td></tr><tr><td align="right"><strong>Validation &#40;GFP&#41;</strong></td><td align="right">Mean fluorescence intensity</td><td align="right">&#37; of pVAX1 &#40;&#61;100&#37;&#41;</td><td align="right">Figures 4c-d, 5</td></tr><tr><td align="right"><strong>Validation &#40;ELISA&#41;</strong></td><td align="right">pg/mL per 100k cells/24h</td><td align="right">&#37; of pVAX1 &#40;&#61;100&#37;&#41;</td><td align="right">Figures 4e-f</td></tr></table>
+<h2 id="key_differences_from_other_papers"><a href="#key_differences_from_other_papers" class="header-anchor">Key Differences from Other Papers</a></h2>
+<p><strong>Yeast &#40;de Boer 2019&#41;:</strong></p>
+<ul>
+<li><p>Unit: log₂&#40;YFP/RFP&#41; </p>
+</li>
+<li><p>Both on same plasmid</p>
+</li>
+</ul>
+<p><strong>E. coli &#40;Johns 2018&#41;:</strong></p>
+<ul>
+<li><p>Unit: log₂&#40;RNA/DNA&#41;</p>
+</li>
+<li><p>DNA-seq normalizes for cell count</p>
+</li>
+</ul>
+<p><strong>This paper &#40;Cao 2021&#41;:</strong></p>
+<ul>
+<li><p>Training: Translation Efficiency &#40;TE&#41; from public data</p>
+</li>
+<li><p>Screening: log₂&#40;reads enrichment&#41; </p>
+</li>
+<li><p>Validation: &#37; of pVAX1 &#40;from GFP/BFP ratio or ELISA pg/mL&#41;</p>
+</li>
+</ul>
+<h2 id="where_to_find_this_in_the_paper"><a href="#where_to_find_this_in_the_paper" class="header-anchor">Where to Find This in the Paper</a></h2>
+<p><strong>Methods Section:</strong></p>
+<ul>
+<li><p>&quot;Translation efficiency was calculated as Ribo-seq RPKM / RNA-seq RPKM&quot;</p>
+</li>
+<li><p>&quot;ELISA measurements reported as pg/mL per 100,000 cells per 24h&quot;</p>
+</li>
+</ul>
+<p><strong>Results:</strong></p>
+<ul>
+<li><p>Figure 3c: Enrichment scores &#40;log₂ ratios&#41;</p>
+</li>
+<li><p>Figure 4: Relative expression &#40;&#37; of pVAX1&#41;</p>
+</li>
+<li><p>Figure 5: Multi-cell-type validation</p>
+</li>
+</ul>
+<h2 id="bottom_line"><a href="#bottom_line" class="header-anchor">Bottom Line</a></h2>
+<p><strong>Training datasets &#40;HEK, muscle, PC3&#41;:</strong></p>
+<ul>
+<li><p>Unit: Translation Efficiency &#40;TE&#41; &#61; dimensionless Ribo-seq/RNA-seq ratio</p>
+</li>
+<li><p>Source: Published datasets, not their own data</p>
+</li>
+</ul>
+<p><strong>Final screening dataset:</strong></p>
+<ul>
+<li><p>Screening metric: log₂&#40;enrichment&#41; from NGS read counts</p>
+</li>
+<li><p>Validation metric: &#37; of pVAX1 from either GFP/BFP fluorescence ratio OR protein concentration &#40;pg/mL&#41;</p>
+</li>
+</ul>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 21, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+        <script src="/libs/katex/katex.min.js"></script>
+<script src="/libs/katex/contrib/auto-render.min.js"></script>
+<script>renderMathInElement(document.body)</script>
+
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>

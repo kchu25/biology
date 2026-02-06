@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="/libs/katex/katex.min.css">
+     
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Systematic Rules for Maternal mRNA Clearance in Zebrafish</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="systematic_rules_for_maternal_mrna_clearance_in_zebrafish"><a href="#systematic_rules_for_maternal_mrna_clearance_in_zebrafish" class="header-anchor">Systematic Rules for Maternal mRNA Clearance in Zebrafish</a></h1>
+<h2 id="first_lets_clarify_the_biology"><a href="#first_lets_clarify_the_biology" class="header-anchor">First, Let&#39;s Clarify the Biology</a></h2>
+<blockquote>
+<p><strong>What&#39;s happening in early development?</strong></p>
+<p>When a sperm fertilizes an egg, you get a <strong>fertilized egg</strong> &#40;also called a zygote or 1-cell embryo&#41;. At this point, the embryo&#39;s own genome is completely silent—it&#39;s not making any proteins yet. </p>
+<p>So how does the embryo survive? The mother pre-loaded the egg with <strong>maternal mRNAs</strong>—essentially &quot;care packages&quot; of instructions she made during egg development &#40;oogenesis&#41;. These maternal mRNAs are already sitting in the egg cytoplasm when fertilization happens, ready to be translated into proteins.</p>
+<p><strong>The maternal-to-zygotic transition &#40;MZT&#41;</strong>: Around 3-4 hours post-fertilization in zebrafish, the embryo&#39;s genome finally &quot;wakes up&quot; and starts transcribing its own genes. Now the embryo needs to get rid of mom&#39;s old mRNAs and switch to its own. This handoff is the MZT.</p>
+</blockquote>
+<blockquote>
+<p><strong>What did they actually do in the MPRA?</strong></p>
+<p>They made <strong>synthetic reporter mRNAs</strong>—basically artificial mRNAs with a GFP gene plus different 3&#39;UTR sequences &#40;110 nucleotides each&#41;. Think of it like making 35,000 different variants of the same mRNA, each with a unique barcode in its 3&#39;UTR.</p>
+<p>They injected this whole library into <strong>1-cell embryos</strong> &#40;fertilized eggs&#41; using a tiny needle. All 35,000 different mRNAs go into the same embryo at once. Then they just watch: collect embryos every hour, sequence the mRNAs that are still around, and count how many copies of each variant survived.</p>
+<p>It&#39;s like a survival contest—which 3&#39;UTR sequences make mRNAs last longer, and which ones get them destroyed quickly?</p>
+</blockquote>
+<h2 id="the_biological_question"><a href="#the_biological_question" class="header-anchor">The Biological Question</a></h2>
+<blockquote>
+<p><strong>What they wanted to know</strong>:  Which specific sequences in the 3&#39;UTR act like &quot;destroy me&quot; or &quot;keep me stable&quot; signals? And are there different sets of rules before vs. after the embryo&#39;s genome turns on?</p>
+</blockquote>
+<hr />
+<h2 id="what_they_found_two_different_delete_programs"><a href="#what_they_found_two_different_delete_programs" class="header-anchor">What They Found: Two Different &quot;Delete Programs&quot;</a></h2>
+<blockquote>
+<p><strong>Program 1: The maternal program &#40;0-4 hours&#41;</strong></p>
+<p>This runs from the very beginning using machinery that mom already put in the egg. It recognizes:</p>
+<ul>
+<li><p><strong>Poly-U stretches</strong> &#40;UUUUUUU&#41; → these <em>protect</em> mRNAs, make them last longer</p>
+</li>
+<li><p><strong>UUAG motifs</strong> → also <em>protective</em></p>
+</li>
+<li><p><strong>GC-rich sequences</strong> → these <em>destabilize</em> mRNAs, make them degrade faster</p>
+</li>
+</ul>
+<p><strong>Program 2: The zygotic program &#40;4-10 hours&#41;</strong></p>
+<p>This kicks in after the embryo&#39;s genome wakes up and starts making new proteins. It&#39;s much more aggressive and recognizes:</p>
+<ul>
+<li><p><strong>miR-430 binding sites</strong> &#40;GCACUU&#41; → microRNA targeting, causes fast degradation</p>
+</li>
+<li><p><strong>AU-rich elements</strong> &#40;AUUUAU&#41; → classic instability signals</p>
+</li>
+<li><p><strong>Pumilio binding sites</strong> &#40;UGUAHAUA&#41; → recruits Pumilio protein, accelerates decay</p>
+</li>
+</ul>
+<p>All three of these make mRNAs disappear quickly once the zygotic program is running.</p>
+</blockquote>
+<hr />
+<h2 id="how_systematic_is_this"><a href="#how_systematic_is_this" class="header-anchor">How Systematic Is This?</a></h2>
+<blockquote>
+<p><strong>Very systematic—not just a few scattered examples</strong>:</p>
+<ol>
+<li><p><strong>Tested 35,000 different sequences</strong> at once &#40;massively parallel&#41;</p>
+<ul>
+<li><p>Each sequence is 110 nucleotides from real zebrafish 3&#39;UTRs</p>
+</li>
+<li><p>Measured hourly for 10 hours in living embryos</p>
+</li>
+<li><p>Did this for both polyadenylated &#40;A&#43;&#41; and deadenylated &#40;A-&#41; versions</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Found 6 main signals</strong> that explain most of what&#39;s happening</p>
+</li>
+<li><p><strong>Built predictive models</strong> using those signals:</p>
+<ul>
+<li><p>The model learns how much each short sequence pattern &#40;3-7 nucleotides&#41; contributes</p>
+</li>
+<li><p>Can predict 70&#37; of the variation in mRNA stability just from sequence</p>
+</li>
+<li><p>Multiple signals combine additively &#40;more sites &#61; stronger effect&#41;</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Validated by making new sequences</strong>:</p>
+<ul>
+<li><p>Designed artificial 3&#39;UTRs with predicted half-lives</p>
+</li>
+<li><p>Actually made them and tested them</p>
+</li>
+<li><p>The predictions matched&#33; If they added a miR-430 site, mRNA degraded faster. Remove it, mRNA lasted longer.</p>
+</li>
+</ul>
+</li>
+</ol>
+<p><strong>Bottom line</strong>: These aren&#39;t just correlations. You can now <em>design</em> how long an mRNA will last by choosing which signals to include in its 3&#39;UTR.</p>
+</blockquote>
+<hr />
+<h2 id="the_computational_model_in_plain_terms"><a href="#the_computational_model_in_plain_terms" class="header-anchor">The Computational Model &#40;In Plain Terms&#41;</a></h2>
+<blockquote>
+<p><strong>How the model works</strong>:</p>
+<p>Think of each 3&#39;UTR as a collection of short words &#40;3-7 letters long&#41;. The model:</p>
+<ol>
+<li><p>Counts how many times each short sequence appears</p>
+</li>
+<li><p>Assigns a &quot;weight&quot; to each sequence &#40;positive &#61; destabilizing, negative &#61; stabilizing&#41;</p>
+</li>
+<li><p>Adds them all up to predict how fast the mRNA degrades</p>
+</li>
+</ol>
+<p><strong>Formula</strong>: </p>
+</blockquote>
+\[\text{Degradation rate} = \text{baseline} + \sum (\text{count of motif} \times \text{weight of motif})\]
+<blockquote>
+<p><strong>They built two models</strong>:</p>
+<ul>
+<li><p><strong>Early model</strong> &#40;maternal program&#41;: Uses 1,264 sequence patterns</p>
+</li>
+<li><p><strong>Late model</strong> &#40;zygotic program&#41;: Uses 718 sequence patterns</p>
+</li>
+</ul>
+<p><strong>Performance</strong>: Explains 70&#37; of the differences in mRNA stability between sequences</p>
+<p><strong>Why this matters</strong>: You don&#39;t need to know the exact proteins involved. The sequence patterns alone are enough to predict what will happen.</p>
+</blockquote>
+<hr />
+<h2 id="the_punchline"><a href="#the_punchline" class="header-anchor">The Punchline</a></h2>
+<blockquote>
+<p><strong>What they discovered</strong>:</p>
+<p>Six short sequence signals control when maternal mRNAs get destroyed. Three signals work from the start &#40;using mom&#39;s machinery&#41;, and three kick in when the embryo&#39;s genome wakes up.</p>
+<p><strong>Why it&#39;s powerful</strong>:</p>
+<ul>
+<li><p>First time anyone systematically mapped <em>which sequences</em> control maternal mRNA clearance</p>
+</li>
+<li><p>Not just &quot;miR-430 is important&quot;—now we know <em>exactly</em> how much each sequence contributes</p>
+</li>
+<li><p><strong>You can engineer mRNA stability</strong>: Want an mRNA to last 2 hours? 5 hours? Just design the right 3&#39;UTR.</p>
+</li>
+</ul>
+<p><strong>Timeline</strong>:</p>
+</blockquote>
+<pre><code class="language-julia">&gt; Hours:    0───3───6───10
+&gt;          │Early│Late│
+&gt; Active:   Mom   Baby
+&gt; Signals:  U     miR-430
+&gt;          UUAG   ARE
+&gt;           GC    Pumilio
+&gt;</code></pre>
+<blockquote>
+<p><strong>The breakthrough</strong>: This isn&#39;t correlational biology—it&#39;s <em>predictive</em>. They proved it by designing new sequences and showing they behaved exactly as predicted.</p>
+</blockquote>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 27, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+        <script src="/libs/katex/katex.min.js"></script>
+<script src="/libs/katex/contrib/auto-render.min.js"></script>
+<script>renderMathInElement(document.body)</script>
+
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>

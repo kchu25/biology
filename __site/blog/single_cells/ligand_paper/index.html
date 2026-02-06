@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="/libs/katex/katex.min.css">
+     
+  
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Decoding that Macrophage Paper: A Survival Guide</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="decoding_that_macrophage_paper_a_survival_guide"><a href="#decoding_that_macrophage_paper_a_survival_guide" class="header-anchor">Decoding that Macrophage Paper: A Survival Guide</a></h1>
+<h2 id="ligand-target_gene_identification_why_bother"><a href="#ligand-target_gene_identification_why_bother" class="header-anchor"><ol>
+<li><p>Ligand-Target Gene Identification: Why Bother?</p>
+</li>
+</ol>
+</a></h2>
+<h3 id="first_what_even_are_ligands_and_receptors"><a href="#first_what_even_are_ligands_and_receptors" class="header-anchor">First: What Even Are Ligands and Receptors?</a></h3>
+<p><strong>Ligand:</strong> A molecule that binds to a receptor. Often a protein, but not always:</p>
+<p>&#40;Etymology: From Latin <em>ligare</em> &#61; &quot;to bind&quot; or &quot;to tie.&quot; Literally just means &quot;the thing that binds.&quot;&#41;</p>
+<ul>
+<li><p><strong>Proteins:</strong> Cytokines &#40;IL-4, IFN-γ&#41;, growth factors &#40;EGF, VEGF&#41;, hormones &#40;insulin&#41;</p>
+</li>
+<li><p><strong>Small molecules:</strong> Hormones &#40;estrogen, testosterone&#41;, neurotransmitters &#40;dopamine&#41;</p>
+</li>
+<li><p><strong>Lipids:</strong> Prostaglandins, leukotrienes</p>
+</li>
+</ul>
+<p>In your macrophage paper, it&#39;s almost certainly protein ligands &#40;cytokines&#41;.</p>
+<p><strong>Receptor:</strong> A protein sitting on the cell surface &#40;or sometimes inside&#41; that binds the ligand. Think lock-and-key.</p>
+<p><strong>Why do they exist?</strong> Cells need to communicate and respond to their environment:</p>
+<ul>
+<li><p>&quot;Danger&#33;&quot; signals from pathogens → activate immune cells</p>
+</li>
+<li><p>&quot;Grow&#33;&quot; signals from neighboring cells → cell division</p>
+</li>
+<li><p>&quot;Differentiate&#33;&quot; signals during development → become a specific cell type</p>
+</li>
+</ul>
+<p>The ligand-receptor interaction is how cells translate external signals into internal actions.</p>
+<p><strong>The cascade:</strong></p>
+\[\text{Ligand (outside)} \xrightarrow{\text{binds}} \text{Receptor (membrane)} \xrightarrow{\text{activates}} \text{Signaling proteins (inside)} \xrightarrow{\text{regulate}} \text{Transcription factors} \xrightarrow{\text{control}} \text{Target genes}\]
+<h3 id="the_problem"><a href="#the_problem" class="header-anchor">The Problem</a></h3>
+<p><strong>The problem:</strong> A ligand &#40;like a cytokine or growth factor&#41; binds to a receptor on a cell&#39;s surface. This kicks off a signaling cascade inside the cell, ultimately changing which genes get turned on or off. But which genes? That&#39;s the hard part.</p>
+<p><strong>Why we care:</strong> If you know ligand X activates gene Y, you can:</p>
+<ul>
+<li><p>Understand disease mechanisms &#40;e.g., inflammation&#41;</p>
+</li>
+<li><p>Design better drugs &#40;target the right pathways&#41;</p>
+</li>
+<li><p>Predict cell behavior in response to treatments</p>
+</li>
+</ul>
+<p><strong>The challenge:</strong> Between the receptor and the downstream genes, there&#39;s a complex web of signaling proteins. Direct targets vs. indirect effects are hard to untangle. That&#39;s where fancy experimental approaches come in.</p>
+<hr />
+<h2 id="ol_start2_single-cell_rna-seq_perturbation_time_course_data"><a href="#ol_start2_single-cell_rna-seq_perturbation_time_course_data" class="header-anchor"><ol start="2">
+<li><p>Single-Cell RNA-seq Perturbation Time Course Data</p>
+</li>
+</ol>
+</a></h2>
+<p>Let&#39;s break this monster phrase down step by step.</p>
+<h3 id="single-cell_rna-seq_scrna-seq"><a href="#single-cell_rna-seq_scrna-seq" class="header-anchor">Single-Cell RNA-seq &#40;scRNA-seq&#41;</a></h3>
+<p><strong>Regular RNA-seq:</strong> Grind up thousands/millions of cells together, measure average gene expression. You lose information about cell-to-cell differences.</p>
+<p><strong>scRNA-seq:</strong> Measure gene expression in <em>individual cells</em>. Now you can see that Cell A is highly expressing Gene X while Cell B isn&#39;t.</p>
+<p><strong>How it&#39;s quantified:</strong></p>
+<ul>
+<li><p>Isolate individual cells &#40;microfluidics, droplet-based methods like 10x Genomics&#41;</p>
+</li>
+<li><p>Extract RNA from each cell</p>
+</li>
+<li><p>Convert to cDNA, add barcodes &#40;each cell gets a unique barcode&#41;</p>
+</li>
+<li><p>Sequence everything together</p>
+</li>
+<li><p>Use barcodes to assign reads back to individual cells</p>
+</li>
+<li><p><strong>Output:</strong> A matrix where rows &#61; genes, columns &#61; cells, values &#61; expression counts</p>
+</li>
+</ul>
+<p><strong>Key papers:</strong></p>
+<ul>
+<li><p>Macosko et al. &#40;2015&#41; &quot;Highly Parallel Genome-wide Expression Profiling of Individual Cells Using Nanoliter Droplets&quot; <em>Cell</em></p>
+</li>
+<li><p>Zheng et al. &#40;2017&#41; &quot;Massively parallel digital transcriptional profiling of single cells&quot; <em>Nature Communications</em></p>
+</li>
+</ul>
+<h3 id="perturbation"><a href="#perturbation" class="header-anchor"><ul>
+<li><p>Perturbation</p>
+</li>
+</ul>
+</a></h3>
+<p>You don&#39;t just observe cells—you <em>do something</em> to them:</p>
+<ul>
+<li><p>Add a ligand &#40;e.g., interferon-γ, IL-4&#41;</p>
+</li>
+<li><p>Knock out a gene</p>
+</li>
+<li><p>Add a drug</p>
+</li>
+</ul>
+<p>Then measure how gene expression changes compared to control.</p>
+<h3 id="time_course"><a href="#time_course" class="header-anchor"><ul>
+<li><p>Time Course</p>
+</li>
+</ul>
+</a></h3>
+<p>Instead of one snapshot, you sample at multiple time points after perturbation:</p>
+<ul>
+<li><p>t &#61; 0h &#40;baseline&#41;</p>
+</li>
+<li><p>t &#61; 1h, 6h, 24h, 48h, etc.</p>
+</li>
+</ul>
+<p>This reveals the <em>dynamics</em>: which genes respond immediately &#40;direct targets&#41;, which respond later &#40;secondary effects&#41;, and how responses evolve.</p>
+<p><strong>How time course is quantified:</strong></p>
+<ul>
+<li><p>Same cells cultured in parallel</p>
+</li>
+<li><p>At each timepoint, harvest a subset and do scRNA-seq</p>
+</li>
+<li><p>Compare gene expression across timepoints</p>
+</li>
+<li><p>Look for temporal patterns using trajectory inference or pseudotime analysis</p>
+</li>
+</ul>
+<p><strong>Example papers:</strong></p>
+<ul>
+<li><p>Briggs et al. &#40;2018&#41; &quot;The dynamics of gene expression in vertebrate embryogenesis at single-cell resolution&quot; <em>Science</em> &#40;developmental time course&#41;</p>
+</li>
+<li><p>Shalek et al. &#40;2014&#41; &quot;Single-cell RNA-seq reveals dynamic paracrine control of cellular variation&quot; <em>Nature</em> &#40;viral response time course&#41;</p>
+</li>
+</ul>
+<p><strong>Is this standard?</strong> It&#39;s becoming more common but still computationally and experimentally expensive. Most people do either scRNA-seq OR time courses OR perturbations—doing all three is ambitious.</p>
+<hr />
+<h2 id="ol_start3_macrophage_polarization_what_even_is_that"><a href="#ol_start3_macrophage_polarization_what_even_is_that" class="header-anchor"><ol start="3">
+<li><p>Macrophage Polarization: What Even Is That?</p>
+</li>
+</ol>
+</a></h2>
+<p><strong>Macrophages</strong> are immune cells that eat pathogens, dead cells, and debris. They&#39;re like the janitors/security guards of your immune system.</p>
+<p><strong>Polarization</strong> means they can adopt different &quot;personalities&quot; depending on signals they receive:</p>
+<h3 id="m1_macrophages_pro-inflammatory"><a href="#m1_macrophages_pro-inflammatory" class="header-anchor">M1 Macrophages &#40;Pro-inflammatory&#41;</a></h3>
+<ul>
+<li><p><strong>Activated by:</strong> Interferon-γ &#40;IFN-γ&#41;, bacterial products &#40;LPS&#41;</p>
+</li>
+<li><p><strong>Function:</strong> Kill pathogens, promote inflammation</p>
+</li>
+<li><p><strong>Marker genes:</strong> <em>iNOS</em>, <em>TNF-α</em>, <em>IL-12</em></p>
+</li>
+<li><p>Think: &quot;Fight mode&quot;</p>
+</li>
+</ul>
+<h3 id="m2_macrophages_anti-inflammatory"><a href="#m2_macrophages_anti-inflammatory" class="header-anchor">M2 Macrophages &#40;Anti-inflammatory&#41;</a></h3>
+<ul>
+<li><p><strong>Activated by:</strong> IL-4, IL-13, IL-10</p>
+</li>
+<li><p><strong>Function:</strong> Tissue repair, wound healing, dampen inflammation</p>
+</li>
+<li><p><strong>Marker genes:</strong> <em>Arg1</em>, <em>CD206</em>, <em>IL-10</em></p>
+</li>
+<li><p>Think: &quot;Repair mode&quot;</p>
+</li>
+</ul>
+<p><strong>Why it matters:</strong></p>
+<ul>
+<li><p><strong>Cancer:</strong> Tumor-associated macrophages often polarize toward M2 &#40;bad—they help tumors grow&#41;</p>
+</li>
+<li><p><strong>Autoimmune disease:</strong> Too much M1 &#61; chronic inflammation</p>
+</li>
+<li><p><strong>Wound healing:</strong> Need proper M1→M2 transition</p>
+</li>
+</ul>
+<p><strong>It&#39;s a spectrum:</strong> Real macrophages aren&#39;t purely M1 or M2—they&#39;re on a continuum.</p>
+<p><strong>Key papers:</strong></p>
+<ul>
+<li><p>Murray et al. &#40;2014&#41; &quot;Macrophage activation and polarization: nomenclature and experimental guidelines&quot; <em>Immunity</em></p>
+</li>
+<li><p>Xue et al. &#40;2014&#41; &quot;Transcriptome-based network analysis reveals a spectrum model of human macrophage activation&quot; <em>Immunity</em></p>
+</li>
+</ul>
+<hr />
+<h2 id="putting_it_all_together"><a href="#putting_it_all_together" class="header-anchor">Putting It All Together</a></h2>
+<p>Your paper is probably doing something like:</p>
+<ol>
+<li><p>Take macrophages</p>
+</li>
+<li><p>Hit them with a ligand &#40;e.g., IL-4 to polarize toward M2&#41;</p>
+</li>
+<li><p>Do scRNA-seq at multiple timepoints &#40;0h, 6h, 24h...&#41;</p>
+</li>
+<li><p>Use computational methods to infer which genes are <em>direct</em> targets of the IL-4 signaling pathway vs. downstream consequences</p>
+</li>
+</ol>
+<p><strong>Why this approach?</strong> Traditional bulk methods would miss:</p>
+<ul>
+<li><p>Rare cell subpopulations</p>
+</li>
+<li><p>Cell-to-cell variability in response timing</p>
+</li>
+<li><p>Heterogeneity in polarization states</p>
+</li>
+</ul>
+<p>The time course lets you distinguish early &#40;direct&#41; from late &#40;indirect&#41; responses at single-cell resolution.</p>
+<hr />
+<p><strong>Bottom line:</strong> This is legit cutting-edge stuff combining multiple experimental layers to map out signaling networks in a complex biological process. Expensive, complicated, but potentially very informative.</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: February 06, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+        <script src="/libs/katex/katex.min.js"></script>
+<script src="/libs/katex/contrib/auto-render.min.js"></script>
+<script>renderMathInElement(document.body)</script>
+
+    
+    
+  </body>
+</html>

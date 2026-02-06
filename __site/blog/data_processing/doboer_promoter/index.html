@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="/libs/katex/katex.min.css">
+     
+  
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>de Boer et al. (2019) Yeast Promoter Expression Units Explained</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="de_boer_et_al_2019_yeast_promoter_expression_units_explained"><a href="#de_boer_et_al_2019_yeast_promoter_expression_units_explained" class="header-anchor">de Boer et al. &#40;2019&#41; Yeast Promoter Expression Units Explained</a></h1>
+<h2 id="yes_-_thats_exactly_the_premise"><a href="#yes_-_thats_exactly_the_premise" class="header-anchor">YES - That&#39;s Exactly the Premise&#33;</a></h2>
+<p>The <strong>random test promoter</strong> can have wildly different strength than the <strong>reference promoter</strong>, and that&#39;s the whole point of the measurement.</p>
+<h2 id="the_mathematical_framework"><a href="#the_mathematical_framework" class="header-anchor">The Mathematical Framework</a></h2>
+<h3 id="whats_actually_being_measured"><a href="#whats_actually_being_measured" class="header-anchor">What&#39;s Actually Being Measured</a></h3>
+<p>For a single cell containing the plasmid:</p>
+\[
+\text{YFP}_{\text{intensity}} = k_Y \cdot \alpha_{\text{test}} \cdot n \cdot \eta
+\]
+\[
+\text{RFP}_{\text{intensity}} = k_R \cdot \alpha_{\text{TEF2}} \cdot n \cdot \eta
+\]
+<p>Where:</p>
+<ul>
+<li><p>\(\alpha_{\text{test}}\) &#61; transcriptional activity of the test promoter &#40;what we want to measure&#41;</p>
+</li>
+<li><p>\(\alpha_{\text{TEF2}}\) &#61; transcriptional activity of TEF2 reference promoter &#40;constant&#41;</p>
+</li>
+<li><p>\(n\) &#61; plasmid copy number in this cell</p>
+</li>
+<li><p>\(\eta\) &#61; cellular machinery efficiency &#40;ribosomes, RNA polymerase, etc.&#41;</p>
+</li>
+<li><p>\(k_Y, k_R\) &#61; detection efficiency constants &#40;fluorophore brightness, detector sensitivity&#41;</p>
+</li>
+</ul>
+<h3 id="the_ratio_cancels_confounding_variables"><a href="#the_ratio_cancels_confounding_variables" class="header-anchor">The Ratio Cancels Confounding Variables</a></h3>
+\[
+\frac{\text{YFP}_{\text{intensity}}}{\text{RFP}_{\text{intensity}}} = \frac{k_Y \cdot \alpha_{\text{test}} \cdot n \cdot \eta}{k_R \cdot \alpha_{\text{TEF2}} \cdot n \cdot \eta}
+\]
+\[
+= \frac{k_Y}{k_R} \cdot \frac{\alpha_{\text{test}}}{\alpha_{\text{TEF2}}}
+\]
+<p>Notice that \(n\) and \(\eta\)<strong>cancel out completely</strong>.</p>
+<h3 id="log_transform_for_better_dynamic_range"><a href="#log_transform_for_better_dynamic_range" class="header-anchor">Log Transform for Better Dynamic Range</a></h3>
+\[
+\text{Expression} = \log_2\left(\frac{\text{YFP}}{\text{RFP}}\right)
+\]
+\[
+= \log_2(k_Y) - \log_2(k_R) + \log_2(\alpha_{\text{test}}) - \log_2(\alpha_{\text{TEF2}})
+\]
+\[
+= C + \log_2(\alpha_{\text{test}})
+\]
+<p>where \(C = \log_2(k_Y/k_R) - \log_2(\alpha_{\text{TEF2}})\) is a constant offset.</p>
+<h2 id="the_key_premise_alpha_texttest_varies_widely"><a href="#the_key_premise_alpha_texttest_varies_widely" class="header-anchor">The Key Premise: \(\alpha_{\text{test}}\) Varies Widely</a></h2>
+<p>For random promoter sequences:</p>
+\[
+\alpha_{\text{test}} \in [0.01 \cdot \alpha_{\text{TEF2}}, 10 \cdot \alpha_{\text{TEF2}}]
+\]
+<p><strong>This means:</strong></p>
+<ul>
+<li><p>Weak promoters: \(\text{YFP} \ll \text{RFP}\) → Expression \(\approx -7\) to \(0\)</p>
+</li>
+<li><p>Medium promoters: \(\text{YFP} \approx \text{RFP}\) → Expression \(\approx 0\)</p>
+</li>
+<li><p>Strong promoters: \(\text{YFP} \gg \text{RFP}\) → Expression \(\approx 0\) to \(+4\)</p>
+</li>
+</ul>
+<p>The paper reports a ~50-fold range, which is:</p>
+\[
+\log_2(50) \approx 5.64 \text{ units}
+\]
+<h2 id="why_the_ratio_matters_concrete_example"><a href="#why_the_ratio_matters_concrete_example" class="header-anchor">Why the Ratio Matters &#40;Concrete Example&#41;</a></h2>
+<h3 id="scenario_two_cells_with_different_copy_numbers"><a href="#scenario_two_cells_with_different_copy_numbers" class="header-anchor">Scenario: Two cells with different copy numbers</a></h3>
+<p><strong>Cell 1:</strong> High copy number</p>
+\[
+n_1 = 50 \text{ plasmids}
+\]
+<p><strong>Cell 2:</strong> Low copy number</p>
+\[
+n_2 = 10 \text{ plasmids}
+\]
+<h3 id="without_normalization_measuring_yfp_only"><a href="#without_normalization_measuring_yfp_only" class="header-anchor">Without normalization &#40;measuring YFP only&#41;:</a></h3>
+<p><strong>Cell 1:</strong></p>
+\[
+\text{YFP}_1 = k_Y \cdot \alpha_{\text{test}} \cdot 50 \cdot \eta = 50 k_Y \alpha_{\text{test}} \eta
+\]
+<p><strong>Cell 2:</strong></p>
+\[
+\text{YFP}_2 = k_Y \cdot \alpha_{\text{test}} \cdot 10 \cdot \eta = 10 k_Y \alpha_{\text{test}} \eta
+\]
+<p><strong>Problem:</strong> \(\text{YFP}_1 = 5 \times \text{YFP}_2\) even though they have the <strong>same promoter</strong>&#33;</p>
+<h3 id="with_normalization_measuring_yfprfp"><a href="#with_normalization_measuring_yfprfp" class="header-anchor">With normalization &#40;measuring YFP/RFP&#41;:</a></h3>
+<p><strong>Cell 1:</strong></p>
+\[
+\frac{\text{YFP}_1}{\text{RFP}_1} = \frac{k_Y \cdot \alpha_{\text{test}} \cdot 50 \cdot \eta}{k_R \cdot \alpha_{\text{TEF2}} \cdot 50 \cdot \eta} = \frac{k_Y \alpha_{\text{test}}}{k_R \alpha_{\text{TEF2}}}
+\]
+<p><strong>Cell 2:</strong></p>
+\[
+\frac{\text{YFP}_2}{\text{RFP}_2} = \frac{k_Y \cdot \alpha_{\text{test}} \cdot 10 \cdot \eta}{k_R \cdot \alpha_{\text{TEF2}} \cdot 10 \cdot \eta} = \frac{k_Y \alpha_{\text{test}}}{k_R \alpha_{\text{TEF2}}}
+\]
+<p><strong>Solution:</strong> Both cells give the <strong>same ratio</strong> despite 5-fold difference in copy number&#33;</p>
+<h2 id="the_actual_units"><a href="#the_actual_units" class="header-anchor">The Actual Units</a></h2>
+<h3 id="raw_measurements_arbitrary_units"><a href="#raw_measurements_arbitrary_units" class="header-anchor">Raw measurements &#40;arbitrary units&#41;:</a></h3>
+\[
+\text{YFP} \in [10^2, 10^6] \text{ a.u.}
+\]
+\[
+\text{RFP} \in [10^2, 10^6] \text{ a.u.}
+\]
+<p>These are <strong>digitized photon counts</strong> from the photomultiplier tube.</p>
+<h3 id="final_expression_value"><a href="#final_expression_value" class="header-anchor">Final expression value:</a></h3>
+\[
+\text{Expression} = \log_2\left(\frac{\text{YFP (a.u.)}}{\text{RFP (a.u.)}}\right)
+\]
+<p><strong>Unit:</strong> Dimensionless &#40;log of a dimensionless ratio&#41;</p>
+<p><strong>Range in their data:</strong> Approximately \(-3\) to \(+15\)</p>
+<h2 id="variance_decomposition"><a href="#variance_decomposition" class="header-anchor">Variance Decomposition</a></h2>
+<p>The total variance in YFP intensity can be decomposed as:</p>
+\[
+\text{Var}(\text{YFP}) = \text{Var}(\alpha_{\text{test}}) + \text{Var}(n) + \text{Var}(\eta) + \text{Var}(\text{noise})
+\]
+<p>By taking the ratio:</p>
+\[
+\text{Var}\left(\frac{\text{YFP}}{\text{RFP}}\right) \approx \text{Var}(\alpha_{\text{test}}) + \text{Var}(\text{noise})
+\]
+<p>The variance from \(n\) and \(\eta\) are <strong>eliminated</strong> because they affect both YFP and RFP equally.</p>
+<h2 id="what_theyre_actually_testing"><a href="#what_theyre_actually_testing" class="header-anchor">What They&#39;re Actually Testing</a></h2>
+<p><strong>Null hypothesis:</strong> Random DNA sequences have no promoter activity</p>
+\[
+H_0: \alpha_{\text{test}} = 0
+\]
+<p><strong>Alternative:</strong> Random sequences can have varying promoter strengths</p>
+\[
+H_A: \alpha_{\text{test}} \sim \text{some distribution}
+\]
+<p>They found that random sequences DO have activity, spanning:</p>
+\[
+\alpha_{\text{test}} \in [0.01 \alpha_{\text{TEF2}}, 10 \alpha_{\text{TEF2}}]
+\]
+<p>This ~1000-fold range &#40;\(\log_2(1000) \approx 10\)&#41; shows random DNA can accidentally create functional promoters.</p>
+<h2 id="summary"><a href="#summary" class="header-anchor">Summary</a></h2>
+<p><strong>The premise:</strong> \(\alpha_{\text{test}}\) can deviate significantly from \(\alpha_{\text{TEF2}}\)</p>
+<p><strong>The solution:</strong> Measure both simultaneously and take the ratio</p>
+<p><strong>The math:</strong> Confounding variables cancel, leaving only the signal of interest</p>
+<p><strong>The units:</strong> \(\log_2(\text{dimensionless ratio})\) where the ratio is in arbitrary fluorescence units that cancel out</p>
+<h2 id="flow_cytometry_throughput"><a href="#flow_cytometry_throughput" class="header-anchor">Flow Cytometry Throughput</a></h2>
+<p><strong>YES - Flow cytometry can absolutely handle millions of cells&#33;</strong></p>
+<p><strong>Typical speeds:</strong></p>
+<ul>
+<li><p>Standard flow cytometers: <strong>10,000 - 50,000 cells/second</strong></p>
+</li>
+<li><p>High-throughput systems: <strong>100,000 - 400,000 cells/second</strong></p>
+</li>
+<li><p>State-of-the-art imaging flow cytometry: <strong>&gt;1,000,000 cells/second</strong></p>
+</li>
+</ul>
+<p><strong>In their experiment:</strong></p>
+<ul>
+<li><p>Analyzing 100 million promoters across multiple bins</p>
+</li>
+<li><p>At 10,000 cells/second → 10 million cells in ~17 minutes</p>
+</li>
+<li><p>At 50,000 cells/second → 10 million cells in ~3 minutes</p>
+</li>
+</ul>
+<p>They likely ran multiple sorts and pooled cells into bins based on YFP/RFP ratio, then sequenced the DNA from each bin to determine which promoter sequences gave which expression levels.</p>
+<p><strong>The workflow:</strong></p>
+<ol>
+<li><p>Millions of yeast cells flow through single-file</p>
+</li>
+<li><p>Each cell measured for YFP and RFP &#40;takes microseconds&#41;</p>
+</li>
+<li><p>Cells sorted into 18 expression bins in real-time</p>
+</li>
+<li><p>DNA extracted from each bin and sequenced</p>
+</li>
+<li><p>Map: promoter sequence → expression bin → log₂&#40;YFP/RFP&#41; value</p>
+</li>
+</ol>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 21, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+        <script src="/libs/katex/katex.min.js"></script>
+<script src="/libs/katex/contrib/auto-render.min.js"></script>
+<script>renderMathInElement(document.body)</script>
+
+    
+    
+  </body>
+</html>

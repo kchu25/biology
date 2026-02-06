@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>UTR-seq Study Overview (regulatory elements)</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="utr-seq_study_overview"><a href="#utr-seq_study_overview" class="header-anchor">UTR-seq Study Overview</a></h1>
+<h2 id="the_biological_motivation"><a href="#the_biological_motivation" class="header-anchor">The Biological Motivation</a></h2>
+<p><strong>The big question:</strong> How do cells control when mRNAs get degraded?</p>
+<p>Every mRNA has regulatory signals encoded in its sequence - especially in the <strong>3&#39; untranslated region &#40;3&#39;UTR&#41;</strong> - that determine how long it sticks around. But we didn&#39;t have a systematic, predictive understanding of these &quot;sequence rules.&quot; </p>
+<p><strong>Why this matters:</strong></p>
+<ul>
+<li><p>mRNA stability is a major control point for gene expression - if the mRNA degrades quickly, you get less protein</p>
+</li>
+<li><p>During development, cells need precise temporal control: some mRNAs need to be stable for hours, others need to disappear fast</p>
+</li>
+<li><p>The <strong>maternal-to-zygotic transition &#40;MZT&#41;</strong> is a perfect natural experiment: maternal mRNAs stored in the egg get cleared at specific times as the embryo&#39;s genome takes over</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>ELI5: What is MZT and why it&#39;s perfect for studying 3&#39;UTRs</strong></p>
+<p>Think of a fertilized egg like a startup that just got acquired:</p>
+<p><strong>Before the merger &#40;0-3 hours&#41;:</strong> The egg is running entirely on &quot;mom&#39;s code&quot; - mRNAs and proteins she packed into the egg before fertilization. The embryo&#39;s own genome is OFF, not making anything yet.</p>
+<p><strong>The transition &#40;3-6 hours&#41;:</strong> The embryo&#39;s genome boots up &#40;this is ZGA - zygotic genome activation&#41;. Now you have TWO programs running: mom&#39;s old code AND the embryo&#39;s new code.</p>
+<p><strong>After the takeover &#40;6&#43; hours&#41;:</strong> The embryo actively deletes mom&#39;s old mRNAs to make room for its own. It&#39;s like cleaning out the old codebase.</p>
+<p><strong>Why this is PERFECT for studying 3&#39;UTRs:</strong></p>
+<ol>
+<li><p><strong>Natural time course</strong> - you get a built-in experiment where mRNAs with different 3&#39;UTRs degrade at different, predictable times</p>
+</li>
+<li><p><strong>Two distinct programs</strong> - maternal degradation &#40;always on&#41; vs zygotic degradation &#40;turns on at hour 4-6&#41;, so you can separate what sequences each program recognizes</p>
+</li>
+<li><p><strong>Massive coordinated clearance</strong> - thousands of maternal mRNAs get degraded in a short window, giving you tons of data points</p>
+</li>
+<li><p><strong>Clean system</strong> - early embryos are simple, not cluttered with complex cell types or stress responses</p>
+</li>
+</ol>
+<p>It&#39;s like having a controlled experiment where nature does the work of testing thousands of sequences under two different regulatory regimes, all in one 10-hour window&#33;</p>
+<p><strong>Wait, massively parallel eggs?</strong> </p>
+<p>No&#33; It&#39;s massively parallel <em>within</em> each egg. They inject a pool of ~35,000 different reporter mRNAs &#40;each with a different 3&#39;UTR sequence&#41; into a SINGLE embryo. All 35,000 reporters experience the same developmental program simultaneously - same timing, same degradation machinery, same conditions. Then they use sequencing to count how much of each reporter is left at each hour. It&#39;s like running 35,000 experiments in parallel inside one embryo, rather than doing them one-by-one.</p>
+<p><strong>What&#39;s an embryo anyway?</strong></p>
+<p>At the <strong>1-cell stage</strong> &#40;when they inject&#41;: it&#39;s literally ONE giant cell - the fertilized egg. Think of it as one big container with cytoplasm, organelles, and two nuclei that just fused &#40;sperm &#43; egg&#41;.</p>
+<p>Over the first 10 hours, this single cell divides many times &#40;2 cells → 4 → 8 → 16 → 32... up to thousands of cells by hour 10&#41;, but all those cells are still sharing a lot of the same materials. The injected reporters get distributed among all the daughter cells as division happens.</p>
+<p>So &quot;embryo&quot; &#61; the developing organism, which starts as 1 cell and becomes many cells over time.</p>
+<p><strong>How do measurements work as cells divide?</strong></p>
+<p>Yes&#33; At later timepoints &#40;hour 6, 8, 10&#41;, they&#39;re measuring mRNA from the ENTIRE embryo - which is now thousands of cells. But that&#39;s actually fine because:</p>
+<ol>
+<li><p>They homogenize the whole embryo &#40;grind it up&#41; and extract all the RNA</p>
+</li>
+<li><p>Sequencing counts how many copies of each reporter sequence are present total</p>
+</li>
+<li><p>What matters is the <em>relative abundance</em> - if a reporter had 1000 copies at hour 0 and 500 copies at hour 6, it degraded by 50&#37;, regardless of whether those copies are in 1 cell or 1000 cells</p>
+</li>
+</ol>
+<p>The key assumption: all cells in the early embryo are experiencing similar developmental programs &#40;which is true - they&#39;re all synchronized during these early stages&#41;. So cell division doesn&#39;t confound the degradation measurements - you&#39;re still tracking the same pool of molecules, just distributed across more cells.</p>
+</blockquote>
+<p><strong>The challenge before this study:</strong></p>
+<ul>
+<li><p>Previous work found individual regulatory elements &#40;like AU-rich elements, microRNA binding sites&#41; but mostly one-at-a-time</p>
+</li>
+<li><p>We knew <em>some</em> sequences mattered, but couldn&#39;t predict degradation from sequence alone</p>
+</li>
+<li><p>No comprehensive &quot;rulebook&quot; for how 3&#39;UTR sequences control mRNA fate</p>
+</li>
+</ul>
+<p><strong>What they did differently:</strong> Instead of testing sequences one-by-one, they used a <strong>massively parallel reporter assay</strong> to test ~35,000 different 3&#39;UTRs simultaneously during early zebrafish development. This let them:</p>
+<ol>
+<li><p>Systematically identify <em>all</em> the major sequence signals</p>
+</li>
+<li><p>Measure their effects quantitatively</p>
+</li>
+<li><p>Build regression models that could predict degradation dynamics from sequence</p>
+</li>
+<li><p>Test predictions by designing artificial 3&#39;UTRs with specific properties</p>
+</li>
+</ol>
+<p>It&#39;s like going from studying individual words to learning the entire grammar of a language.</p>
+<hr />
+<h2 id="what_kind_of_experiments"><a href="#what_kind_of_experiments" class="header-anchor">What Kind of Experiments?</a></h2>
+<p>This was a <strong>massively parallel reporter assay &#40;MPRA&#41;</strong> - they tested ~35,000 different 3&#39;UTR sequences simultaneously to see how fast each one caused mRNA to degrade.</p>
+<h2 id="sequence_sources"><a href="#sequence_sources" class="header-anchor">Sequence Sources</a></h2>
+<p><strong>Endogenous sequences</strong> - they pulled real 3&#39;UTRs from zebrafish genes &#40;110 nucleotides long&#41;. These were actual sequences that exist in nature, not random synthetic ones.</p>
+<h2 id="experimental_design"><a href="#experimental_design" class="header-anchor">Experimental Design</a></h2>
+<p>They created two pools of reporters:</p>
+<ul>
+<li><p><strong>A&#43;</strong>: Pre-adenylated &#40;with poly-A tails already attached&#41;</p>
+</li>
+<li><p><strong>A-</strong>: Non-adenylated &#40;no poly-A tail&#41;</p>
+</li>
+</ul>
+<p>Then they injected these into 1-cell zebrafish embryos and measured mRNA levels every hour for the first 10 hours of development.</p>
+<h2 id="the_biology_two_degradation_programs"><a href="#the_biology_two_degradation_programs" class="header-anchor">The Biology: Two Degradation Programs</a></h2>
+<p>The cool finding was that mRNAs followed <strong>two distinct temporal programs</strong>:</p>
+<h3 id="early-onset_degradation"><a href="#early-onset_degradation" class="header-anchor">Early-Onset Degradation</a></h3>
+<ul>
+<li><p>Happens right from the start &#40;0-2 hours&#41;</p>
+</li>
+<li><p>Controlled by <em>maternal</em> machinery already in the egg</p>
+</li>
+<li><p>Key signals:</p>
+<ul>
+<li><p><strong>Poly-U sequences</strong> → stabilize</p>
+</li>
+<li><p><strong>GC-rich sequences</strong> → destabilize</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="late-onset_degradation"><a href="#late-onset_degradation" class="header-anchor">Late-Onset Degradation  </a></h3>
+<ul>
+<li><p>Kicks in around <strong>4-6 hours</strong> &#40;after zygotic genome activation&#41;</p>
+</li>
+<li><p>Happens when the embryo&#39;s own genes turn on</p>
+</li>
+<li><p>Key signals:</p>
+<ul>
+<li><p><strong>miR-430</strong> &#40;microRNA&#41;</p>
+</li>
+<li><p><strong>AU-rich elements</strong></p>
+</li>
+<li><p><strong>Pumilio binding sites</strong></p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="best_hour_for_neural_net_training"><a href="#best_hour_for_neural_net_training" class="header-anchor">Best Hour for Neural Net Training</a></h2>
+<p><strong>Use hour 6 as your reference point.</strong> Here&#39;s why:</p>
+<ol>
+<li><p><strong>Maximum biological signal</strong>: By hour 6, both degradation programs are active - you capture maternal regulation &#40;0-4h&#41; <em>and</em> the zygotic program just kicking in</p>
+</li>
+<li><p><strong>Transition zone</strong>: Hour 6 sits right at the maternal-to-zygotic transition, where the most dramatic regulatory changes happen</p>
+</li>
+<li><p><strong>Practical</strong>: Most sequences have detectable signal by then but haven&#39;t completely degraded yet</p>
+</li>
+</ol>
+<p><strong>Alternative strategy</strong>: If you want to predict <em>which</em> program controls a sequence, use <strong>hour 3</strong> &#40;mostly early-onset&#41; vs <strong>hour 8</strong> &#40;strong late-onset&#41;. The ratio between these captures the temporal shift beautifully.</p>
+<hr />
+<blockquote>
+<p><strong>Why hour 6, not 1 or 9-10?</strong></p>
+<p><strong>Hour 1</strong> is too early - you&#39;re still in the maternal-only zone. Everything is being controlled by what mom put in the egg. The embryo&#39;s genome hasn&#39;t woken up yet, so you only see half the story.</p>
+<p><strong>Hours 9-10</strong> are too late - most of the interesting changes already happened. By then, unstable mRNAs are already degraded and you&#39;ve lost your dynamic range. Plus, stable mRNAs dominate the signal, which is less informative.</p>
+<p><strong>Hour 6</strong> is the Goldilocks zone - it&#39;s right when zygotic genome activation hits &#40;around 4-6 hpf in zebrafish&#41;. You catch the handoff between maternal and zygotic control. The late-onset degradation machinery is firing up while early-onset effects are still visible. Maximum information, maximum variance between sequences.</p>
+</blockquote>
+<hr />
+<h2 id="whats_zygotic_genome_activation_zga"><a href="#whats_zygotic_genome_activation_zga" class="header-anchor">What&#39;s Zygotic Genome Activation &#40;ZGA&#41;?</a></h2>
+<p><strong>The biological explanation from this paper:</strong></p>
+<p>When sperm meets egg, the embryo initially relies entirely on mRNAs and proteins that mom stored in the egg during oogenesis - this is the <strong>maternal program</strong>. The embryo&#39;s own genome is transcriptionally silent at first.</p>
+<p>Then, at a specific developmental time, the embryo&#39;s genome &quot;wakes up&quot; and starts transcribing its own genes - this is <strong>zygotic genome activation &#40;ZGA&#41;</strong>.</p>
+<p><strong>In zebrafish, ZGA happens around 3-4 hours post-fertilization.</strong> The Rabani et al. paper shows that:</p>
+<ul>
+<li><p>Late-onset degradation has onset times clustering around <strong>4-6 hours</strong> &#40;see Figure 2d in the paper&#41;</p>
+</li>
+<li><p>This timing matches when the embryo starts making zygotic factors like <strong>miR-430</strong>, which appears after ZGA and drives massive maternal mRNA clearance</p>
+</li>
+<li><p>The paper explicitly states this is a &quot;<strong>late-onset program that accelerated degradation after zygotic genome activation</strong>&quot;</p>
+</li>
+</ul>
+<p><strong>Why this matters for hour 6:</strong></p>
+<p>By hour 6, you&#39;ve got ~2 hours of the early maternal program &#40;0-4h&#41; establishing baseline degradation rates, PLUS you&#39;re now 1-2 hours into the zygotic program where new regulatory machinery &#40;miR-430, Pumilio, etc.&#41; is actively degrading targets. It&#39;s the moment when both regulatory layers are simultaneously visible in your data - maximum biological complexity, maximum predictive information.</p>
+<hr />
+<h2 id="a_or_a-_-_which_matters_more"><a href="#a_or_a-_-_which_matters_more" class="header-anchor">A&#43; or A- - Which Matters More?</a></h2>
+<p><strong>Use A&#43; &#40;adenylated&#41; if you can only pick one.</strong> Here&#39;s why:</p>
+<p><strong>Biological reality:</strong> In real embryos, maternal mRNAs START with poly&#40;A&#41; tails. They&#39;re adenylated when deposited in the egg. So A&#43; reporters better mimic what&#39;s actually happening in vivo.</p>
+<p><strong>From the paper:</strong> </p>
+<ul>
+<li><p>A&#43; reporters showed stronger late-onset effects &#40;Figure 3b&#41; - they&#39;re more sensitive to the zygotic degradation program</p>
+</li>
+<li><p>A- reporters often degraded faster overall just from lacking the poly&#40;A&#41; tail protection, which can mask sequence-specific effects</p>
+</li>
+<li><p>For Class II sequences &#40;late-onset, poly&#40;A&#41;-dependent&#41;, the A&#43; condition captures biology that&#39;s completely invisible in A-</p>
+</li>
+</ul>
+<p><strong>Practical insight:</strong> The paper&#39;s regression models were built separately for A&#43; and A- because poly&#40;A&#41; fundamentally changes how sequences behave. If you&#39;re training a neural net to predict real embryonic dynamics, A&#43; is more physiologically relevant.</p>
+<p><strong>Counter-argument - Why A- might be useful:</strong> </p>
+<blockquote>
+<p>You&#39;re right&#33; A- actually lets you see degradation effects more immediately and clearly. Without the poly&#40;A&#41; tail protection, sequence-specific signals aren&#39;t masked by the stabilizing effect of adenylation. The paper shows A- reporters generally degrade faster &#40;Figure 2e&#41; - this means:</p>
+<ul>
+<li><p><strong>Higher signal-to-noise for sequence effects</strong> - differences between sequences show up faster</p>
+</li>
+<li><p><strong>Cleaner read on intrinsic stability</strong> - you see what the 3&#39;UTR sequence itself does, without poly&#40;A&#41; confounding it</p>
+</li>
+<li><p><strong>Faster experimental readout</strong> - degradation happens sooner, so you don&#39;t need to wait as long</p>
+</li>
+</ul>
+<p><strong>For machine learning specifically:</strong> If you&#39;re trying to learn sequence motifs and their effects, A- might actually be better for training because the signal is &quot;purer&quot; and shows up faster. Then you could test generalization on A&#43; data.</p>
+</blockquote>
+<p><strong>Bottom line:</strong> A&#43; &#61; biological relevance, A- &#61; cleaner sequence signal. Pick based on your goal&#33;</p>
+<hr />
+<h2 id="key_regulatory_sequence_features_they_found"><a href="#key_regulatory_sequence_features_they_found" class="header-anchor">Key Regulatory Sequence Features They Found</a></h2>
+<p>The paper identified <strong>six major sequence signals</strong> that control mRNA degradation:</p>
+<h3 id="early-onset_stabilizers_maternal_program_0-4_hours"><a href="#early-onset_stabilizers_maternal_program_0-4_hours" class="header-anchor">Early-Onset Stabilizers &#40;Maternal Program, ~0-4 hours&#41;</a></h3>
+<ol>
+<li><p><strong>Poly-U stretches</strong> &#40;e.g., UUUUUUUU&#41; - these stabilize mRNAs, slowing degradation</p>
+<ul>
+<li><p>Active from hour 0 onwards</p>
+</li>
+<li><p>Effect visible throughout but most important before ZGA</p>
+</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p><strong>From the paper &#40;Abstract&#41;:</strong> &quot;Three signals regulated early-onset rates: stabilizing poly-U and UUAG sequences and destabilizing GC-rich signals.&quot;</p>
+<p><strong>From Figure 4a:</strong> They show poly-U sequences associate with slower early-onset degradation rates in both A&#43; and A- reporters.</p>
+</blockquote>
+<ol start="2">
+<li><p><strong>UUAG motifs</strong> - also protective, associated with longer half-lives</p>
+<ul>
+<li><p>Active from hour 0 onwards</p>
+</li>
+<li><p>Maternal machinery recognizes these immediately</p>
+</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p><strong>From the paper &#40;Abstract&#41;:</strong> &quot;stabilizing poly-U and UUAG sequences&quot;</p>
+<p><strong>From Figure 4a:</strong> UUAG sequences show enrichment in stable 3&#39;UTRs &#40;slower degradation rates&#41;.</p>
+</blockquote>
+<h3 id="early-onset_destabilizers_maternal_program_0-4_hours"><a href="#early-onset_destabilizers_maternal_program_0-4_hours" class="header-anchor">Early-Onset Destabilizers &#40;Maternal Program, ~0-4 hours&#41;  </a></h3>
+<ol start="3">
+<li><p><strong>GC-rich sequences</strong> - these accelerate early degradation</p>
+<ul>
+<li><p>Active from hour 0 onwards</p>
+</li>
+<li><p>Maternal degradation machinery targets these right away</p>
+</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p><strong>From the paper &#40;Abstract&#41;:</strong> &quot;destabilizing GC-rich signals&quot;</p>
+<p><strong>From Figure 4b:</strong> Four GC-rich sequences are shown to associate with faster early-onset degradation.</p>
+</blockquote>
+<h3 id="late-onset_accelerators_zygotic_program_4-10_hours"><a href="#late-onset_accelerators_zygotic_program_4-10_hours" class="header-anchor">Late-Onset Accelerators &#40;Zygotic Program, ~4-10 hours&#41;</a></h3>
+<ol start="4">
+<li><p><strong>miR-430 seed sequences</strong> - the big player&#33; This microRNA appears after ZGA and targets tons of maternal mRNAs for clearance</p>
+<ul>
+<li><p><strong>Seed motif: GCACUU</strong> &#40;6-mer&#41; or <strong>UGCACUU</strong> &#40;7-mer, more potent&#41;</p>
+</li>
+<li><p>These are complementary to the miR-430 seed region</p>
+</li>
+<li><p><strong>Kicks in around hour 4-6</strong> &#40;when miR-430 is transcribed&#41;</p>
+</li>
+<li><p>Peak activity hours 6-10</p>
+</li>
+<li><p>The 7-mer seed match &#40;with the extra U at position 1&#41; is particularly potent</p>
+</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p><strong>From the paper &#40;Abstract&#41;:</strong> &quot;Three signals explained late-onset degradation: miR-430 seeds, AU-rich sequences, and Pumilio recognition sites.&quot;</p>
+<p><strong>From Figure 6c &#40;left panel&#41;:</strong> Shows miR-430 as the top destabilizing late-onset peak in the regression model. The paper notes this is &quot;the miR-430 seed&quot; and it&#39;s one of the strongest regulatory signals.</p>
+</blockquote>
+<ol start="5">
+<li><p><strong>AU-rich elements &#40;AREs&#41;</strong> - classic instability elements, activated after ZGA</p>
+<ul>
+<li><p><strong>Onset around hour 4-6</strong> &#40;requires zygotic trans-acting factors&#41;</p>
+</li>
+<li><p>Continues through hours 6-10</p>
+</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p><strong>From the paper &#40;Abstract&#41;:</strong> &quot;Three signals explained late-onset degradation: miR-430 seeds, AU-rich sequences, and Pumilio recognition sites.&quot;</p>
+<p><strong>From Figure 6c &#40;middle panel&#41;:</strong> Shows AU-rich element &#40;ARE&#41; as a destabilizing late-onset peak with the motif enriched in sequences that degrade faster after ZGA.</p>
+</blockquote>
+<ol start="6">
+<li><p><strong>Pumilio recognition elements &#40;PREs&#41;</strong> - Pumilio is an RNA-binding protein that promotes degradation</p>
+<ul>
+<li><p><strong>Consensus sequence: UGUAHAUA</strong> &#40;where H &#61; A, U, or C&#41;</p>
+</li>
+<li><p>Classic Pumilio binding motif is an 8-nucleotide sequence</p>
+</li>
+<li><p><strong>Onset around hour 4-6</strong> &#40;Pumilio or cofactors expressed zygotically&#41;</p>
+</li>
+<li><p>Effect visible hours 6-10</p>
+</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p><strong>From the paper &#40;Abstract&#41;:</strong> &quot;Three signals explained late-onset degradation: miR-430 seeds, AU-rich sequences, and Pumilio recognition sites.&quot;</p>
+<p><strong>From Figure 6c &#40;bottom panel&#41;:</strong> Shows Pumilio &#40;PUM&#41; recognition element as a destabilizing late-onset peak. The regression model identifies the UGUAHAUA-like motif.</p>
+</blockquote>
+<p><strong>Timeline visualization:</strong></p>
+<pre><code class="language-julia">Hour:  0    1    2    3    4    5    6    7    8    9    10
+       |----|----|----|----|----|----|----|----|----|----|
+Poly-U ████████████████████████████████████████████████  &#40;stabilizing, always on&#41;
+UUAG   ████████████████████████████████████████████████  &#40;stabilizing, always on&#41;
+GC     ████████████████████████████████████████████████  &#40;destabilizing, always on&#41;
+       |         |         |         |         |         |
+       └─ Maternal only ──┴── ZGA ──┴─ Zygotic control ─┘
+                                    |                    |
+miR-430                             ████████████████████  &#40;destabilizing&#41;
+ARE                                 ████████████████████  &#40;destabilizing&#41;
+Pumilio                             ████████████████████  &#40;destabilizing&#41;</code></pre>
+<p><strong>Most important for your neural net:</strong> The miR-430 seeds, AU-rich elements, and Pumilio sites are the dominant late-onset signals. Poly-U is the dominant early-onset stabilizer. If your model learns to recognize these, you&#39;re capturing most of the biology.</p>
+<h2 id="key_insight_for_modeling"><a href="#key_insight_for_modeling" class="header-anchor">Key Insight for Modeling</a></h2>
+<p>The researchers built regression models that could predict degradation rates from sequence alone - and they worked&#33; The sequences they identified &#40;poly-U, GC-rich, miR-430 seeds, etc.&#41; had real predictive power. So your neural net should definitely look for these motifs.</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 27, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>

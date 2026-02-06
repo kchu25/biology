@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>MPRA Pipeline: From DNA to Measurements</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="mpra_pipeline_from_dna_to_measurements"><a href="#mpra_pipeline_from_dna_to_measurements" class="header-anchor">MPRA Pipeline: From DNA to Measurements</a></h1>
+<p>Looking at these studies, there&#39;s a common experimental thread—they&#39;re all <strong>massively parallel reporter assays &#40;MPRAs&#41;</strong>. Let me break down what&#39;s actually happening.</p>
+<h2 id="the_core_pattern_input_instrument_measurement"><a href="#the_core_pattern_input_instrument_measurement" class="header-anchor">The Core Pattern: Input → Instrument → Measurement</a></h2>
+<p>Think of it like this: you&#39;re testing hundreds of thousands of DNA sequences to see what they <em>do</em>. The input is always <strong>a DNA sequence</strong> &#40;promoter, 5&#39; UTR, or 3&#39; UTR&#41;, and the measurement is some proxy for <strong>gene expression activity</strong>.</p>
+<h3 id="input_the_dna_sequence_library"><a href="#input_the_dna_sequence_library" class="header-anchor">Input: The DNA Sequence Library</a></h3>
+<ul>
+<li><p><strong>Promoters</strong> &#40;de Boer&#41;: Random DNA sequences to test transcription initiation</p>
+</li>
+<li><p><strong>5&#39; UTRs</strong> &#40;Sample, Cuperus, Cao&#41;: 50-nt sequences controlling translation</p>
+</li>
+<li><p><strong>3&#39; UTRs</strong> &#40;Rabani&#41;: Sequences controlling mRNA stability</p>
+</li>
+<li><p>Typically 10,000 - 500,000 unique variants per experiment</p>
+</li>
+</ul>
+<h3 id="the_measurement_what_are_we_tracking"><a href="#the_measurement_what_are_we_tracking" class="header-anchor">The Measurement: What Are We Tracking?</a></h3>
+<p>Each study measures a different layer of gene expression:</p>
+<table><tr><th align="right">Study</th><th align="right">What&#39;s Measured</th><th align="right">Units</th></tr><tr><td align="right"><strong>de Boer &#40;yeast&#41;</strong></td><td align="right">Transcription strength</td><td align="right">log₂&#40;YFP/RFP fluorescence ratio&#41;</td></tr><tr><td align="right"><strong>Johns &#40;bacteria&#41;</strong></td><td align="right">Transcription activity</td><td align="right">log₂&#40;RNA reads / DNA reads&#41;</td></tr><tr><td align="right"><strong>Cuperus &#40;yeast&#41;</strong></td><td align="right">Translation efficiency &#43; growth</td><td align="right">log₂&#40;enrichment after selection&#41;</td></tr><tr><td align="right"><strong>Sample &#40;human&#41;</strong></td><td align="right">Ribosome loading</td><td align="right">Mean Ribosome Load &#40;0-8&#43; ribosomes&#41;</td></tr><tr><td align="right"><strong>Cao &#40;human&#41;</strong></td><td align="right">Translation efficiency</td><td align="right">log₂&#40;enrichment&#41;, then &#37; of control</td></tr><tr><td align="right"><strong>Rabani &#40;zebrafish&#41;</strong></td><td align="right">mRNA stability over time</td><td align="right">log₂&#40;mRNA count / initial count&#41;</td></tr></table>
+<p>Notice the pattern? <strong>Almost everything is a log₂ ratio.</strong> Why? Because gene expression spans orders of magnitude &#40;a weak promoter might be 100× weaker than a strong one&#41;, and ratios naturally cancel out confounding variables.</p>
+<h3 id="breaking_down_the_measurement_units_what_the_numbers_actually_mean"><a href="#breaking_down_the_measurement_units_what_the_numbers_actually_mean" class="header-anchor">Breaking Down the Measurement Units &#40;What the Numbers Actually Mean&#41;</a></h3>
+<table><tr><th align="right">Study</th><th align="right">Raw Measurement</th><th align="right">How It&#39;s Normalized</th><th align="right">Final Value Type</th><th align="right">Interpretation Example</th></tr><tr><td align="right"><strong>de Boer</strong></td><td align="right">YFP fluorescence &#40;AFU&#41;, RFP fluorescence &#40;AFU&#41;</td><td align="right">log₂&#40;YFP/RFP&#41;</td><td align="right"><strong>Dimensionless log₂ ratio</strong> &#40;Range: -3 to &#43;15&#41;</td><td align="right"><code>5.2</code> &#61; 2^5.2 ≈ 37× more YFP than RFP; <code>-2.0</code> &#61; 2^-2 &#61; 0.25× &#40;weak promoter&#41;</td></tr><tr><td align="right"><strong>Johns</strong></td><td align="right">RNA-seq read counts, DNA-seq read counts</td><td align="right">log₂&#40;RNA/DNA&#41; - control_mean</td><td align="right"><strong>Dimensionless log₂ ratio</strong> &#40;Range: -3 to &#43;6&#41;</td><td align="right"><code>2.35</code> &#61; 2^2.35 ≈ 5× more RNA than DNA; <code>-2.14</code> &#61; repressed &#40;less RNA than expected&#41;</td></tr><tr><td align="right"><strong>Cuperus</strong></td><td align="right"><strong>DNA sequencing reads</strong> of the 50-nt UTR region. <strong>Before</strong>: Initial plasmid library &#40;T₀&#41;. <strong>After</strong>: Extracted from surviving yeast after 20 generations in -His medium</td><td align="right">log₂&#40;reads<em>after / reads</em>before&#41;</td><td align="right"><strong>log₂ enrichment score</strong> &#40;Range: -5 to &#43;5&#41;. Common formats: &quot;log₂ enrichment&quot;, &quot;log₂ fold-change&quot;, &quot;selection coefficient&quot;</td><td align="right"><code>3.5</code> &#61; 2^3.5 ≈ 11× enrichment &#40;good growth&#41;; <code>-3.0</code> &#61; 2^-3 &#61; 0.125× &#40;died off&#41;. <strong>What&#39;s actually sequenced</strong>: PCR-amplified DNA from the UTR region</td></tr><tr><td align="right"><strong>Sample</strong></td><td align="right">Sequencing reads in 14 fractions &#40;fraction 1 &#61; 0 ribosomes, fraction 14 &#61; 8&#43; ribosomes&#41;</td><td align="right">Σ&#40;fraction<em>proportion × ribosome</em>count&#41;</td><td align="right"><strong>Mean Ribosome Load &#40;MRL&#41;</strong> &#40;Range: 2 to 8&#43;&#41;. <strong>Units: number of ribosomes</strong></td><td align="right"><code>2.5</code> &#61; average of 2-3 ribosomes per mRNA &#40;weak&#41;; <code>7.8</code> &#61; average of 7-8 ribosomes per mRNA &#40;strong&#41;</td></tr><tr><td align="right"><strong>Cao &#40;screening&#41;</strong></td><td align="right">NGS reads in top GFP bin, NGS reads in control bin</td><td align="right">log₂&#40;top<em>bin / control</em>bin&#41;</td><td align="right"><strong>log₂ enrichment score</strong> &#40;Range: varies&#41;</td><td align="right"><code>2.0</code> &#61; 2^2 &#61; 4× enriched in high expressors</td></tr><tr><td align="right"><strong>Cao &#40;validation&#41;</strong></td><td align="right">GFP fluorescence &#40;MFI&#41;, BFP fluorescence &#40;MFI&#41;. Compared to pVAX1 control</td><td align="right">&#40;GFP/BFP&#41;<em>test / &#40;GFP/BFP&#41;</em>control × 100&#37;</td><td align="right"><strong>Percentage of control</strong> &#40;Range: 0&#37; to 500&#37;&#43;&#41;. <strong>Units: &#37;</strong></td><td align="right"><code>158&#37;</code> &#61; 1.58× more protein than control; <code>250&#37;</code> &#61; 2.5× more protein</td></tr><tr><td align="right"><strong>Cao &#40;validation&#41;</strong></td><td align="right">ELISA protein concentration</td><td align="right">Protein amount / cell count / time</td><td align="right"><strong>Picograms per milliliter</strong>. Normalized: pg/mL per 100k cells/24h. <strong>Units: pg/mL</strong></td><td align="right"><code>2760 pg/mL</code> &#40;raw concentration&#41;. Then converted to <code>552&#37;</code> of control</td></tr><tr><td align="right"><strong>Rabani</strong></td><td align="right">UMI counts &#40;unique molecular identifiers&#41;, Spike-in controls &#40;known RNA amounts&#41;</td><td align="right">Calibrated to molecule count, then log₂&#40;count / initial<em>fitted</em>count&#41;</td><td align="right"><strong>log₂ fold-change from initial</strong> &#40;Range: -6 to &#43;3&#41;. <strong>Dimensionless</strong></td><td align="right"><code>-3.0</code> &#61; 2^-3 &#61; 12.5&#37; of mRNA remains; <code>0.0</code> &#61; at initial level; <code>&#43;1.0</code> &#61; 2× more mRNA</td></tr></table>
+<h3 id="key_distinctions"><a href="#key_distinctions" class="header-anchor">Key Distinctions</a></h3>
+<p><strong>Type 1: Dimensionless log₂ ratios</strong> &#40;de Boer, Johns, Cuperus screening, Cao screening, Rabani&#41;</p>
+<ul>
+<li><p>The value is a <strong>logarithm of a dimensionless ratio</strong></p>
+</li>
+<li><p>To get back to fold-change: <strong>2^value</strong></p>
+</li>
+<li><p>Typical range: -5 to &#43;15</p>
+</li>
+<li><p>Example: <code>3.0</code> means 2³ &#61; 8× more active</p>
+</li>
+</ul>
+<p><strong>Type 2: Absolute physical units</strong> &#40;Sample MRL, Cao ELISA&#41;</p>
+<ul>
+<li><p><strong>Sample MRL</strong>: Literally counting ribosomes—the value IS the number of ribosomes</p>
+<ul>
+<li><p><code>5.2</code> means on average 5.2 ribosomes are on each mRNA molecule</p>
+</li>
+<li><p>This is NOT a log scale—it&#39;s a direct count&#33;</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Cao ELISA</strong>: Measuring protein concentration in pg/mL</p>
+<ul>
+<li><p><code>2760 pg/mL</code> &#61; 2.76 nanograms per milliliter</p>
+</li>
+<li><p>Often then converted to &#37; of control for easier comparison</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>Type 3: Percentages</strong> &#40;Cao validation with fluorescence&#41;</p>
+<ul>
+<li><p>Normalized to control &#61; 100&#37;</p>
+</li>
+<li><p><code>158&#37;</code> means 1.58× the activity of the control plasmid</p>
+</li>
+<li><p>This is <strong>linear scale</strong>, not log scale&#33;</p>
+</li>
+</ul>
+<h3 id="the_critical_difference_log_vs_linear_vs_counts"><a href="#the_critical_difference_log_vs_linear_vs_counts" class="header-anchor">The Critical Difference: Log vs Linear vs Counts</a></h3>
+<ul>
+<li><p><strong>log₂ values</strong>: You must exponentiate to get actual fold-change &#40;2^x&#41;</p>
+</li>
+<li><p><strong>MRL values</strong>: Direct count—no transformation needed</p>
+</li>
+<li><p><strong>Percentage values</strong>: Already in intuitive linear scale</p>
+</li>
+<li><p><strong>pg/mL values</strong>: Physical concentration—real-world measurable quantity</p>
+</li>
+</ul>
+<p>When training ML models, these different value types matter&#33; Log-scaled data has different statistical properties than linear counts or percentages.</p>
+<h2 id="how_to_report_these_measurements"><a href="#how_to_report_these_measurements" class="header-anchor">How to Report These Measurements</a></h2>
+<p>Here&#39;s how each study actually reports their units in papers, and what you should write:</p>
+<table><tr><th align="right">Study</th><th align="right">Short Name for Figures</th><th align="right">Methods Section Description</th><th align="right">Example Figure Caption</th><th align="right">Notes</th></tr><tr><td align="right"><strong>de Boer</strong></td><td align="right">&quot;Expression&quot; or &quot;log₂&#40;YFP/RFP&#41;&quot;</td><td align="right">&quot;Promoter activity was measured as the log₂ ratio of YFP to RFP fluorescence intensity per cell, normalized to the TEF2 reference promoter&quot;</td><td align="right">&quot;Promoter expression levels &#40;log₂&#40;YFP/RFP&#41;&#41; for 100M random sequences&quot;</td><td align="right">The &quot;log₂&quot; is explicit. YFP/RFP makes it clear both colors are measured</td></tr><tr><td align="right"><strong>Johns</strong></td><td align="right">&quot;Transcription&quot; or &quot;log₂&#40;RNA/DNA&#41;&quot;</td><td align="right">&quot;Transcriptional activity was quantified as log₂&#40;RNA/DNA&#41; ratios, where RNA and DNA read counts were obtained from RNA-seq and DNA-seq respectively, normalized by the mean activity of control sequences&quot;</td><td align="right">&quot;Transcription levels &#40;log₂&#40;RNA/DNA&#41;&#41; across three bacterial species&quot;</td><td align="right">Explicitly state both RNA-seq AND DNA-seq were performed</td></tr><tr><td align="right"><strong>Cuperus</strong></td><td align="right">&quot;log₂ enrichment&quot; or&lt;br&gt;&quot;Fitness&quot; or&lt;br&gt;&quot;Selection coefficient&quot;</td><td align="right">&quot;Translation efficiency was measured as log₂ enrichment, calculated from the ratio of normalized sequencing read counts after 20 generations of selection in -His medium to initial library counts&quot;</td><td align="right">&quot;Translation efficiency &#40;log₂ enrichment&#41; for 500K 5&#39; UTR variants&quot;</td><td align="right">Don&#39;t say &quot;reads after/before&quot;—say &quot;enrichment&quot; or &quot;fold-change&quot;</td></tr><tr><td align="right"><strong>Sample</strong></td><td align="right">&quot;MRL&quot; &#40;Mean Ribosome Load&#41;</td><td align="right">&quot;Translation was quantified by Mean Ribosome Load &#40;MRL&#41;, calculated as the weighted average of ribosome occupancy across 14 polysome fractions, where MRL &#61; Σᵢ &#40;fᵢ × rᵢ&#41;, with fᵢ being the fraction of reads in fraction i and rᵢ the number of ribosomes&quot;</td><td align="right">&quot;Ribosome loading &#40;MRL&#41; for 280K synthetic 5&#39; UTRs&quot;</td><td align="right">This is NOT log-scaled&#33; Report as &quot;MRL &#61; 5.2 ribosomes&quot; not &quot;log₂&quot;</td></tr><tr><td align="right"><strong>Cao &#40;screening&#41;</strong></td><td align="right">&quot;log₂ enrichment&quot;</td><td align="right">&quot;Translation efficiency was screened using FACS-seq. Cells were sorted by GFP intensity, and enrichment scores were calculated as log₂&#40;reads in top 2.5&#37; bin / reads in unsorted pool&#41;&quot;</td><td align="right">&quot;Enrichment scores &#40;log₂&#41; for 12K synthetic 5&#39; UTRs&quot;</td><td align="right">Specify which bins you&#39;re comparing &#40;top vs. control&#41;</td></tr><tr><td align="right"><strong>Cao &#40;validation&#41;</strong></td><td align="right">&quot;Relative expression &#40;&#37;&#41;&quot; or &quot;&#37; of control&quot;</td><td align="right">&quot;Relative expression was measured as &#40;GFP/BFP&#41;test / &#40;GFP/BFP&#41;pVAX1 × 100&#37;, where GFP and BFP fluorescence were measured by flow cytometry. For therapeutic proteins, expression was quantified by ELISA &#40;pg/mL per 100,000 cells per 24h&#41; and normalized to pVAX1 &#61; 100&#37;&quot;</td><td align="right">&quot;Relative GFP expression &#40;&#37; of pVAX1 control&#41; for top candidate UTRs&quot;</td><td align="right">Be explicit about what &quot;100&#37;&quot; means &#40;your control plasmid&#41;</td></tr><tr><td align="right"><strong>Rabani</strong></td><td align="right">&quot;log₂ fold-change&quot; or&lt;br&gt;&quot;mRNA decay&quot; or&lt;br&gt;&quot;log₂&#40;normalized count&#41;&quot;</td><td align="right">&quot;mRNA stability was measured as log₂ fold-change relative to the fitted initial count &#40;X₀&#41; for each reporter, normalized using spike-in controls and calculated as log₂&#40;UMI count / X₀&#41;&quot;</td><td align="right">&quot;mRNA decay profiles &#40;log₂ fold-change from initial&#41; across developmental time points&quot;</td><td align="right">Clarify that X₀ is fitted per-reporter, not a single global value</td></tr></table>
+<h3 id="general_principles_for_reporting"><a href="#general_principles_for_reporting" class="header-anchor">General Principles for Reporting</a></h3>
+<p><strong>In your figure axes:</strong></p>
+<ul>
+<li><p>Always include &quot;log₂&quot; if the data is log-transformed</p>
+</li>
+<li><p>Use shorthand: &quot;log₂&#40;RNA/DNA&#41;&quot;, &quot;log₂ enrichment&quot;, &quot;MRL&quot;</p>
+</li>
+<li><p>Include units when they exist: &quot;pg/mL&quot;, &quot;&#37; of control&quot;, &quot;ribosomes&quot;</p>
+</li>
+</ul>
+<p><strong>In your methods section:</strong></p>
+<ul>
+<li><p>Spell out EXACTLY what was measured &#40;RNA-seq? DNA-seq? Fluorescence?&#41;</p>
+</li>
+<li><p>Explain the normalization &#40;control sequences? spike-ins? reference promoter?&#41;</p>
+</li>
+<li><p>Give the formula: log₂&#40;X/Y&#41; where X &#61; ... and Y &#61; ...</p>
+</li>
+</ul>
+<p><strong>In your results text:</strong></p>
+<ul>
+<li><p>You can drop &quot;log₂&quot; if it&#39;s clear from context: &quot;Variant X showed 3.5-fold enrichment&quot;</p>
+</li>
+<li><p>For non-log values, be explicit: &quot;MRL &#61; 7.2 ribosomes&quot; or &quot;158&#37; of control&quot;</p>
+</li>
+</ul>
+<p><strong>Common mistakes to avoid:</strong></p>
+<ul>
+<li><p>❌ Saying &quot;fold-change&quot; when you mean &quot;log₂ fold-change&quot; &#40;3.5 vs. 2^3.5 &#61; 11.3×&#41;</p>
+</li>
+<li><p>❌ Writing &quot;log&quot; without specifying base &#40;always use log₂ or log₁₀&#41;</p>
+</li>
+<li><p>❌ Forgetting to mention normalization &#40;what&#39;s your denominator?&#41;</p>
+</li>
+<li><p>❌ Mixing linear and log scales in the same figure without labels</p>
+</li>
+</ul>
+<h3 id="quick_reference_card"><a href="#quick_reference_card" class="header-anchor">Quick Reference Card</a></h3>
+<p>When you&#39;re writing your paper:</p>
+<pre><code class="language-julia">Measurement Type          Write in Figure          Write in Methods
+─────────────────────────────────────────────────────────────────
+Promoter strength         log₂&#40;YFP/RFP&#41;            &quot;log₂ ratio of test to reference fluorescence&quot;
+Transcription             log₂&#40;RNA/DNA&#41;            &quot;log₂ ratio of RNA-seq to DNA-seq reads&quot;
+Translation &#40;selection&#41;   log₂ enrichment          &quot;log₂&#40;post-selection / pre-selection counts&#41;&quot;
+Translation &#40;direct&#41;      MRL &#40;ribosomes&#41;          &quot;mean ribosome load from polysome profiling&quot;
+Relative activity         &#37; of control             &quot;&#40;test/control&#41; × 100&#37;&quot;
+Absolute protein          pg/mL                    &quot;protein concentration by ELISA&quot;
+mRNA stability            log₂ fold-change         &quot;log₂&#40;count / initial count&#41;&quot;</code></pre>
+<p>The golden rule: <strong>Be consistent, be explicit, and always define your denominator.</strong></p>
+<h2 id="the_instrument_pipeline"><a href="#the_instrument_pipeline" class="header-anchor">The Instrument Pipeline</a></h2>
+<p>Here&#39;s where it gets interesting. These aren&#39;t single-measurement experiments—they&#39;re sophisticated pipelines:</p>
+<pre><code class="language-julia">┌─────────────────────┐
+│  DNA Library        │  ← 10K-500K unique sequences
+│  &#40;Synthesized&#41;      │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│  Cloning into       │  ← Put each sequence into a plasmid
+│  Reporter Construct │     with a fluorescent protein or
+└──────────┬──────────┘     survival gene
+           │
+           ▼
+┌─────────────────────┐
+│  Transformation     │  ← Get DNA into cells
+│  into Cells         │     &#40;bacteria, yeast, mammalian&#41;
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│  Expression Period  │  ← Let cells express the gene
+└──────────┬──────────┘     &#40;hours to days&#41;
+           │
+           ├─────────────────────────────────────┐
+           │                                     │
+           ▼                                     ▼
+┌─────────────────────┐              ┌─────────────────────┐
+│  Flow Cytometry     │              │  Next-Gen           │
+│  &#40;FACS&#41;             │              │  Sequencing         │
+│                     │              │                     │
+│  • Measures fluor-  │              │  • RNA-seq          │
+│    escence per cell │              │  • DNA-seq          │
+│  • Sorts cells into │              │  • Count reads per  │
+│    bins             │              │    variant          │
+│  • 10K-400K cells/s │              │  • Quantifies       │
+└──────────┬──────────┘              │    abundance        │
+           │                         └──────────┬──────────┘
+           │                                    │
+           └──────────┬─────────────────────────┘
+                      ▼
+           ┌─────────────────────┐
+           │  Deep Sequencing    │  ← Identify which sequences
+           │  of Sorted Pools    │     were in which bin
+           └──────────┬──────────┘
+                      │
+                      ▼
+           ┌─────────────────────┐
+           │  Read Counting &amp;    │  ← Map sequence → activity
+           │  Normalization      │
+           └──────────┬──────────┘
+                      │
+                      ▼
+           ┌─────────────────────┐
+           │  Final Measurement  │  ← log₂&#40;ratio&#41; or enrichment
+           └─────────────────────┘</code></pre>
+<h2 id="key_instruments_at_each_stage"><a href="#key_instruments_at_each_stage" class="header-anchor">Key Instruments at Each Stage</a></h2>
+<p><strong>1. DNA Synthesis &amp; Cloning</strong></p>
+<ul>
+<li><p>Oligonucleotide synthesizers &#40;or order from Twist, IDT&#41;</p>
+</li>
+<li><p>Gibson assembly or restriction cloning</p>
+</li>
+<li><p>Transformation &#40;electroporation or heat shock&#41;</p>
+</li>
+</ul>
+<p><strong>2. The Expression Phase</strong> Different approaches depending on what you&#39;re measuring:</p>
+<ul>
+<li><p><strong>Flow cytometry approach</strong>: Fluorescent proteins &#40;YFP/RFP, GFP/BFP&#41;</p>
+</li>
+<li><p><strong>Sequencing approach</strong>: Extract RNA and DNA from pooled cells</p>
+</li>
+<li><p><strong>Selection approach</strong>: Grow cells and see which variants survive</p>
+</li>
+<li><p><strong>Polysome profiling</strong>: Separate mRNA by ribosome occupancy</p>
+</li>
+</ul>
+<p><strong>3. Sorting &amp; Separation</strong></p>
+<ul>
+<li><p><strong>Flow cytometer &#40;FACS&#41;</strong>: Laser-based cell sorter, 10K-400K cells/second</p>
+<ul>
+<li><p>Used in: de Boer, Cao, Sample &#40;for validation&#41;</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Sucrose gradient ultracentrifuge</strong>: Separates by density</p>
+<ul>
+<li><p>Used in: Sample &#40;polysome profiling&#41;</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Growth selection</strong>: Natural selection in liquid culture</p>
+<ul>
+<li><p>Used in: Cuperus</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>4. Sequencing</strong></p>
+<ul>
+<li><p><strong>Illumina sequencer</strong>: Gold standard, millions of reads</p>
+<ul>
+<li><p>Used in: all studies</p>
+</li>
+</ul>
+</li>
+<li><p>Counts how many times each DNA sequence appears</p>
+</li>
+<li><p>Typical output: 10-100 million reads per sample</p>
+</li>
+</ul>
+<p><strong>5. Normalization</strong> This is the secret sauce. The measurement is always a <strong>ratio</strong> to cancel out:</p>
+<ul>
+<li><p>Copy number variation &#40;plasmids per cell&#41;</p>
+</li>
+<li><p>Sequencing depth differences</p>
+</li>
+<li><p>PCR amplification bias</p>
+</li>
+<li><p>Cell-to-cell heterogeneity</p>
+</li>
+</ul>
+<h2 id="the_normalization_trick"><a href="#the_normalization_trick" class="header-anchor">The Normalization Trick</a></h2>
+<p><strong>Promoter studies</strong> &#40;de Boer&#41;:</p>
+<ul>
+<li><p>Measure both YFP &#40;test promoter&#41; and RFP &#40;reference promoter&#41;</p>
+</li>
+<li><p>Ratio cancels out: plasmid copy number, cell size, detector sensitivity</p>
+</li>
+</ul>
+<p><strong>Transcription studies</strong> &#40;Johns&#41;:</p>
+<ul>
+<li><p>RNA-seq / DNA-seq ratio</p>
+</li>
+<li><p>Cancels out: library representation, sequencing depth</p>
+</li>
+</ul>
+<p><strong>Translation studies</strong> &#40;Cuperus, Sample, Cao&#41;:</p>
+<ul>
+<li><p>Before/after enrichment OR ribosome occupancy</p>
+</li>
+<li><p>Cancels out: PCR bias, initial abundance</p>
+</li>
+</ul>
+<p><strong>Stability studies</strong> &#40;Rabani&#41;:</p>
+<ul>
+<li><p>Normalized to initial count &#43; spike-in controls</p>
+</li>
+<li><p>Cancels out: sequencing depth, extraction efficiency</p>
+</li>
+</ul>
+<h2 id="why_this_design_is_brilliant"><a href="#why_this_design_is_brilliant" class="header-anchor">Why This Design Is Brilliant</a></h2>
+<p>By pooling hundreds of thousands of variants and measuring them simultaneously:</p>
+<ul>
+<li><p><strong>Throughput</strong>: Test 500K sequences in one experiment</p>
+</li>
+<li><p><strong>Controlled conditions</strong>: All variants compete in the same environment</p>
+</li>
+<li><p><strong>Cost-effective</strong>: One sequencing run, massive data</p>
+</li>
+<li><p><strong>Internal controls</strong>: Variants normalize against each other</p>
+</li>
+</ul>
+<p>The real innovation isn&#39;t just high-throughput—it&#39;s the ability to <strong>decouple variables</strong>. By measuring multiple things &#40;DNA &#43; RNA, or YFP &#43; RFP, or before &#43; after&#41;, you can isolate the signal you care about from all the noise.</p>
+<h2 id="from_wet_lab_to_data"><a href="#from_wet_lab_to_data" class="header-anchor">From Wet Lab to Data</a></h2>
+<p>The final output is always a table:</p>
+<pre><code class="language-julia">sequence              measurement
+ATCG...TGCA          2.35
+GGTA...CCAA          -1.42
+TCCC...TAAG          5.67</code></pre>
+<p>That measurement column—whether it&#39;s log₂&#40;YFP/RFP&#41;, log₂&#40;RNA/DNA&#41;, enrichment score, or mean ribosome load—represents the <strong>biological activity</strong> of that sequence, cleaned of all the technical noise through clever normalization.</p>
+<p>Pretty elegant, right? You transform a molecular biology problem into a data science problem, then use CNNs to learn the sequence-function relationship.</p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: January 27, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>
