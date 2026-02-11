@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/hypertext.css">
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Experimental Setup: Plant Core Promoter STARR-seq Analysis</title>  
+</head>
+<body>
+<header>
+  <h1 style="color:#283747">Biology</h1>
+  <nav>
+    <a href="/" class="current">Tags</a>
+  | <a href="/blog/" >Notes</a>
+  <hr/>
+  </nav>
+</header>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h1 id="experimental_setup_plant_core_promoter_starr-seq_analysis"><a href="#experimental_setup_plant_core_promoter_starr-seq_analysis" class="header-anchor">Experimental Setup: Plant Core Promoter STARR-seq Analysis</a></h1>
+<h2 id="overview"><a href="#overview" class="header-anchor">Overview</a></h2>
+<p>This study uses a <strong>massively parallel reporter assay &#40;MPRA&#41;</strong> approach, specifically a <strong>STARR-seq-like</strong> strategy, to quantify the activity of thousands of native plant promoters across three species. The design enables systematic analysis of core promoter elements &#40;CPEs&#41; and transcription factor binding sites &#40;TFBSs&#41; in their native genomic context.</p>
+<p><strong>Publication</strong>: &quot;Synthetic Promoter Designs Enabled by a Comprehensive Analysis of Plant Core Promoters&quot; &#40;<a href="https://www.biorxiv.org/content/10.1101/2021.01.07.425784v1">bioRxiv 2021.01.07.425784</a>&#41;</p>
+<hr />
+<h2 id="experimental_units"><a href="#experimental_units" class="header-anchor">Experimental Units</a></h2>
+<h3 id="basic_unit_the_promoter-barcode_construct"><a href="#basic_unit_the_promoter-barcode_construct" class="header-anchor">Basic Unit: The Promoter-Barcode Construct</a></h3>
+<p>Each experimental unit consists of:</p>
+<ul>
+<li><p><strong>Test promoter sequence</strong>: 170bp upstream of TSS &#40;transcription start site&#41;</p>
+</li>
+<li><p><strong>Unique barcode</strong>: Random 12bp DNA sequence embedded in the 3&#39; UTR</p>
+</li>
+<li><p><strong>Reporter gene</strong>: Transcribed mRNA containing the barcode</p>
+</li>
+<li><p><strong>Minimal promoter</strong>: CaMV 35S minimal promoter &#40;control constructs&#41;</p>
+</li>
+</ul>
+<h3 id="measurement_level_transcription"><a href="#measurement_level_transcription" class="header-anchor">Measurement Level: <strong>Transcription</strong></a></h3>
+<p>The assay measures <strong>transcript abundance</strong> &#40;not translation&#41;:</p>
+<ul>
+<li><p>Barcodes are embedded in the <strong>mRNA transcript</strong> &#40;3&#39; UTR&#41;</p>
+</li>
+<li><p>RNA-seq quantifies barcode counts → proxy for transcriptional activity</p>
+</li>
+<li><p>Does NOT measure protein levels or translation efficiency</p>
+</li>
+</ul>
+<hr />
+<h2 id="library_composition"><a href="#library_composition" class="header-anchor">Library Composition</a></h2>
+<h3 id="three_species-specific_genomic_promoter_libraries"><a href="#three_species-specific_genomic_promoter_libraries" class="header-anchor">Three Species-Specific Genomic Promoter Libraries</a></h3>
+<table><tr><th align="right">Species</th><th align="right">Short Code</th><th align="right">Promoters in Library</th><th align="right">Genome</th></tr><tr><td align="right"><em>Arabidopsis thaliana</em></td><td align="right">At</td><td align="right">27,676</td><td align="right">Dicot model</td></tr><tr><td align="right"><em>Zea mays</em> &#40;Maize&#41;</td><td align="right">Zm</td><td align="right">38,637</td><td align="right">Monocot crop</td></tr><tr><td align="right"><em>Sorghum bicolor</em></td><td align="right">Sb</td><td align="right">34,173</td><td align="right">Monocot crop</td></tr><tr><td align="right"><strong>Total</strong></td><td align="right"></td><td align="right"><strong>100,486</strong></td><td align="right"></td></tr></table>
+<p><strong>Promoter selection criteria</strong>:</p>
+<ul>
+<li><p>Extracted from genome annotations</p>
+</li>
+<li><p>170bp upstream of annotated TSS</p>
+</li>
+<li><p>Unique sequences only &#40;deduplicated&#41;</p>
+</li>
+<li><p>Includes protein-coding, miRNA, and other gene types</p>
+</li>
+<li><p>Full-length &#40;start position &#61; 1, stop &#61; 170&#41; sequences prioritized in analysis</p>
+</li>
+</ul>
+<p><strong>Barcode-promoter linking</strong>:</p>
+<ul>
+<li><p>Multiple barcodes per promoter &#40;technical replicates&#41;</p>
+</li>
+<li><p>Median enrichment across barcodes calculated per promoter</p>
+</li>
+<li><p>Subassembly process links sequencing reads to specific promoters</p>
+</li>
+<li><p>Quality control: only barcodes uniquely mapping to one promoter retained</p>
+</li>
+</ul>
+<hr />
+<h2 id="assay_systems"><a href="#assay_systems" class="header-anchor">Assay Systems</a></h2>
+<h3 id="two_independent_expression_systems"><a href="#two_independent_expression_systems" class="header-anchor">Two Independent Expression Systems</a></h3>
+<table><tr><th align="right">System</th><th align="right">Code</th><th align="right">Host Organism</th><th align="right">Tissue/Cell Type</th><th align="right">Light Conditions</th></tr><tr><td align="right"><strong>Tobacco leaf transfection</strong></td><td align="right">leaf</td><td align="right"><em>Nicotiana benthamiana</em></td><td align="right">Leaf epidermal cells</td><td align="right">Dark &#43; Light</td></tr><tr><td align="right"><strong>Maize protoplast transfection</strong></td><td align="right">proto</td><td align="right"><em>Zea mays</em></td><td align="right">Mesophyll protoplasts</td><td align="right">Dark only</td></tr></table>
+<p><strong>Why two systems?</strong></p>
+<ul>
+<li><p>Test promoter activity in different cellular contexts</p>
+</li>
+<li><p>Leaf: intact tissue, cell-cell interactions preserved</p>
+</li>
+<li><p>Protoplast: isolated cells, simpler regulatory environment</p>
+</li>
+<li><p>Cross-system validation of promoter strength</p>
+</li>
+</ul>
+<hr />
+<h2 id="experimental_design"><a href="#experimental_design" class="header-anchor">Experimental Design</a></h2>
+<h3 id="conditions_tested"><a href="#conditions_tested" class="header-anchor">Conditions Tested</a></h3>
+<p><strong>Factorial design</strong>:</p>
+<ol>
+<li><p><strong>Enhancer</strong>: With/without CaMV 35S enhancer</p>
+<ul>
+<li><p><code>withENH</code> &#40;35SEnh&#41;: Upstream enhancer present</p>
+</li>
+<li><p><code>noENH</code>: No enhancer &#40;core promoter activity only&#41;</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Light</strong>: Dark vs. Light &#40;leaf system only&#41;</p>
+<ul>
+<li><p><code>dark</code>: Plants kept in darkness</p>
+</li>
+<li><p><code>light</code>: Plants exposed to light</p>
+</li>
+</ul>
+</li>
+<li><p><strong>System</strong>: Leaf vs. Protoplast</p>
+</li>
+</ol>
+<p><strong>Total experimental conditions per species</strong>:</p>
+<ul>
+<li><p>Leaf system: 4 conditions &#40;2 enhancer × 2 light&#41;</p>
+</li>
+<li><p>Protoplast system: 2 conditions &#40;2 enhancer × 1 dark&#41;</p>
+</li>
+<li><p><strong>6 conditions total per species library</strong></p>
+</li>
+</ul>
+<h3 id="replicates"><a href="#replicates" class="header-anchor">Replicates</a></h3>
+<p><strong>Biological replicates</strong>: 2 independent experiments per condition</p>
+<ul>
+<li><p>Rep1 &#40;Roman numeral I&#41;</p>
+</li>
+<li><p>Rep2 &#40;Roman numeral II&#41;</p>
+</li>
+</ul>
+<p><strong>Technical replicates</strong>: Multiple barcodes per promoter</p>
+<ul>
+<li><p>Median enrichment across barcodes</p>
+</li>
+<li><p>Mean enrichment across biological replicates</p>
+</li>
+</ul>
+<hr />
+<h2 id="data_files_structure"><a href="#data_files_structure" class="header-anchor">Data Files Structure</a></h2>
+<h3 id="raw_barcode_counts"><a href="#raw_barcode_counts" class="header-anchor">Raw Barcode Counts</a></h3>
+<p>Located in: <code>data/barcode_counts/&#123;system&#125;/&#123;species&#125;_Rep&#123;n&#125;/</code></p>
+<p><strong>File naming convention</strong>:</p>
+<pre><code class="language-julia">barcodes_pPSup_&#123;species&#125;PRO_&#123;enhancer&#125;_&#123;rep&#125;_&#123;condition&#125;.count.gz</code></pre>
+<p>Example:</p>
+<ul>
+<li><p><code>barcodes_pPSup_AtPRO_35SEnh_I_dark.count.gz</code></p>
+<ul>
+<li><p>Species: Arabidopsis &#40;At&#41;</p>
+</li>
+<li><p>Enhancer: with 35S enhancer &#40;35SEnh&#41;</p>
+</li>
+<li><p>Replicate: 1 &#40;I&#41;</p>
+</li>
+<li><p>Condition: dark</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>Three files per replicate</strong>:</p>
+<ol>
+<li><p><code>inp.count.gz</code>: Input library &#40;plasmid DNA before transfection&#41;</p>
+</li>
+<li><p><code>dark.count.gz</code>: Output library &#40;mRNA from dark condition&#41;</p>
+</li>
+<li><p><code>light.count.gz</code>: Output library &#40;mRNA from light condition&#41; - leaf only</p>
+</li>
+</ol>
+<p><strong>File format</strong>:</p>
+<pre><code class="language-julia">&lt;count&gt; &lt;barcode&gt;
+61      AAAAAAAAAAAA
+11      AAAAAAAAAAAC
+27      AAAAAAAAAAAG</code></pre>
+<h3 id="total_dataset_size"><a href="#total_dataset_size" class="header-anchor">Total Dataset Size</a></h3>
+<p><strong>Native promoter libraries</strong>:</p>
+<ul>
+<li><p>3 species × 2 systems × 2 enhancer conditions × 2 replicates &#61; 24 experiments</p>
+</li>
+<li><p>Leaf system adds light condition: &#43;12 experiments</p>
+</li>
+<li><p><strong>36 total experiments</strong> &#40;3 input &#43; output files each&#41;</p>
+</li>
+</ul>
+<p><strong>Additional validation libraries</strong>:</p>
+<ul>
+<li><p><code>PROval</code>: Validation constructs &#40;synthetic promoters, mutations&#41;</p>
+</li>
+<li><p><code>PROevo</code>: Evolved promoters from <em>in silico</em> optimization</p>
+</li>
+</ul>
+<hr />
+<h2 id="enrichment_calculation"><a href="#enrichment_calculation" class="header-anchor">Enrichment Calculation</a></h2>
+<h3 id="formula"><a href="#formula" class="header-anchor">Formula</a></h3>
+<p>Promoter strength quantified as <strong>log₂ enrichment</strong>:</p>
+<pre><code class="language-julia">enrichment &#61; log₂&#40;&#40;count_out / Σcount_out&#41; / &#40;count_inp / Σcount_inp&#41;&#41;</code></pre>
+<p>Where:</p>
+<ul>
+<li><p><code>count_out</code>: Barcode count in output &#40;mRNA&#41;</p>
+</li>
+<li><p><code>count_inp</code>: Barcode count in input &#40;plasmid library&#41;</p>
+</li>
+<li><p>Sum normalizes for library size</p>
+</li>
+</ul>
+<h3 id="normalization_steps"><a href="#normalization_steps" class="header-anchor">Normalization Steps</a></h3>
+<ol>
+<li><p><strong>Per-replicate normalization</strong>: Subtract median enrichment of negative control</p>
+<ul>
+<li><p>Control: <code>control-withPRO-noENH</code> &#40;35S minimal promoter, no enhancer&#41;</p>
+</li>
+<li><p>This sets the minimal promoter baseline to 0</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Quality filtering</strong>:</p>
+<ul>
+<li><p>Read count cutoff: ≥5 reads in both input and output</p>
+</li>
+<li><p>Barcode must uniquely map to one promoter</p>
+</li>
+<li><p>Only full-length &#40;FL&#41; promoters used for modeling</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Aggregation</strong>:</p>
+<ul>
+<li><p>Median enrichment across barcodes &#40;per promoter per replicate&#41;</p>
+</li>
+<li><p>Mean enrichment across biological replicates</p>
+</li>
+</ul>
+</li>
+</ol>
+<p><strong>No further normalization applied</strong> before CNN training &#40;raw log₂ values used&#41;.</p>
+<hr />
+<h2 id="cnn_training_data"><a href="#cnn_training_data" class="header-anchor">CNN Training Data</a></h2>
+<h3 id="data_processing_pipeline"><a href="#data_processing_pipeline" class="header-anchor">Data Processing Pipeline</a></h3>
+<p><strong>R scripts</strong> &#40;<code>analysis/</code>&#41; → <strong>Python files</strong> &#40;<code>CNN/</code>&#41;</p>
+<ol>
+<li><p><strong>Raw data</strong> &#40;<code>data/barcode_counts/</code>&#41; → <code>read&#43;process_barcode_counts.R</code></p>
+</li>
+<li><p><strong>Subassembly</strong> links barcodes to promoters → <code>filter_subassembly.R</code></p>
+</li>
+<li><p><strong>Enrichment calculation</strong> and normalization → <code>RData/main_data.Rdata</code></p>
+</li>
+<li><p><strong>Motif scoring</strong> adds CPE/TFBS features → <code>motif_scores.R</code></p>
+</li>
+<li><p><strong>Train/test split</strong> → <code>modelling.R</code></p>
+</li>
+<li><p><strong>Export to TSV</strong> → <code>CNN/CNN_train_&#123;system&#125;.tsv</code>, <code>CNN_test_&#123;system&#125;.tsv</code></p>
+</li>
+</ol>
+<h3 id="dataset_files"><a href="#dataset_files" class="header-anchor">Dataset Files</a></h3>
+<table><tr><th align="right">File</th><th align="right">System</th><th align="right">Split</th><th align="right">Sequences</th><th align="right">Purpose</th></tr><tr><td align="right"><code>CNN_train_leaf.tsv</code></td><td align="right">Tobacco leaf</td><td align="right">Train</td><td align="right">65,004</td><td align="right">Training leaf model</td></tr><tr><td align="right"><code>CNN_test_leaf.tsv</code></td><td align="right">Tobacco leaf</td><td align="right">Test</td><td align="right">7,154</td><td align="right">Evaluating leaf model</td></tr><tr><td align="right"><code>CNN_train_proto.tsv</code></td><td align="right">Maize protoplast</td><td align="right">Train</td><td align="right">68,213</td><td align="right">Training protoplast model</td></tr><tr><td align="right"><code>CNN_test_proto.tsv</code></td><td align="right">Maize protoplast</td><td align="right">Test</td><td align="right">7,595</td><td align="right">Evaluating protoplast model</td></tr><tr><td align="right"><strong>Total</strong></td><td align="right"></td><td align="right"></td><td align="right"><strong>147,966</strong></td><td align="right"></td></tr></table>
+<p><strong>Species distribution in training data</strong>:</p>
+<table><tr><th align="right">Species</th><th align="right">Leaf Train</th><th align="right">Proto Train</th><th align="right">Leaf Test</th><th align="right">Proto Test</th></tr><tr><td align="right">At</td><td align="right">15,050</td><td align="right">15,766</td><td align="right">~1,670</td><td align="right">~1,752</td></tr><tr><td align="right">Zm</td><td align="right">27,667</td><td align="right">29,396</td><td align="right">~3,074</td><td align="right">~3,266</td></tr><tr><td align="right">Sb</td><td align="right">22,287</td><td align="right">23,051</td><td align="right">~2,476</td><td align="right">~2,561</td></tr></table>
+<h3 id="traintest_split_strategy"><a href="#traintest_split_strategy" class="header-anchor">Train/Test Split Strategy</a></h3>
+<p><strong>Selection criteria</strong>:</p>
+<ul>
+<li><p>Only promoters tested with enhancer in dark condition</p>
+</li>
+<li><p>Random 90/10 split per species-system group</p>
+</li>
+<li><p>Single random seed &#40;<code>set.seed&#40;1&#41;</code>&#41;</p>
+</li>
+<li><p><strong>No stratification</strong> by enrichment value or gene type</p>
+</li>
+<li><p><strong>No separate validation set</strong> &#40;10&#37; validation split used internally during training&#41;</p>
+</li>
+</ul>
+<p><strong>Data format</strong> &#40;TSV columns&#41;:</p>
+<pre><code class="language-julia">set    sp    gene              sequence                                     enrichment
+train  At    AT2G28056         GTTAAGTACCATATAGATGAT...                     1.6878
+test   Zm    ENSRNA049996853   TCCTTCCAAACACTTCACCAG...                    -1.8951</code></pre>
+<hr />
+<h2 id="cnn_model_architecture"><a href="#cnn_model_architecture" class="header-anchor">CNN Model Architecture</a></h2>
+<h3 id="two_independent_models"><a href="#two_independent_models" class="header-anchor">Two Independent Models</a></h3>
+<p>Separate models trained for each biological system:</p>
+<ol>
+<li><p><strong>model_leaf</strong>: Predicts activity in tobacco leaf system</p>
+</li>
+<li><p><strong>model_proto</strong>: Predicts activity in maize protoplast system</p>
+</li>
+</ol>
+<p><strong>Why separate models?</strong></p>
+<ul>
+<li><p>Different cellular contexts may have distinct regulatory logic</p>
+</li>
+<li><p>Allows system-specific predictions for <em>in silico</em> evolution</p>
+</li>
+</ul>
+<h3 id="architecture_details"><a href="#architecture_details" class="header-anchor">Architecture Details</a></h3>
+<p><strong>Input</strong>: One-hot encoded 170bp sequences → <code>&#40;170, 4&#41;</code> tensor</p>
+<p><strong>Layers</strong>:</p>
+<ol>
+<li><p><strong>BiConv1D</strong> &#40;custom bidirectional convolution&#41;</p>
+<ul>
+<li><p>128 filters, kernel size &#61; 13bp</p>
+</li>
+<li><p>2 stacked layers</p>
+</li>
+<li><p>Forward &#43; reverse strand processing</p>
+</li>
+<li><p>Dropout rate &#61; 0.15</p>
+</li>
+<li><p><strong>Initialized with CPE/TF motif PWMs</strong> &#40;first 128 filters&#41;</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Conv1D</strong></p>
+<ul>
+<li><p>128 filters, kernel size &#61; 13bp</p>
+</li>
+<li><p>ReLU activation</p>
+</li>
+<li><p>Dropout &#61; 0.15</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Flatten</strong> → <strong>Dense&#40;64&#41;</strong> → <strong>BatchNorm</strong> → <strong>ReLU</strong></p>
+</li>
+<li><p><strong>Output Dense&#40;1&#41;</strong> &#40;linear activation&#41;</p>
+</li>
+</ol>
+<p><strong>Training</strong>:</p>
+<ul>
+<li><p>Loss: Mean Squared Error &#40;MSE&#41;</p>
+</li>
+<li><p>Optimizer: Adam &#40;default learning rate&#41;</p>
+</li>
+<li><p>Batch size: 128</p>
+</li>
+<li><p>Max epochs: 25</p>
+</li>
+<li><p>Callbacks:</p>
+<ul>
+<li><p>Early stopping &#40;patience &#61; 5&#41;</p>
+</li>
+<li><p>Learning rate reduction &#40;patience &#61; 2&#41;</p>
+</li>
+</ul>
+</li>
+<li><p>Internal validation split: 10&#37; from training data</p>
+</li>
+</ul>
+<p><strong>No hyperparameter tuning performed</strong> - fixed architecture used.</p>
+<hr />
+<h2 id="key_experimental_specifications"><a href="#key_experimental_specifications" class="header-anchor">Key Experimental Specifications</a></h2>
+<h3 id="promoter_sequences"><a href="#promoter_sequences" class="header-anchor">Promoter Sequences</a></h3>
+<ul>
+<li><p><strong>Length</strong>: 170bp upstream of TSS</p>
+</li>
+<li><p><strong>Source</strong>: Genome annotations &#40;RefSeq for Arabidopsis, EGLab for maize/sorghum&#41;</p>
+</li>
+<li><p><strong>Coordinate system</strong>: Position 1 &#61; most upstream, position 170 &#61; TSS</p>
+</li>
+</ul>
+<h3 id="barcodes"><a href="#barcodes" class="header-anchor">Barcodes</a></h3>
+<ul>
+<li><p><strong>Length</strong>: 12bp random sequences</p>
+</li>
+<li><p><strong>Location</strong>: Embedded in 3&#39; UTR of transcript</p>
+</li>
+<li><p><strong>Purpose</strong>: Unique identifier for each construct copy</p>
+</li>
+</ul>
+<h3 id="motifs_used_for_model_initialization"><a href="#motifs_used_for_model_initialization" class="header-anchor">Motifs Used for Model Initialization</a></h3>
+<ul>
+<li><p><strong>CPEs</strong> &#40;Core Promoter Elements&#41;: TATA-box, Inr, TCT, Y-patch, BRE upstream, BRE downstream</p>
+</li>
+<li><p><strong>TF clusters</strong>: TCP, HSF, NAC binding sites &#40;from clustering analysis&#41;</p>
+</li>
+<li><p><strong>Format</strong>: Position Frequency Matrices &#40;PFMs&#41; converted to PWMs</p>
+</li>
+<li><p><strong>File</strong>: <code>data/misc/CPEs.meme</code>, <code>data/misc/TF-clusters.meme</code></p>
+</li>
+</ul>
+<h3 id="quality_control_metrics"><a href="#quality_control_metrics" class="header-anchor">Quality Control Metrics</a></h3>
+<ul>
+<li><p><strong>Read count cutoff</strong>: ≥5 reads in input AND output</p>
+</li>
+<li><p><strong>Barcode uniqueness</strong>: Must map to single promoter</p>
+</li>
+<li><p><strong>Promoter completeness</strong>: Full-length &#40;FL&#41; flag for 170bp sequences</p>
+</li>
+<li><p><strong>Replicate concordance</strong>: Mean of 2 biological replicates</p>
+</li>
+</ul>
+<hr />
+<h2 id="output_metrics"><a href="#output_metrics" class="header-anchor">Output Metrics</a></h2>
+<h3 id="primary_measurement"><a href="#primary_measurement" class="header-anchor">Primary Measurement</a></h3>
+<p><strong>Promoter strength</strong> &#61; log₂ enrichment relative to 35S minimal promoter</p>
+<p><strong>Interpretation</strong>:</p>
+<ul>
+<li><p><code>enrichment &#61; 0</code>: Same activity as 35S minimal promoter</p>
+</li>
+<li><p><code>enrichment &gt; 0</code>: Stronger than minimal promoter</p>
+</li>
+<li><p><code>enrichment &lt; 0</code>: Weaker than minimal promoter</p>
+</li>
+<li><p><code>enrichment &#61; 1</code>: 2× stronger</p>
+</li>
+<li><p><code>enrichment &#61; -1</code>: 0.5× as strong</p>
+</li>
+</ul>
+<h3 id="model_performance_metrics"><a href="#model_performance_metrics" class="header-anchor">Model Performance Metrics</a></h3>
+<ul>
+<li><p><strong>R² &#40;Pearson correlation squared&#41;</strong>: Overall correlation</p>
+</li>
+<li><p><strong>Spearman correlation</strong>: Rank-order correlation</p>
+</li>
+<li><p>Calculated overall and per-species</p>
+</li>
+<li><p>Reported for both training and test sets</p>
+</li>
+</ul>
+<hr />
+<h2 id="validation_experiments"><a href="#validation_experiments" class="header-anchor">Validation Experiments</a></h2>
+<p>Additional constructs tested beyond the genomic libraries:</p>
+<h3 id="validation_set_1_motif_mutations"><a href="#validation_set_1_motif_mutations" class="header-anchor">Validation Set 1 &#40;Motif Mutations&#41;</a></h3>
+<ul>
+<li><p>TATA-box mutations &#40;mut/insertion&#41;</p>
+</li>
+<li><p>BRE mutations</p>
+</li>
+<li><p>Synthetic CPE combinations</p>
+</li>
+<li><p>TF binding site insertions</p>
+</li>
+</ul>
+<h3 id="validation_set_2_in_silico_evolution"><a href="#validation_set_2_in_silico_evolution" class="header-anchor">Validation Set 2 &#40;In Silico Evolution&#41;</a></h3>
+<ul>
+<li><p><strong>Starting sequences</strong>: 310 native promoters from all 3 species</p>
+</li>
+<li><p><strong>Optimization targets</strong>: Leaf, protoplast, or both systems</p>
+</li>
+<li><p><strong>Method</strong>: Iterative point mutation &#43; CNN prediction</p>
+</li>
+<li><p><strong>Rounds</strong>: Up to 10 rounds of evolution</p>
+</li>
+<li><p><strong>Constraints</strong>: Remove restriction enzyme sites &#40;BsaI, BbsI&#41;</p>
+</li>
+<li><p><strong>Output</strong>: Optimized promoters for experimental validation</p>
+</li>
+</ul>
+<hr />
+<h2 id="data_availability"><a href="#data_availability" class="header-anchor">Data Availability</a></h2>
+<h3 id="processed_data_files"><a href="#processed_data_files" class="header-anchor">Processed Data Files</a></h3>
+<ul>
+<li><p><code>RData/main_data.Rdata</code>: Aggregated enrichment values</p>
+</li>
+<li><p><code>CNN/*.tsv</code>: Training/test data for neural networks</p>
+</li>
+<li><p><code>figures/rawData/*.tsv</code>: Data tables for publication figures</p>
+</li>
+</ul>
+<h3 id="code_organization"><a href="#code_organization" class="header-anchor">Code Organization</a></h3>
+<ul>
+<li><p><code>analysis/</code>: R scripts for data processing and analysis</p>
+</li>
+<li><p><code>CNN/</code>: Python notebooks for model training and evolution</p>
+</li>
+<li><p><code>barcode_extraction/</code>: Bash scripts for barcode counting</p>
+</li>
+<li><p><code>subassembly/</code>: Scripts to link barcodes to promoters</p>
+</li>
+<li><p><code>promoter_annotation/</code>: Extract promoter sequences from genomes</p>
+</li>
+</ul>
+<hr />
+<h2 id="summary_statistics"><a href="#summary_statistics" class="header-anchor">Summary Statistics</a></h2>
+<table><tr><th align="right">Metric</th><th align="right">Value</th></tr><tr><td align="right"><strong>Total promoters tested</strong></td><td align="right">100,486</td></tr><tr><td align="right"><strong>Species</strong></td><td align="right">3 &#40;Arabidopsis, maize, sorghum&#41;</td></tr><tr><td align="right"><strong>Expression systems</strong></td><td align="right">2 &#40;leaf, protoplast&#41;</td></tr><tr><td align="right"><strong>Experimental conditions</strong></td><td align="right">6 per species</td></tr><tr><td align="right"><strong>Biological replicates</strong></td><td align="right">2 per condition</td></tr><tr><td align="right"><strong>Total experiments</strong></td><td align="right">36</td></tr><tr><td align="right"><strong>Barcodes per promoter</strong></td><td align="right">Variable &#40;multiple technical replicates&#41;</td></tr><tr><td align="right"><strong>Training sequences &#40;CNN&#41;</strong></td><td align="right">133,217 &#40;90&#37; split&#41;</td></tr><tr><td align="right"><strong>Test sequences &#40;CNN&#41;</strong></td><td align="right">14,749 &#40;10&#37; split&#41;</td></tr><tr><td align="right"><strong>Sequence length</strong></td><td align="right">170bp</td></tr><tr><td align="right"><strong>Measurement type</strong></td><td align="right">Transcriptional &#40;mRNA abundance&#41;</td></tr><tr><td align="right"><strong>Normalization baseline</strong></td><td align="right">35S minimal promoter</td></tr></table>
+<hr />
+<h2 id="comparison_to_standard_mpra"><a href="#comparison_to_standard_mpra" class="header-anchor">Comparison to Standard MPRA</a></h2>
+<table><tr><th align="right">Feature</th><th align="right">This Study</th><th align="right">Typical MPRA</th></tr><tr><td align="right"><strong>Library size</strong></td><td align="right">~100K promoters</td><td align="right">10K-1M variants</td></tr><tr><td align="right"><strong>Sequence length</strong></td><td align="right">Fixed 170bp</td><td align="right">Variable &#40;50-200bp&#41;</td></tr><tr><td align="right"><strong>Source</strong></td><td align="right">Native genomic promoters</td><td align="right">Synthetic/mutated</td></tr><tr><td align="right"><strong>Barcode location</strong></td><td align="right">3&#39; UTR &#40;transcribed&#41;</td><td align="right">3&#39; UTR or separate tag</td></tr><tr><td align="right"><strong>Measurement</strong></td><td align="right">RNA-seq</td><td align="right">RNA-seq or DNA-seq</td></tr><tr><td align="right"><strong>Normalization</strong></td><td align="right">35S minimal promoter</td><td align="right">Various &#40;input DNA&#41;</td></tr><tr><td align="right"><strong>Systems tested</strong></td><td align="right">2 &#40;leaf, protoplast&#41;</td><td align="right">Usually 1</td></tr><tr><td align="right"><strong>Replicates</strong></td><td align="right">2 biological</td><td align="right">2-3 biological</td></tr><tr><td align="right"><strong>Train/test split</strong></td><td align="right">90/10</td><td align="right">Varies &#40;often none&#41;</td></tr><tr><td align="right"><strong>Model</strong></td><td align="right">CNN &#40;bidirectional&#41;</td><td align="right">Various ML approaches</td></tr></table>
+<hr />
+<h2 id="critical_design_choices"><a href="#critical_design_choices" class="header-anchor">Critical Design Choices</a></h2>
+<h3 id="strengths"><a href="#strengths" class="header-anchor">Strengths</a></h3>
+<p>✅ Large-scale native promoter sampling across 3 species   ✅ Two independent biological systems for validation   ✅ Multiple conditions &#40;enhancer, light&#41; per system   ✅ Biological replicates for statistical robustness   ✅ Motif-initialized CNN leverages prior knowledge  </p>
+<h3 id="limitations"><a href="#limitations" class="header-anchor">Limitations</a></h3>
+<p>⚠️ Random train/test split &#40;no stratification&#41;   ⚠️ No separate validation set for hyperparameter tuning   ⚠️ Single random seed &#40;split not robust&#41;   ⚠️ No cross-validation   ⚠️ Fixed CNN architecture &#40;no hyperparameter search&#41;   ⚠️ Species imbalance in datasets &#40;Zm &gt; Sb &gt; At&#41;   ⚠️ Tobacco host system &#40;non-native for all 3 species&#41;  </p>
+<hr />
+<p><em>This document describes the experimental and computational methodology for the plant core promoter analysis. For detailed methods, refer to the original publication and repository code.</em></p>
+<div class="page-foot">
+    Contact me by <a href="mailto:skchu@wustl.edu">E-mail</a> | <a href="https://github.com/kchu25">Github</a> | <a href="https://www.linkedin.com/in/kchu1/">Linkedin</a>
+    <br>
+    This work is licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.  Last modified: February 11, 2026.
+    <br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia language</a>.
+</div>
+</div><!-- CONTENT ENDS HERE -->
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>
