@@ -233,15 +233,28 @@ test   Zm    ENSRNA049996853   TCCTTCCAAACACTTCACCAG...                    -1.89
 
 ## CNN Model Architecture
 
-### Two Independent Models
+### Two Independent Models (NOT Combined)
 
-Separate models trained for each biological system:
-1. **model_leaf**: Predicts activity in tobacco leaf system
-2. **model_proto**: Predicts activity in maize protoplast system
+**Critical design choice**: Separate models trained for each biological system:
+1. **model_leaf**: Trained ONLY on tobacco leaf data (72,158 sequences)
+2. **model_proto**: Trained ONLY on maize protoplast data (75,808 sequences)
 
-**Why separate models?**
-- Different cellular contexts may have distinct regulatory logic
-- Allows system-specific predictions for *in silico* evolution
+**Why keep datasets separate?**
+- Different cellular contexts have fundamentally different regulatory logic
+- Leaf tissue: intact cells, cell-cell signaling, complex tissue environment
+- Protoplasts: isolated cells, no intercellular communication, simplified context
+- Mixing would dilute system-specific patterns
+
+**How both models are used together:**
+The key innovation is using BOTH models for *in silico* evolution:
+- **Optimize for leaf**: Use model_leaf predictions to guide mutations
+- **Optimize for proto**: Use model_proto predictions to guide mutations
+- **Optimize for both**: Take mean of both predictions → promoters that work in multiple contexts
+
+This approach allows rational design of:
+- Context-specific promoters (strong in one system)
+- Universal promoters (strong in both systems)
+- Conditional promoters (strong only under specific conditions)
 
 ### Architecture Details
 
@@ -413,6 +426,123 @@ Additional constructs tested beyond the genomic libraries:
 ⚠️ Fixed CNN architecture (no hyperparameter search)  
 ⚠️ Species imbalance in datasets (Zm > Sb > At)  
 ⚠️ Tobacco host system (non-native for all 3 species)  
+
+---
+
+## Data Extraction for Machine Learning
+
+### Quick Start
+
+Extract clean sequence-to-expression CSV files:
+
+```bash
+julia extract_seq_expr_data.jl
+```
+
+### Why Two Separate Datasets?
+
+**The study trains TWO independent models, NOT one combined model:**
+
+1. **model_leaf**: Trained ONLY on tobacco leaf data → predicts activity in leaf tissue
+2. **model_proto**: Trained ONLY on maize protoplast data → predicts activity in protoplasts
+
+**Rationale for keeping datasets separate:**
+- Different cellular contexts have fundamentally different regulatory logic
+- Leaf tissue: intact cells with cell-cell interactions, complex tissue environment
+- Protoplasts: isolated single cells, simplified regulatory context
+- Mixing would dilute system-specific regulatory patterns
+
+**How both models work together:**
+
+For *in silico* evolution, both models are used simultaneously:
+- Optimize for `'leaf'`: Use model_leaf predictions to guide mutations
+- Optimize for `'proto'`: Use model_proto predictions to guide mutations
+- Optimize for `'both'`: Average both predictions → universal promoters
+
+This enables rational design of context-specific OR universal promoters.
+
+### Output Files Generated
+
+The extraction script generates **6 CSV files**:
+
+| File | System | Sequences | Purpose | Split |
+|------|--------|-----------|---------|-------|
+| `seq_expr_leaf_simple.csv` | Tobacco leaf | 72,158 | ML training | 65,004 / 7,154 |
+| `seq_expr_proto_simple.csv` | Maize protoplast | 75,808 | ML training | 68,213 / 7,595 |
+| `seq_expr_combined_simple.csv` | Both systems | 147,966 | Analysis only | Mixed |
+| `seq_expr_leaf_annotated.csv` | Tobacco leaf | 72,158 | With metadata | 65,004 / 7,154 |
+| `seq_expr_proto_annotated.csv` | Maize protoplast | 75,808 | With metadata | 68,213 / 7,595 |
+| `seq_expr_combined_annotated.csv` | Both systems | 147,966 | With metadata | Mixed |
+
+**Note**: The same promoter sequences appear in BOTH leaf and proto datasets with different expression values. These are independent measurements in different biological contexts, NOT duplicates.
+
+### File Formats
+
+**Simple format** (seq, expr only) - ready for direct ML use:
+```csv
+seq,expr
+TCCCACTATTTGTCGGCTAGCCAGATTGTTGTGGTCTGATTAAAGT...,2.346474234
+CTTTTTTTTGAATAAATTGTGACAAATCGTGACACAATATCGTCAC...,-1.895096702
+```
+
+**Annotated format** (with metadata) - for filtering and analysis:
+```csv
+seq,expr,species,gene,split,system
+TCCCACTATTTGTCGGCTAGCCAGATTGTTGTGGTCTGATTAAAGT...,2.346474234,At,AT2G28056,train,leaf
+CTTTTTTTTGAATAAATTGTGACAAATCGTGACACAATATCGTCAC...,-1.895096702,Zm,ENSRNA049996853,test,proto
+```
+
+### Column Descriptions
+
+| Column | Description | Values |
+|--------|-------------|--------|
+| `seq` | Promoter DNA sequence | 170bp uppercase (ACGT) |
+| `expr` | Log₂ enrichment (promoter strength) | Real number |
+| `species` | Source organism | At, Zm, or Sb |
+| `gene` | Gene identifier | Varies by species |
+| `split` | Original train/test assignment | train or test |
+| `system` | Expression system tested | leaf or proto |
+
+### Expression Value Interpretation
+
+**Units**: Log₂ enrichment relative to 35S minimal promoter
+
+| Value | Meaning | Fold Change |
+|-------|---------|-------------|
+| `expr = 0` | Same as 35S minimal promoter | 1× |
+| `expr = 1` | Twice as strong | 2× |
+| `expr = 2` | Four times stronger | 4× |
+| `expr = -1` | Half as strong | 0.5× |
+| `expr = -2` | Quarter as strong | 0.25× |
+
+**System statistics**:
+- Leaf: mean = 0.90, std = 1.67, range = [-4.45, 5.47]
+- Proto: mean = -0.13, std = 1.24, range = [-5.42, 5.56]
+
+### Requirements
+
+Julia packages (install once):
+```julia
+using Pkg
+Pkg.add(["CSV", "DataFrames"])
+```
+
+### Use Cases
+
+✅ **Recommended uses:**
+1. Train system-specific models (use separate leaf/proto files)
+2. Species-specific analysis (filter annotated format)
+3. Respect original train/test split (use `split` column)
+4. Transfer learning experiments (train on one system, test on other)
+
+❌ **Not recommended:**
+1. Combining both systems for training (dilutes system-specific patterns)
+2. Using combined file for training models (use separate files instead)
+
+✅ **Combined file appropriate for:**
+1. Cross-system behavior analysis
+2. Multi-task learning experiments (predict both simultaneously)
+3. Comparing promoter performance across contexts
 
 ---
 
