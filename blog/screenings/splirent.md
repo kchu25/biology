@@ -81,9 +81,11 @@ These are three **splice donor** sites — positions where the splicing machiner
 
 | Site | Position (relative) | Sequence context | What happens if used |
 |------|---------------------|-----------------|---------------------|
-| **SD1** | 0 (primary) | `...CGAGG`**GT**`GCTT...` | Standard splice — full exon 1 retained |
-| **SD2** | +44 | `...CCCAGG`**TT**`CGTG...` | 44 extra nt removed from exon 1 |
-| **SD3** | +79 | `...GAG`**GT**`ATTC...` | 79 extra nt removed from exon 1 |
+| **SD1** | 0 (primary) | `...CGAGG`**GT**`GCTT...` | Standard splice — intron fully removed |
+| **SD2** | +44 | `...CCCAGG`**TT**`CGTG...` | 44 nt of intron left in mRNA (incomplete intron removal) |
+| **SD3** | +79 | `...GAG`**GT**`ATTC...` | 79 nt of intron left in mRNA (incomplete intron removal) |
+
+All three sites are **inside the intron**, downstream of the exon 1 boundary. SD1 sits right at the exon–intron junction (position 0), so using it removes the intron cleanly. SD2 and SD3 are 44 and 79 nt further into the intron, so splicing there leaves that extra chunk of intronic sequence in the mature mRNA.
 
 The DNA sequence around these sites — especially the two 25-bp random regions — determines which site the cell prefers to use.
 
@@ -198,6 +200,28 @@ The label in the CSV files is called **`sd1_usage`** (splice donor 1 usage ratio
 $$\text{sd1\_usage} = \frac{\text{RNA-seq reads supporting splicing at SD1}}{\text{total RNA-seq reads across all splice sites}}$$
 
 This is conceptually similar to **PSI (Percent Spliced In)**, a standard metric in splicing biology.
+
+### What "reads at SD1" means quantitatively
+
+**"Reads at SD1"** = RNA-seq reads where the splice junction lands exactly at the SD1 position. 
+
+When the spliceosome cuts at SD1, mature mRNA has a junction spanning the exon-intron boundary:
+```
+Mature mRNA (after splicing at SD1):
+  ...Exon1_bases]Exon2_bases...
+                ↑ junction point = SD1 was used
+```
+
+RNA-seq reads that span this junction indicate splicing happened at SD1.
+
+**Concrete example:**
+- Sequence has 10,000 total RNA-seq reads from all splicing events
+- 8,500 reads have junctions at SD1 (primary site)
+- 1,200 reads have junctions at SD2 (alternative)
+- 600 reads have junctions at SD3 (alternative)
+- **sd1_usage = 8,500 / 10,300 = 0.825** (82.5% use SD1)
+
+The formula includes SD1 in **both numerator and denominator** — it's asking: "**What fraction of all splicing events used SD1?**"
 
 | Value | Meaning |
 |-------|---------|
